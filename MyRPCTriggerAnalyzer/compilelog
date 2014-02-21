@@ -1,0 +1,24 @@
+Reading cached build data
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+>> Entering Package MyAnalyzers/MyRPCTriggerAnalyzer
+>> Creating project symlinks
+>> Compiling edm plugin /afs/cern.ch/work/p/piet/Analysis/CMSSW_5_3_12_patch3/src/MyAnalyzers/MyRPCTriggerAnalyzer/src/MyRPCTriggerAnalyzer.cc 
+/afs/cern.ch/work/p/piet/Analysis/CMSSW_5_3_12_patch3/src/MyAnalyzers/MyRPCTriggerAnalyzer/src/MyRPCTriggerAnalyzer.cc: In member function 'virtual void MyRPCTriggerAnalyzer::analyze(const edm::Event&, const edm::EventSetup&)':
+/afs/cern.ch/work/p/piet/Analysis/CMSSW_5_3_12_patch3/src/MyAnalyzers/MyRPCTriggerAnalyzer/src/MyRPCTriggerAnalyzer.cc:245:9: warning: unused variable 'BxInEvent' [-Wunused-variable]
+>> Building edm plugin tmp/slc5_amd64_gcc462/src/MyAnalyzers/MyRPCTriggerAnalyzer/src/MyAnalyzersMyRPCTriggerAnalyzer/libMyAnalyzersMyRPCTriggerAnalyzer.so
+@@@@ Running edmWriteConfigs for MyAnalyzersMyRPCTriggerAnalyzer
+--- Registered EDM Plugin: MyAnalyzersMyRPCTriggerAnalyzer
+>> Leaving Package MyAnalyzers/MyRPCTriggerAnalyzer
+>> Package MyAnalyzers/MyRPCTriggerAnalyzer built
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+gmake[1]: Entering directory `/afs/cern.ch/work/p/piet/Analysis/CMSSW_5_3_12_patch3'
+>> Creating project symlinks
+>> Done python_symlink
+>> Compiling python modules python
+>> Compiling python modules src/MyAnalyzers/MyRPCTriggerAnalyzer/python
+>> All python modules compiled
+@@@@ Refreshing Plugins:edmPluginRefresh
+>> Pluging of all type refreshed.
+gmake[1]: Leaving directory `/afs/cern.ch/work/p/piet/Analysis/CMSSW_5_3_12_patch3'
