@@ -1,0 +1,212 @@
+25-Feb-2014 19:08:45 CET  Initiating request to open file file:/build/civanch/CMSSW_7_0_0_pre13/src/mb_8TeV_mu_xs_ext.root
+25-Feb-2014 19:08:48 CET  Successfully opened file file:/build/civanch/CMSSW_7_0_0_pre13/src/mb_8TeV_mu_xs_ext.root
+Begin processing the 1st record. Run 1, Event 1, LumiSection 1 at 25-Feb-2014 19:08:58.715 CET
+Begin processing the 2nd record. Run 1, Event 2, LumiSection 1 at 25-Feb-2014 19:08:58.830 CET
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 641622 TrackId CMSSW = 3291 track = 0x2b41dac99fd0
+ VertexId = 2592
+ VertexId = 2592 Vertex = 0x2b41dace4700
+TrackId = 641622 VertexId = 2592 OriginId = -1
+TrackId = 641622 VertexId = 2592 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 641629 TrackId CMSSW = 0 track = 0x2b41dac40000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41dacc1000
+TrackId = 641629 VertexId = 0 OriginId = -1
+TrackId = 641629 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 641628 TrackId CMSSW = 0 track = 0x2b41dac40000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41dacc1000
+TrackId = 641628 VertexId = 0 OriginId = -1
+TrackId = 641628 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 641627 TrackId CMSSW = 0 track = 0x2b41dac40000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41dacc1000
+TrackId = 641627 VertexId = 0 OriginId = -1
+TrackId = 641627 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 641626 TrackId CMSSW = 0 track = 0x2b41dac40000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41dacc1000
+TrackId = 641626 VertexId = 0 OriginId = -1
+TrackId = 641626 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 641625 TrackId CMSSW = 0 track = 0x2b41dac40000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41dacc1000
+TrackId = 641625 VertexId = 0 OriginId = -1
+TrackId = 641625 VertexId = 0 OriginId = -1 GenParicleId = 0
+Begin processing the 3rd record. Run 1, Event 3, LumiSection 1 at 25-Feb-2014 19:08:58.838 CET
+SimHit from particle = 11 created in process = 10
+TrackId Geant = 831015 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 831015 VertexId = 0 OriginId = -1
+TrackId = 831015 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 831017 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 831017 VertexId = 0 OriginId = -1
+TrackId = 831017 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 831016 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 831016 VertexId = 0 OriginId = -1
+TrackId = 831016 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 831019 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 831019 VertexId = 0 OriginId = -1
+TrackId = 831019 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 831018 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 831018 VertexId = 0 OriginId = -1
+TrackId = 831018 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 831849 TrackId CMSSW = 5453 track = 0x2b41dae951b0
+ VertexId = 4412
+ VertexId = 4412 Vertex = 0x2b41daefd520
+TrackId = 831849 VertexId = 4412 OriginId = -1
+TrackId = 831849 VertexId = 4412 OriginId = -1 GenParicleId = 0
+SimHit from particle = -11 created in process = 12
+TrackId Geant = 832009 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832009 VertexId = 0 OriginId = -1
+TrackId = 832009 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 2212 created in process = 1
+TrackId Geant = 831562 TrackId CMSSW = 5452 track = 0x2b41dae95140
+ VertexId = 4411
+ VertexId = 4411 Vertex = 0x2b41daefd4e8
+TrackId = 831562 VertexId = 4411 OriginId = -1
+TrackId = 831562 VertexId = 4411 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832298 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832298 VertexId = 0 OriginId = -1
+TrackId = 832298 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832297 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832297 VertexId = 0 OriginId = -1
+TrackId = 832297 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832296 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832296 VertexId = 0 OriginId = -1
+TrackId = 832296 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832295 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832295 VertexId = 0 OriginId = -1
+TrackId = 832295 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832294 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832294 VertexId = 0 OriginId = -1
+TrackId = 832294 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832293 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832293 VertexId = 0 OriginId = -1
+TrackId = 832293 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 8
+TrackId Geant = 832292 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 832292 VertexId = 0 OriginId = -1
+TrackId = 832292 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 833091 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 833091 VertexId = 0 OriginId = -1
+TrackId = 833091 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 833090 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 833090 VertexId = 0 OriginId = -1
+TrackId = 833090 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 7
+TrackId Geant = 833089 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 833089 VertexId = 0 OriginId = -1
+TrackId = 833089 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 838731 TrackId CMSSW = 0 track = 0x2b41dae00000
+ VertexId = 0
+ VertexId = 0 Vertex = 0x2b41daec1000
+TrackId = 838731 VertexId = 0 OriginId = -1
+TrackId = 838731 VertexId = 0 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 838730 TrackId CMSSW = 5484 track = 0x2b41dae95f40
+ VertexId = 4443
+ VertexId = 4443 Vertex = 0x2b41daefdbe8
+TrackId = 838730 VertexId = 4443 OriginId = -1
+TrackId = 838730 VertexId = 4443 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 838730 TrackId CMSSW = 5484 track = 0x2b41dae95f40
+ VertexId = 4443
+ VertexId = 4443 Vertex = 0x2b41daefdbe8
+TrackId = 838730 VertexId = 4443 OriginId = -1
+TrackId = 838730 VertexId = 4443 OriginId = -1 GenParicleId = 0
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 838730 TrackId CMSSW = 5484 track = 0x2b41dae95f40
+ VertexId = 4443
+ VertexId = 4443 Vertex = 0x2b41daefdbe8
+TrackId = 838730 VertexId = 4443 OriginId = -1
+TrackId = 838730 VertexId = 4443 OriginId = -1 GenParicleId = 0
+Begin processing the 4th record. Run 1, Event 4, LumiSection 1 at 25-Feb-2014 19:08:58.857 CET
+Begin processing the 5th record. Run 1, Event 5, LumiSection 1 at 25-Feb-2014 19:08:58.863 CET
+Begin processing the 6th record. Run 1, Event 6, LumiSection 1 at 25-Feb-2014 19:08:58.869 CET
+SimHit from particle = 11 created in process = 5
+TrackId Geant = 403500 TrackId CMSSW = 3592 track = 0x2b41dada2380
+ VertexId = 2924
+ VertexId = 2924 Vertex = 0x2b41daea7fa0
+TrackId = 403500 VertexId = 2924 OriginId = -1
+%MSG-e FatalSystemSignal:  MyNeutronSimHitAnalyzer:demo  25-Feb-2014 19:08:58 CET Run: 1 Event: 6
+A fatal system signal has occurred: segmentation violation
+%MSG
+
+
+A fatal system signal has occurred: segmentation violation
+The following is the call stack containing the origin of the signal.
+NOTE:The first few functions on the stack are artifacts of processing the signal and can be ignored
+
+#0  0x0000003890a9a075 in waitpid () from /lib64/libc.so.6
+#1  0x0000003890a3c741 in do_system () from /lib64/libc.so.6
+#2  0x00002b41ba458ddf in TUnixSystem::StackTrace() () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/external/slc5_amd64_gcc481/lib/libCore.so
+#3  0x00002b41bd7e8385 in sig_dostack_then_abort () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreServices.so
+#4  <signal handler called>
+#5  0x00002b41c7ad236f in MyNeutronSimHitAnalyzer::analyze(edm::Event const&, edm::EventSetup const&) () from /build/piet/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/pluginMyAnalyzersMyNeutronSimHitAnalyzerAuto.so
+#6  0x00002b41b9051e5b in edm::EDAnalyzer::doEvent(edm::EventPrincipal const&, edm::EventSetup const&, edm::ModuleCallingContext const*) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#7  0x00002b41b9126a4e in edm::WorkerT<edm::EDAnalyzer>::implDo(edm::EventPrincipal&, edm::EventSetup const&, edm::ModuleCallingContext const*) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#8  0x00002b41b907abb1 in bool edm::Worker::doWork<edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1> >(edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1>::MyPrincipal&, edm::EventSetup const&, edm::CPUTimer*, edm::StreamID, edm::ParentContext const&, edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1>::Context const*) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#9  0x00002b41b907e9cb in void edm::Path::processOneOccurrence<edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1> >(edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1>::MyPrincipal&, edm::EventSetup const&, edm::StreamID const&, edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1>::Context const*) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#10 0x00002b41b90862d6 in void edm::StreamSchedule::processOneEvent<edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1> >(edm::OccurrenceTraits<edm::EventPrincipal, (edm::BranchActionType)1>::MyPrincipal&, edm::EventSetup const&, bool) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#11 0x00002b41b90766ba in edm::EventProcessor::processEvent(unsigned int) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#12 0x00002b41b9076933 in edm::EventProcessor::readAndProcessEvent() () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#13 0x00002b41b905739a in statemachine::HandleEvent::readAndProcessEvent() () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#14 0x00002b41b9059380 in statemachine::HandleEvent::HandleEvent(boost::statechart::state<statemachine::HandleEvent, statemachine::HandleLumis, boost::mpl::list<mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na>, (boost::statechart::history_mode)0>::my_context) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#15 0x00002b41b9061aae in boost::statechart::state<statemachine::HandleEvent, statemachine::HandleLumis, boost::mpl::list<mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na>, (boost::statechart::history_mode)0>::shallow_construct(boost::intrusive_ptr<statemachine::HandleLumis> const&, boost::statechart::state_machine<statemachine::Machine, statemachine::Starting, std::allocator<void>, boost::statechart::null_exception_translator>&) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#16 0x00002b41b9061c57 in boost::statechart::simple_state<statemachine::FirstLumi, statemachine::HandleLumis, boost::mpl::list<mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na, mpl_::na>, (boost::statechart::history_mode)0>::react_impl(boost::statechart::event_base const&, void const*) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#17 0x00002b41b907cbba in boost::statechart::state_machine<statemachine::Machine, statemachine::Starting, std::allocator<void>, boost::statechart::null_exception_translator>::process_event(boost::statechart::event_base const&) () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#18 0x00002b41b9074caa in edm::EventProcessor::runToCompletion() () from /afs/cern.ch/cms/slc5_amd64_gcc481/cms/cmssw/CMSSW_7_0_0_pre13/lib/slc5_amd64_gcc481/libFWCoreFramework.so
+#19 0x000000000040b414 in main ()
+
+A fatal system signal has occurred: segmentation violation
