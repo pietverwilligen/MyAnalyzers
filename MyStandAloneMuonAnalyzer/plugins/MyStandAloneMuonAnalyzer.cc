@@ -1,0 +1,435 @@
+// -*- C++ -*-
+//
+// Package:    MyStandAloneMuonAnalyzer
+// Class:      MyStandAloneMuonAnalyzer
+// 
+/**\class MyStandAloneMuonAnalyzer MyStandAloneMuonAnalyzer.cc MyAnalyzers/MyStandAloneMuonAnalyzer/plugins/MyStandAloneMuonAnalyzer.cc
+
+ Description: [one line class summary]
+
+ Implementation:
+     [Notes on implementation]
+*/
+//
+// Original Author:  Piet Verwilligen
+//         Created:  Thu, 05 Jun 2014 17:16:14 GMT
+// $Id$
+//
+//
+
+
+// system include files
+#include <memory>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+
+// ROOT include files
+#include <TRandom.h>
+#include "TROOT.h"
+#include "TStyle.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TF1.h"
+#include "THStack.h"
+#include "TLegend.h"
+#include "TTree.h"
+#include "TCanvas.h"
+#include "TDirectoryFile.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+#include "TLatex.h"
+
+// user include files
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h"
+#include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
+#include "Geometry/CommonDetUnit/interface/GeomDet.h"
+
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "RecoMuon/TrackingTools/interface/MuonPatternRecoDumper.h"
+
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
+#include <DataFormats/MuonDetId/interface/RPCDetId.h>
+#include <DataFormats/MuonDetId/interface/CSCDetId.h>
+#include "DataFormats/MuonDetId/interface/DTWireId.h"
+
+#include "RecoMuon/TrackingTools/interface/SegmentsTrackAssociator.h"
+#include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
+
+#include "RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h"
+#include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"
+#include "DataFormats/DTRecHit/interface/DTRecHitCollection.h"
+
+#include "DataFormats/CSCRecHit/interface/CSCSegment.h"
+
+//
+// class declaration
+//
+
+class MyStandAloneMuonAnalyzer : public edm::EDAnalyzer {
+   public:
+      explicit MyStandAloneMuonAnalyzer(const edm::ParameterSet&);
+      ~MyStandAloneMuonAnalyzer();
+
+      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+
+   private:
+      virtual void beginJob() override;
+      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
+      virtual void endJob() override;
+
+      //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+      //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
+      //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+      //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+
+      // ----------member data ---------------------------
+  edm::InputTag STAMuLabel, GLBMuLabel;
+  // std::string muonLabel1, muonLabel2;
+  std::string rootFileName;
+  bool physDebug, techDebug;
+
+  TFile * outputfile;
+
+  TH1F * Rechits_All, * Rechits_DT, * Rechits_CSC, * Rechits_RPC;
+  TH1F * Muon_All;
+  TH1F * Rechits_All_Eta_1D, * Rechits_DT_Eta_1D, * Rechits_CSC_Eta_1D, * Rechits_RPC_Eta_1D;
+  TH2F * Rechits_All_Eta_2D, * Rechits_DT_Eta_2D, * Rechits_CSC_Eta_2D, * Rechits_RPC_Eta_2D;
+
+  // Find the segments associated to the track
+  SegmentsTrackAssociator* theSegmentsAssociator;
+  MuonServiceProxy * theService;
+};
+
+//
+// constants, enums and typedefs
+//
+
+//
+// static data member definitions
+//
+
+//
+// constructors and destructor
+//
+MyStandAloneMuonAnalyzer::MyStandAloneMuonAnalyzer(const edm::ParameterSet& iConfig)
+
+{
+   //now do what ever initialization is needed
+  rootFileName   = iConfig.getUntrackedParameter<std::string>("RootFileName");
+  physDebug      = iConfig.getUntrackedParameter<bool>("PhysicsDebug");
+  techDebug      = iConfig.getUntrackedParameter<bool>("TechnicDebug");
+  // muonLabel1     = iConfig.getUntrackedParameter<std::string>("MuonLabel1");
+  // muonLabel2     = iConfig.getUntrackedParameter<std::string>("MuonLabel2");
+  STAMuLabel = iConfig.getParameter<edm::InputTag>("StandAloneTrackCollectionLabel");
+  GLBMuLabel = iConfig.getParameter<edm::InputTag>("GlobalTrackCollectionLabel");
+
+  const edm::ParameterSet SegmentsTrackAssociatorParameters = iConfig.getParameter<edm::ParameterSet>("SegmentsTrackAssociatorParameters");
+  theService = new MuonServiceProxy(iConfig.getParameter<edm::ParameterSet>("ServiceParameters"));
+  
+
+  if(techDebug) std::cout<<"[MyStandAloneMuonAnalyzer :: Constructor]"<<std::endl;
+  outputfile      = new TFile(rootFileName.c_str(), "RECREATE" );
+
+  Rechits_All = new TH1F("Rechits_All", "RecHits :: All", 50, -2.5, 2.5);
+  Rechits_DT  = new TH1F("Rechits_DT",  "RecHits :: DT",  50, -2.5, 2.5);
+  Rechits_CSC = new TH1F("Rechits_CSC", "RecHits :: CSC", 50, -2.5, 2.5);
+  Rechits_RPC = new TH1F("Rechits_RPC", "RecHits :: RPC", 50, -2.5, 2.5);
+
+  Muon_All = new TH1F("Muon_All", "Stand Alone Muons :: All", 50, -2.5, 2.5);
+
+  Rechits_All_Eta_1D = new TH1F("Rechits_All_Eta_1D", "Average amount of RecHits :: All", 50, -2.5, 2.5);
+  Rechits_DT_Eta_1D  = new TH1F("Rechits_DT_Eta_1D",  "Average amount of RecHits :: DT",  50, -2.5, 2.5);
+  Rechits_CSC_Eta_1D = new TH1F("Rechits_CSC_Eta_1D", "Average amount of RecHits :: CSC", 50, -2.5, 2.5);
+  Rechits_RPC_Eta_1D = new TH1F("Rechits_RPC_Eta_1D", "Average amount of RecHits :: RPC", 50, -2.5, 2.5);
+
+  Rechits_All_Eta_2D = new TH2F("Rechits_All_Eta_2D", "Amount of RecHits :: All", 50, -2.5, 2.5, 101, -0.5, 100.5);
+  Rechits_DT_Eta_2D  = new TH2F("Rechits_DT_Eta_2D",  "Amount of RecHits :: DT",  50, -2.5, 2.5, 101, -0.5, 100.5);
+  Rechits_CSC_Eta_2D = new TH2F("Rechits_CSC_Eta_2D", "Amount of RecHits :: CSC", 50, -2.5, 2.5, 101, -0.5, 100.5);
+  Rechits_RPC_Eta_2D = new TH2F("Rechits_RPC_Eta_2D", "Amount of RecHits :: RPC", 50, -2.5, 2.5, 101, -0.5, 100.5);
+
+  edm::ConsumesCollector iC = consumesCollector();
+  theSegmentsAssociator = new SegmentsTrackAssociator(SegmentsTrackAssociatorParameters,iC);
+}
+
+
+MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
+{
+ 
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+  outputfile->cd();
+
+  Rechits_All->Write();
+  Rechits_DT->Write();
+  Rechits_CSC->Write();
+  Rechits_RPC->Write();
+
+  Muon_All->Write();
+
+  for(int i=0; i<50; ++i) {
+
+    int num1  = Rechits_All->GetBinContent(i+1); 
+    int num2  = Rechits_DT->GetBinContent(i+1); 
+    int num3  = Rechits_CSC->GetBinContent(i+1); 
+    int num4  = Rechits_RPC->GetBinContent(i+1); 
+
+    int denom = Muon_All->GetBinContent(i+1);
+
+    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0;
+    double err1=0.0, err2=0.0, err3=0.0, err4=0.0;
+
+    if(denom>0) {
+      ave1 = 1.0*num1/denom; err1 = sqrt(num1)/denom;
+      ave2 = 1.0*num2/denom; err2 = sqrt(num2)/denom;
+      ave3 = 1.0*num3/denom; err3 = sqrt(num3)/denom;
+      ave4 = 1.0*num4/denom; err4 = sqrt(num4)/denom;
+    }  
+    Rechits_All_Eta_1D->SetBinContent(i+1, ave1);
+    Rechits_DT_Eta_1D->SetBinContent(i+1,  ave2);
+    Rechits_CSC_Eta_1D->SetBinContent(i+1, ave3);
+    Rechits_RPC_Eta_1D->SetBinContent(i+1, ave4);
+
+    Rechits_All_Eta_1D->SetBinError(i+1, err1);
+    Rechits_DT_Eta_1D->SetBinError(i+1,  err2);
+    Rechits_CSC_Eta_1D->SetBinError(i+1, err3);
+    Rechits_RPC_Eta_1D->SetBinError(i+1, err4);
+  }
+
+  Rechits_All_Eta_1D->Write();
+  Rechits_DT_Eta_1D->Write();
+  Rechits_CSC_Eta_1D->Write();
+  Rechits_RPC_Eta_1D->Write();
+
+  Rechits_All_Eta_2D->Write();
+  Rechits_DT_Eta_2D->Write();
+  Rechits_CSC_Eta_2D->Write();
+  Rechits_RPC_Eta_2D->Write();
+
+}
+
+
+//
+// member functions
+//
+
+// ------------ method called for each event  ------------
+void
+MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+
+  theService->update(iSetup);
+
+  edm::Handle<reco::TrackCollection> staTracks;
+  iEvent.getByLabel(STAMuLabel, staTracks);
+
+  edm::Handle<reco::TrackCollection> glbTracks;
+  iEvent.getByLabel(GLBMuLabel, glbTracks);
+
+  reco::TrackCollection::const_iterator staTrack;
+  if(techDebug) std::cout<<"Reconstructed STA Muon Tracks: " <<staTracks->size()<< std::endl;
+  reco::TrackCollection::const_iterator glbTrack;
+  if(techDebug) std::cout<<"Reconstructed GLO Muon Tracks: " <<glbTracks->size()<<std::endl;
+
+
+  edm::ESHandle<MagneticField> theMGField;
+  iSetup.get<IdealMagneticFieldRecord>().get(theMGField);
+
+  edm::ESHandle<GlobalTrackingGeometry> theTrackingGeometry;
+  iSetup.get<GlobalTrackingGeometryRecord>().get(theTrackingGeometry);
+
+  for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
+    reco::TransientTrack track(*staTrack,&*theMGField,theTrackingGeometry); 
+
+    // double recPt = track.impactPointTSCP().momentum().perp();
+    if(physDebug) {
+      std::cout<<" Stand Alone Muon Track :: ";
+      std::cout<<" p: "<<track.impactPointTSCP().momentum().mag();
+      std::cout<<" pT: "<<track.impactPointTSCP().momentum().perp();
+      std::cout<<" eta: "<<track.impactPointTSCP().momentum().eta();
+      std::cout<<" chi2: "<<track.chi2();
+      std::cout<<" with "<<staTrack->recHitsSize()<<" rechits"<<std::endl;
+    }
+
+    trackingRecHit_iterator rhbegin = staTrack->recHitsBegin();
+    trackingRecHit_iterator rhend = staTrack->recHitsEnd();
+
+    double eta = track.impactPointTSCP().momentum().eta();
+    Muon_All->Fill(eta);
+
+    int All_Rechits = 0;
+    int RPC_Rechits = 0;
+    int CSC_Rechits = 0;
+    int DT_Rechits  = 0;
+
+    if(physDebug) {
+      std::cout<<"RecHits:"<<std::endl;
+    }
+    for(trackingRecHit_iterator recHit = rhbegin; recHit != rhend; ++recHit) {
+      const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+      double r = geomDet->surface().position().perp();
+      double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+
+      DetId detid = DetId((*recHit)->geographicalId());
+      if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+	++All_Rechits; ++RPC_Rechits; Rechits_All->Fill(eta); Rechits_RPC->Fill(eta);
+	if(physDebug) std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+      }
+      if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
+	++All_Rechits; ++DT_Rechits; Rechits_All->Fill(eta); Rechits_DT->Fill(eta);
+	if(physDebug) std::cout<<"DT RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+	// This is actually a Segment ... Try to access different rechits of Segment
+	
+	/*
+	const DTRecSegment4D *seg4D = dynamic_cast<const DTRecSegment4D*>(*recHit);
+	if((*seg4D).hasPhi())
+	  std::cout<<"DT Segment :: phi hits = "<<(*seg4D).phiSegment()->specificRecHits().size()<<std::endl;
+	if((*seg4D).hasZed())
+	  std::cout<<"DT Segment :: z hits = "<<(*seg4D).zSegment()->specificRecHits().size()<<std::endl;
+	*/
+      }
+      if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::CSC) {
+	++All_Rechits; ++CSC_Rechits; Rechits_All->Fill(eta); Rechits_CSC->Fill(eta);
+	if(physDebug) std::cout<<"CSC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+        // This is actually a Segment ... Try to access different rechits of Segment
+	// CSCSegment cscSeg = CSCSegment(**recHit);
+	// CSCSegment * cscSeg = dynamic_cast< CSCSegment * >(*recHit);
+	// RecSegment * recSeg = RecSegment(*recHit);
+
+	// int nCSCrechits = *(recHit)->nRecHits();
+	// std::cout<<"CSC Segment built from "<<nCSCrechits<<std::endl;
+      }
+      if(detid.det()==DetId::Tracker) {
+	if(physDebug) std::cout<<"Tracker RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+      }
+    }
+    Rechits_All_Eta_2D->Fill(eta, All_Rechits);
+    Rechits_RPC_Eta_2D->Fill(eta, RPC_Rechits);
+    Rechits_CSC_Eta_2D->Fill(eta, CSC_Rechits);
+    Rechits_DT_Eta_2D->Fill(eta, DT_Rechits);
+  }
+
+
+  // Code from: DQMOffline/Muon/src/SegmentTrackAnalyzer.cc
+  // GLOBAL MUONS
+  for (glbTrack = glbTracks->begin(); glbTrack!=glbTracks->end(); ++glbTrack) {
+   
+    MuonTransientTrackingRecHit::MuonRecHitContainer segments = theSegmentsAssociator->associate(iEvent, iSetup, *glbTrack );
+    std::cout<<"Global Track :: segments associated = "<<segments.size()<<std::endl;
+
+    for (MuonTransientTrackingRecHit::MuonRecHitContainer::const_iterator segment=segments.begin(); segment!=segments.end(); segment++) {
+      DetId id = (*segment)->geographicalId();
+      // hits from DT segments
+      if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::DT ) {
+        const DTRecSegment4D *seg4D = dynamic_cast<const DTRecSegment4D*>((*segment)->hit());
+        if((*seg4D).hasPhi())
+	  std::cout<<"DT Segment :: phi hits = "<<(*seg4D).phiSegment()->specificRecHits().size()<<std::endl;
+        if((*seg4D).hasZed())
+	  std::cout<<"DT Segment :: z hits = "<<(*seg4D).zSegment()->specificRecHits().size()<<std::endl;
+      }
+      // hits from CSC segments
+      if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::CSC ) {
+	std::cout<<"CSC Segment :: 2D hits = "<<(*segment)->recHits().size()<<std::endl;
+      }
+    }
+  }
+  // Code from: DQMOffline/Muon/src/SegmentTrackAnalyzer.cc
+  // STAND ALONE MUONS
+  for (staTrack = staTracks->begin(); staTrack!=staTracks->end(); ++staTrack) {
+   
+    MuonTransientTrackingRecHit::MuonRecHitContainer segments = theSegmentsAssociator->associate(iEvent, iSetup, *staTrack );
+    std::cout<<"Stand Alone Track :: segments associated = "<<segments.size()<<std::endl;
+
+    for (MuonTransientTrackingRecHit::MuonRecHitContainer::const_iterator segment=segments.begin(); segment!=segments.end(); segment++) {
+      DetId id = (*segment)->geographicalId();
+      // hits from DT segments
+      if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::DT ) {
+        const DTRecSegment4D *seg4D = dynamic_cast<const DTRecSegment4D*>((*segment)->hit());
+        if((*seg4D).hasPhi())
+	  std::cout<<"DT Segment :: phi hits = "<<(*seg4D).phiSegment()->specificRecHits().size()<<std::endl;
+        if((*seg4D).hasZed())
+	  std::cout<<"DT Segment :: z hits = "<<(*seg4D).zSegment()->specificRecHits().size()<<std::endl;
+      }
+      // hits from CSC segments
+      if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::CSC ) {
+	std::cout<<"CSC Segment :: 2D hits = "<<(*segment)->recHits().size()<<std::endl;
+      }
+    }
+  }
+
+
+}
+
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+MyStandAloneMuonAnalyzer::beginJob()
+{
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+MyStandAloneMuonAnalyzer::endJob() 
+{
+}
+
+// ------------ method called when starting to processes a run  ------------
+/*
+void 
+MyStandAloneMuonAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
+{
+}
+*/
+
+// ------------ method called when ending the processing of a run  ------------
+/*
+void 
+MyStandAloneMuonAnalyzer::endRun(edm::Run const&, edm::EventSetup const&)
+{
+}
+*/
+
+// ------------ method called when starting to processes a luminosity block  ------------
+/*
+void 
+MyStandAloneMuonAnalyzer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+{
+}
+*/
+
+// ------------ method called when ending the processing of a luminosity block  ------------
+/*
+void 
+MyStandAloneMuonAnalyzer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+{
+}
+*/
+
+// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
+void
+MyStandAloneMuonAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  //The following says we do not know what parameters are allowed so do no validation
+  // Please change this to state exactly what you do use, even if it is no parameters
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(MyStandAloneMuonAnalyzer);
