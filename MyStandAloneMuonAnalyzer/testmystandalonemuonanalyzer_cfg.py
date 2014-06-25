@@ -20,7 +20,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 # process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
@@ -49,9 +49,9 @@ from RecoMuon.TrackingTools.MuonServiceProxy_cff import *
 
 process.demo = cms.EDAnalyzer('MyStandAloneMuonAnalyzer',
                               MuonServiceProxy,
-                              PhysicsDebug = cms.untracked.bool(False),
-                              TechnicDebug = cms.untracked.bool(False),
-                              RootFileName = cms.untracked.string("STAMuon_70X_2015.root"),
+                              PhysicsDebug = cms.untracked.bool(True),
+                              TechnicDebug = cms.untracked.bool(True),
+                              RootFileName = cms.untracked.string("STAMuon_70X_2015_Test.root"),
                               # MuonLabel1   = cms.untracked.string("standAloneMuons"),
                               # MuonLabel2   = cms.untracked.string("UpdatedAtVtx"),
                               # Maybe try to pass by input tag ???

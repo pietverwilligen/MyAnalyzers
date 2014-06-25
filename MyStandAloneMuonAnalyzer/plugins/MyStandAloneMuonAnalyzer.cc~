@@ -108,22 +108,12 @@ class MyStandAloneMuonAnalyzer : public edm::EDAnalyzer {
   bool physDebug, techDebug;
 
   TFile * outputfile;
-  TDirectoryFile * AllHits, * SegmentsAndHits;  
 
+  TH1F * Rechits_All, * Rechits_DT, * Rechits_CSC, * Rechits_RPC, * Rechits_DT_EtaSL, * Rechits_DT_PhiSL;
   TH1F * Muon_All, * Muon_All_Reduced;
-
-  TH1F * Rechits_All,         * Rechits_DT,          * Rechits_CSC,           * Rechits_RPC;
-  TH1F * Rechits_All_Hits,    * Rechits_DT_Hits,     * Rechits_CSC_Hits;
-  TH1F * Rechits_All_PhiHits, * Rechits_All_EtaHits, * Rechits_DT_Hits_EtaSL, * Rechits_DT_Hits_PhiSL; 
-
-
-  TH1F * Rechits_All_Eta_1D,         * Rechits_DT_Eta_1D,            * Rechits_CSC_Eta_1D,          * Rechits_RPC_Eta_1D;
-  TH1F * Rechits_All_Hits_Eta_1D,    * Rechits_DT_Hits_Eta_1D,       * Rechits_CSC_Hits_Eta_1D;
-  TH1F * Rechits_All_PhiHits_Eta_1D, * Rechits_All_EtaHits_Eta_1D,   * Rechits_DT_Hits_EtaSL_Eta_1D, * Rechits_DT_Hits_PhiSL_Eta_1D; 
-
+  TH1F * Rechits_All_Eta_1D, * Rechits_DT_Eta_1D, * Rechits_CSC_Eta_1D, * Rechits_RPC_Eta_1D, * Rechits_DT_EtaSL_Eta_1D, * Rechits_DT_PhiSL_Eta_1D; 
   TH2F * Rechits_All_Eta_2D, * Rechits_DT_Eta_2D, * Rechits_CSC_Eta_2D, * Rechits_RPC_Eta_2D;
   TH2F * Rechits_All_Eta_2D_Reduced, * Rechits_DT_Eta_2D_Reduced, * Rechits_CSC_Eta_2D_Reduced, * Rechits_RPC_Eta_2D_Reduced;
-
 
   // Find the segments associated to the track
   SegmentsTrackAssociator* theSegmentsAssociator;
@@ -160,48 +150,25 @@ MyStandAloneMuonAnalyzer::MyStandAloneMuonAnalyzer(const edm::ParameterSet& iCon
   if(techDebug) std::cout<<"[MyStandAloneMuonAnalyzer :: Constructor]"<<std::endl;
   outputfile      = new TFile(rootFileName.c_str(), "RECREATE" );
 
-  AllHits         = new TDirectoryFile("AllHits",         "AllHits");
-  SegmentsAndHits = new TDirectoryFile("SegmentsAndHits", "SegmentsAndHits");
+  Rechits_All = new TH1F("Rechits_All", "RecHits :: All", 50, -2.5, 2.5);
+  Rechits_DT  = new TH1F("Rechits_DT",  "RecHits :: DT",  50, -2.5, 2.5);
+  Rechits_CSC = new TH1F("Rechits_CSC", "RecHits :: CSC", 50, -2.5, 2.5);
+  Rechits_RPC = new TH1F("Rechits_RPC", "RecHits :: RPC", 50, -2.5, 2.5);
 
   Muon_All = new TH1F("Muon_All", "Stand Alone Muons :: All", 50, -2.5, 2.5);
   Muon_All_Reduced = new TH1F("Muon_All_Reduced", "Stand Alone Muons :: All :: Rebinned #eta Range", 15, reduced);
 
-  // Plots for segments + RPC hits
-  // -----------------------------
-  Rechits_All = new TH1F("Rechits_All", "RecHits :: All (Segments/RPC Hits)", 50, -2.5, 2.5);
-  Rechits_DT  = new TH1F("Rechits_DT",  "RecHits :: DT  (Segments)", 50, -2.5, 2.5);
-  Rechits_CSC = new TH1F("Rechits_CSC", "RecHits :: CSC (Segments)", 50, -2.5, 2.5);
-  Rechits_RPC = new TH1F("Rechits_RPC", "RecHits :: RPC (RPC Hits)", 50, -2.5, 2.5);
+  Rechits_All_Eta_1D = new TH1F("Rechits_All_Eta_1D", "Average amount of RecHits :: All", 50, -2.5, 2.5);
+  Rechits_DT_Eta_1D  = new TH1F("Rechits_DT_Eta_1D",  "Average amount of RecHits :: DT",  50, -2.5, 2.5);
+  Rechits_CSC_Eta_1D = new TH1F("Rechits_CSC_Eta_1D", "Average amount of RecHits :: CSC", 50, -2.5, 2.5);
+  Rechits_RPC_Eta_1D = new TH1F("Rechits_RPC_Eta_1D", "Average amount of RecHits :: RPC", 50, -2.5, 2.5);
 
-  Rechits_All_Eta_1D = new TH1F("Rechits_All_Eta_1D", "Average amount of RecHits :: All (Segments/RPC Hits)", 50, -2.5, 2.5);
-  Rechits_DT_Eta_1D  = new TH1F("Rechits_DT_Eta_1D",  "Average amount of RecHits :: DT  (Segments)",  50, -2.5, 2.5);
-  Rechits_CSC_Eta_1D = new TH1F("Rechits_CSC_Eta_1D", "Average amount of RecHits :: CSC (Segments)", 50, -2.5, 2.5);
-  Rechits_RPC_Eta_1D = new TH1F("Rechits_RPC_Eta_1D", "Average amount of RecHits :: RPC (RPC Hits)", 50, -2.5, 2.5);
+  Rechits_DT_PhiSL  = new TH1F("Rechits_DT_Phi",  "RecHits :: DT ::Phi",  50, -2.5, 2.5);
+  Rechits_DT_EtaSL  = new TH1F("Rechits_DT_Eta",  "RecHits :: DT ::Eta",  50, -2.5, 2.5);
+  Rechits_DT_PhiSL_Eta_1D  = new TH1F("Rechits_DT_PhiSL_Eta_1D",  "RecHits :: DT ::Phi",  50, -2.5, 2.5);
+  Rechits_DT_EtaSL_Eta_1D  = new TH1F("Rechits_DT_EtaSL_Eta_1D",  "RecHits :: DT ::Eta",  50, -2.5, 2.5);
 
 
-  // Plots for single hits
-  // ---------------------
-  Rechits_All_Hits = new TH1F("Rechits_All_Hits", "RecHits :: All (Hits)", 50, -2.5, 2.5);
-  Rechits_DT_Hits  = new TH1F("Rechits_DT_Hits",  "RecHits :: DT  (Hits)", 50, -2.5, 2.5);
-  Rechits_CSC_Hits = new TH1F("Rechits_CSC_Hits", "RecHits :: CSC (Hits)", 50, -2.5, 2.5);
-
-  Rechits_All_PhiHits    = new TH1F("Rechits_All_PhiHits", "RecHits :: All (Hits) :: #phi", 50, -2.5, 2.5);
-  Rechits_All_EtaHits    = new TH1F("Rechits_All_EtaHits", "RecHits :: All (Hits) :: #eta", 50, -2.5, 2.5);
-  Rechits_DT_Hits_PhiSL  = new TH1F("Rechits_DT_Hits_Phi", "RecHits :: DT :: #phi",  50, -2.5, 2.5);
-  Rechits_DT_Hits_EtaSL  = new TH1F("Rechits_DT_Hits_Eta", "RecHits :: DT :: #eta",  50, -2.5, 2.5);
-
-  Rechits_All_Hits_Eta_1D = new TH1F("Rechits_All_Hits_Eta_1D", "Average amount of RecHits :: All (Hits)", 50, -2.5, 2.5);
-  Rechits_DT_Hits_Eta_1D  = new TH1F("Rechits_DT_Hits_Eta_1D",  "Average amount of RecHits :: DT  (Hits)", 50, -2.5, 2.5);
-  Rechits_CSC_Hits_Eta_1D = new TH1F("Rechits_CSC_Hits_Eta_1D", "Average amount of RecHits :: CSC (Hits)", 50, -2.5, 2.5);
-
-  Rechits_All_PhiHits_Eta_1D    = new TH1F("Rechits_All_PhiHits_Eta_1D",    "Average amount of RecHits :: All (Hits) :: #phi", 50, -2.5, 2.5);
-  Rechits_All_EtaHits_Eta_1D    = new TH1F("Rechits_All_EtaHits_Eta_1D",    "Average amount of RecHits :: All (Hits) :: #eta", 50, -2.5, 2.5);
-  Rechits_DT_Hits_PhiSL_Eta_1D  = new TH1F("Rechits_DT_Hits_PhiSL_Eta_1D",  "Average amount of RecHits :: DT ::Phi",  50, -2.5, 2.5);
-  Rechits_DT_Hits_EtaSL_Eta_1D  = new TH1F("Rechits_DT_Hits_EtaSL_Eta_1D",  "Average amount of RecHits :: DT ::Eta",  50, -2.5, 2.5);
-
-  // 2D Plots are only for Segments + RPC Hits
-  // -----------------------------------------
-  // Nothing changed here
   Rechits_All_Eta_2D = new TH2F("Rechits_All_Eta_2D", "Amount of RecHits :: All", 50, -2.5, 2.5, 101, -0.5, 100.5);
   Rechits_DT_Eta_2D  = new TH2F("Rechits_DT_Eta_2D",  "Amount of RecHits :: DT",  50, -2.5, 2.5, 101, -0.5, 100.5);
   Rechits_CSC_Eta_2D = new TH2F("Rechits_CSC_Eta_2D", "Amount of RecHits :: CSC", 50, -2.5, 2.5, 101, -0.5, 100.5);
@@ -224,27 +191,16 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
    // (e.g. close files, deallocate resources etc.)
   outputfile->cd();
 
-  Muon_All->Write();
-  Muon_All_Reduced->Write();
-
-  SegmentsAndHits->cd();
   Rechits_All->Write();
   Rechits_DT->Write();
   Rechits_CSC->Write();
   Rechits_RPC->Write();
-  outputfile->cd();
 
-  AllHits->cd();
-  Rechits_All_Hits->Write();
-  Rechits_DT_Hits->Write();
-  Rechits_CSC_Hits->Write();
+  Rechits_DT_EtaSL->Write();
+  Rechits_DT_PhiSL->Write();
 
-  Rechits_All_PhiHits->Write();
-  Rechits_All_EtaHits->Write();
-  Rechits_DT_Hits_EtaSL->Write();
-  Rechits_DT_Hits_PhiSL->Write();
-  outputfile->cd();
-
+  Muon_All->Write();
+  Muon_All_Reduced->Write();
 
   for(int i=0; i<50; ++i) {
 
@@ -252,34 +208,44 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
     int num2  = Rechits_DT->GetBinContent(i+1); 
     int num3  = Rechits_CSC->GetBinContent(i+1); 
     int num4  = Rechits_RPC->GetBinContent(i+1); 
+    int num5  = Rechits_DT_EtaSL->GetBinContent(i+1); 
+    int num6  = Rechits_DT_PhiSL->GetBinContent(i+1); 
 
     int denom = Muon_All->GetBinContent(i+1);
 
-    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0;
-    double err1=0.0, err2=0.0, err3=0.0, err4=0.0;
+    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0, ave5 = 0.0, ave6 =0.0;
+    double err1=0.0, err2=0.0, err3=0.0, err4=0.0, err5 = 0.0, err6 =0.0;
 
     if(denom>0) {
       ave1 = 1.0*num1/denom; err1 = sqrt(num1)/denom;
       ave2 = 1.0*num2/denom; err2 = sqrt(num2)/denom;
       ave3 = 1.0*num3/denom; err3 = sqrt(num3)/denom;
       ave4 = 1.0*num4/denom; err4 = sqrt(num4)/denom;
+      ave5 = 1.0*num5/denom; err5 = sqrt(num5)/denom;
+      ave6 = 1.0*num6/denom; err6 = sqrt(num6)/denom;
     }  
     Rechits_All_Eta_1D->SetBinContent(i+1, ave1);
     Rechits_DT_Eta_1D->SetBinContent(i+1,  ave2);
     Rechits_CSC_Eta_1D->SetBinContent(i+1, ave3);
     Rechits_RPC_Eta_1D->SetBinContent(i+1, ave4);
+    Rechits_DT_EtaSL_Eta_1D->SetBinContent(i+1,  ave5);
+    Rechits_DT_PhiSL_Eta_1D->SetBinContent(i+1,  ave6);
 
     Rechits_All_Eta_1D->SetBinError(i+1, err1);
     Rechits_DT_Eta_1D->SetBinError(i+1,  err2);
     Rechits_CSC_Eta_1D->SetBinError(i+1, err3);
     Rechits_RPC_Eta_1D->SetBinError(i+1, err4);
+    Rechits_DT_EtaSL_Eta_1D->SetBinError(i+1,  err5);
+    Rechits_DT_PhiSL_Eta_1D->SetBinError(i+1,  err6);
   }
 
-  SegmentsAndHits->cd();
   Rechits_All_Eta_1D->Write();
   Rechits_DT_Eta_1D->Write();
   Rechits_CSC_Eta_1D->Write();
   Rechits_RPC_Eta_1D->Write();
+
+  Rechits_DT_EtaSL_Eta_1D->Write();
+  Rechits_DT_PhiSL_Eta_1D->Write();
 
   Rechits_All_Eta_2D->Write();
   Rechits_DT_Eta_2D->Write();
@@ -290,64 +256,6 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
   Rechits_DT_Eta_2D_Reduced->Write();
   Rechits_CSC_Eta_2D_Reduced->Write();
   Rechits_RPC_Eta_2D_Reduced->Write();
-  outputfile->cd();
-
-  for(int i=0; i<50; ++i) {
-
-    int num1  = Rechits_All_Hits->GetBinContent(i+1); 
-    int num2  = Rechits_DT_Hits->GetBinContent(i+1); 
-    int num3  = Rechits_CSC_Hits->GetBinContent(i+1); 
-
-    int num4  = Rechits_All_PhiHits->GetBinContent(i+1); 
-    int num5  = Rechits_All_EtaHits->GetBinContent(i+1); 
-    int num6  = Rechits_DT_Hits_EtaSL->GetBinContent(i+1); 
-    int num7  = Rechits_DT_Hits_PhiSL->GetBinContent(i+1); 
-
-    int denom = Muon_All->GetBinContent(i+1);
-
-    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0, ave5 = 0.0, ave6 =0.0, ave7 = 0.0;
-    double err1=0.0, err2=0.0, err3=0.0, err4=0.0, err5 = 0.0, err6 =0.0, err7 = 0.0;
-
-    if(denom>0) {
-      ave1 = 1.0*num1/denom; err1 = sqrt(num1)/denom;
-      ave2 = 1.0*num2/denom; err2 = sqrt(num2)/denom;
-      ave3 = 1.0*num3/denom; err3 = sqrt(num3)/denom;
-      ave4 = 1.0*num4/denom; err4 = sqrt(num4)/denom;
-      ave5 = 1.0*num5/denom; err5 = sqrt(num5)/denom;
-      ave6 = 1.0*num6/denom; err6 = sqrt(num6)/denom;
-      ave7 = 1.0*num7/denom; err7 = sqrt(num7)/denom;
-    }  
-    Rechits_All_Hits_Eta_1D->SetBinContent(i+1, ave1);
-    Rechits_DT_Hits_Eta_1D->SetBinContent(i+1,  ave2);
-    Rechits_CSC_Hits_Eta_1D->SetBinContent(i+1, ave3);
-
-    Rechits_All_Hits_Eta_1D->SetBinError(i+1, err1);
-    Rechits_DT_Hits_Eta_1D->SetBinError(i+1,  err2);
-    Rechits_CSC_Hits_Eta_1D->SetBinError(i+1, err3);
-
-    Rechits_All_PhiHits_Eta_1D->SetBinContent(i+1,  ave4);
-    Rechits_All_EtaHits_Eta_1D->SetBinContent(i+1,  ave5);
-    Rechits_DT_Hits_EtaSL_Eta_1D->SetBinContent(i+1,  ave6);
-    Rechits_DT_Hits_PhiSL_Eta_1D->SetBinContent(i+1,  ave7);
-
-    Rechits_All_PhiHits_Eta_1D->SetBinError(i+1,  err4);
-    Rechits_All_EtaHits_Eta_1D->SetBinError(i+1,  err5);
-    Rechits_DT_Hits_EtaSL_Eta_1D->SetBinError(i+1,  err6);
-    Rechits_DT_Hits_PhiSL_Eta_1D->SetBinError(i+1,  err7);
-  }
-
-  AllHits->cd();
-  Rechits_All_Hits_Eta_1D->Write();
-  Rechits_DT_Hits_Eta_1D->Write();
-  Rechits_CSC_Hits_Eta_1D->Write();
-
-  Rechits_All_PhiHits_Eta_1D->Write();
-  Rechits_All_EtaHits_Eta_1D->Write();
-  Rechits_DT_Hits_EtaSL_Eta_1D->Write();
-  Rechits_DT_Hits_PhiSL_Eta_1D->Write();
-  outputfile->cd();
-
-
 }
 
 
@@ -417,8 +325,6 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       DetId detid = DetId((*recHit)->geographicalId());
       if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
 	++All_Rechits; ++RPC_Rechits; Rechits_All->Fill(eta); Rechits_RPC->Fill(eta);
-	Rechits_All_Hits->Fill(eta);
-	Rechits_All_EtaHits->Fill(eta); Rechits_All_PhiHits->Fill(eta);
 	if(physDebug) std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
       }
       if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
@@ -446,25 +352,28 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	    // std::cout<<"          |--> Number of constituting rechits = "<<DTRecHitsL3.size()<<std::endl;
 	    if(techDebug) std::cout<<"Super Layer Number = "<<sulayerIdL2.superLayer();
 	    if(sulayerIdL2.superLayer()==0)      { if(techDebug) { std::cout<<" chamber"<<std::endl; } }
-	    else if(sulayerIdL2.superLayer()==2) { Rechits_DT_Hits_EtaSL->Fill(eta); Rechits_All_EtaHits->Fill(eta); if(techDebug) { std::cout<<" theta-SL"<<std::endl; } }
-	    else                                 { Rechits_DT_Hits_PhiSL->Fill(eta); Rechits_All_PhiHits->Fill(eta); if(techDebug) { std::cout<<" phi-SL"<<std::endl;   } }
-	    Rechits_DT_Hits->Fill(eta);
-            Rechits_All_Hits->Fill(eta);
+	    else if(sulayerIdL2.superLayer()==2) { Rechits_DT_EtaSL->Fill(eta); if(techDebug) { std::cout<<" theta-SL"<<std::endl; } }
+	    else                                 { Rechits_DT_PhiSL->Fill(eta); if(techDebug) { std::cout<<" phi-SL"<<std::endl;   } }
 	  }
 	}
+	/*
+	const DTRecSegment4D *seg4D = dynamic_cast<const DTRecSegment4D*>(*recHit);
+	if((*seg4D).hasPhi())
+	  std::cout<<"DT Segment :: phi hits = "<<(*seg4D).phiSegment()->specificRecHits().size()<<std::endl;
+	if((*seg4D).hasZed())
+	  std::cout<<"DT Segment :: z hits = "<<(*seg4D).zSegment()->specificRecHits().size()<<std::endl;
+	*/
       }
       if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::CSC) {
 	++All_Rechits; ++CSC_Rechits; Rechits_All->Fill(eta); Rechits_CSC->Fill(eta);
 	if(physDebug) std::cout<<"CSC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
         // This is actually a Segment ... Try to access different rechits of Segment
-	std::vector< const TrackingRecHit * > CSCRecHitsL1 = (*recHit)->recHits();	
-	if(techDebug) std::cout<<"Number of constituting rechits = "<<CSCRecHitsL1.size()<<std::endl;
-	std::vector< const TrackingRecHit * >::const_iterator recHitl1;
-	for(recHitl1 = CSCRecHitsL1.begin(); recHitl1 != CSCRecHitsL1.end(); ++recHitl1) {
-	  Rechits_CSC_Hits->Fill(eta);
-	  Rechits_All_Hits->Fill(eta);
-	  Rechits_All_EtaHits->Fill(eta); Rechits_All_PhiHits->Fill(eta);
-	}
+	// CSCSegment cscSeg = CSCSegment(**recHit);
+	// CSCSegment * cscSeg = dynamic_cast< CSCSegment * >(*recHit);
+	// RecSegment * recSeg = RecSegment(*recHit);
+
+	// int nCSCrechits = *(recHit)->nRecHits();
+	// std::cout<<"CSC Segment built from "<<nCSCrechits<<std::endl;
       }
       if(detid.det()==DetId::Tracker) {
 	if(physDebug) std::cout<<"Tracker RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
