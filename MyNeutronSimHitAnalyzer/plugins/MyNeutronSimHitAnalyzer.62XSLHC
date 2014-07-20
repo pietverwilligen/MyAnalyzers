@@ -2642,7 +2642,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     double log_deposit = log10((*iHit).energyLoss()*1000000);          // keV
 
 
-
+    if(tech_debug) std::cout<<"RPC Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){ // Only RPCs
 
       // RPC Geometry
@@ -2872,6 +2872,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       }
     }
 
+    if(tech_debug) std::cout<<"CSC Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::CSC){ // Only CSCs
       CSCDetId rollId(theDetUnitId);
       GlobalPoint CSCGlobalPoint = cscGeom->idToDet(rollId)->toGlobal((*iHit).localPosition());
@@ -3092,9 +3093,9 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // int trackIdC = geantToIndex.find(trackIdG)->second;   // CMSSW VECTOR ID
       // const SimTrack& track = theSimTracks[trackIdC]; 
       // ------------------------------------------------------------------
-
-
     }
+
+    if(tech_debug) std::cout<<"DT Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
       DTWireId wireId(theDetUnitId);
       GlobalPoint DTGlobalPoint = dtGeom->idToDet(wireId)->toGlobal((*iHit).localPosition());
@@ -3199,6 +3200,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
     // not in 71X
     // /*
+    if(tech_debug) std::cout<<"GEM Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::GEM){ // Only GEMs
       // GEM Geometry
       // ============
@@ -3306,6 +3308,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     // */
     // not in 71X 
     // /*
+    if(tech_debug) std::cout<<"ME0 Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::ME0){ // Only ME0
       // ME0 Geometry
       // ============
@@ -3475,8 +3478,8 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
   iSetup.get<MuonGeometryRecord>().get(cscGeom);
   iSetup.get<MuonGeometryRecord>().get(dtGeom);
   // not in 71X release
-  // iSetup.get<MuonGeometryRecord>().get(gemGeom);
-  // iSetup.get<MuonGeometryRecord>().get(me0Geom);
+  iSetup.get<MuonGeometryRecord>().get(gemGeom);
+  iSetup.get<MuonGeometryRecord>().get(me0Geom);
 
   // Loop over RPC Geometry
   // std::cout <<"Analyze RPC Geometry :: Loop over RPC Chambers"<<std::endl;
