@@ -1880,7 +1880,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
 
 
   Canvas_CSC_PathLength_vs_deposits  = new TCanvas("Canvas_CSC_PathLength_vs_deposits",  "#Delta z (Global Coords) vs E_{deposit} :: CSC", 600, 600);
-  Canvas_CSC_PathLength_vs_kinenergy = new TCanvas("Canvas_CSC_PathLength_vs_kinenergy", "#Delta z (Global Coords) vs E_{kin} :: CSC", 600, 600);
+  Canvas_CSC_PathLength_vs_kinenergy = new TCanvas("Canvas_CSC_PathLenght_vs_kinenergy", "#Delta z (Global Coords) vs E_{kin} :: CSC", 600, 600);
 
   Canvas_CSC_PathLength_vs_deposits->cd();
   CSC_EntryExit_el_Deposit_dR->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
