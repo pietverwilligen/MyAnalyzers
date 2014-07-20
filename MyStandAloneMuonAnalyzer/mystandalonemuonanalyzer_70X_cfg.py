@@ -48,7 +48,6 @@ process.source = cms.Source("PoolSource",
 from RecoMuon.TrackingTools.MuonServiceProxy_cff import *
 
 process.demo = cms.EDAnalyzer('MyStandAloneMuonAnalyzer',
-                              MuonServiceProxy,
                               PhysicsDebug = cms.untracked.bool(False),
                               TechnicDebug = cms.untracked.bool(False),
                               GenPartDebug = cms.untracked.bool(False),
@@ -62,10 +61,11 @@ process.demo = cms.EDAnalyzer('MyStandAloneMuonAnalyzer',
                               StandAloneTrackCollectionLabel = cms.InputTag("standAloneMuons","UpdatedAtVtx"),
                               GlobalTrackCollectionLabel     = cms.InputTag("globalMuons",""),
                               SegmentsTrackAssociatorParameters = cms.PSet(
-                                  segmentsDt = cms.untracked.InputTag("dt4DSegments"),
-                                  SelectedSegments = cms.untracked.InputTag("SelectedSegments"),
-                                  segmentsCSC = cms.untracked.InputTag("cscSegments")
+                                      segmentsDt = cms.untracked.InputTag("dt4DSegments"),
+                                      SelectedSegments = cms.untracked.InputTag("SelectedSegments"),
+                                      segmentsCSC = cms.untracked.InputTag("cscSegments")
                               ),
+                              
 )
 
 
