@@ -338,42 +338,73 @@ void Simulate_Redundancy_2015() {
     }
 
     TightIDEff->SetLineColor(kBlack);               TightIDEff->SetMarkerColor(kBlack);
+    /* Original Colors for showing 90% 80% 70% 60% 50% */ 
+    /*
     Efficiency_1D_Plot[0]->SetLineColor(kGreen+2);  Efficiency_1D_Plot[0]->SetMarkerColor(kGreen+2);
     Efficiency_1D_Plot[1]->SetLineColor(kOrange);   Efficiency_1D_Plot[1]->SetMarkerColor(kOrange);
     Efficiency_1D_Plot[2]->SetLineColor(kBlue);     Efficiency_1D_Plot[2]->SetMarkerColor(kBlue);
     Efficiency_1D_Plot[3]->SetLineColor(kViolet);   Efficiency_1D_Plot[3]->SetMarkerColor(kViolet);
     Efficiency_1D_Plot[4]->SetLineColor(kRed);      Efficiency_1D_Plot[4]->SetMarkerColor(kRed);
+    */
+    Efficiency_1D_Plot[0]->SetLineColor(kGreen+2);  Efficiency_1D_Plot[0]->SetMarkerColor(kGreen+2);    // 90%
+    Efficiency_1D_Plot[1]->SetLineColor(kBlue);     Efficiency_1D_Plot[1]->SetMarkerColor(kBlue);       // 80% 
+    // Efficiency_1D_Plot[2]->SetLineColor(kBlue);     Efficiency_1D_Plot[2]->SetMarkerColor(kBlue);    // 70%
+    Efficiency_1D_Plot[3]->SetLineColor(kRed);      Efficiency_1D_Plot[3]->SetMarkerColor(kRed);        // 60%
+    // Efficiency_1D_Plot[4]->SetLineColor(kRed);      Efficiency_1D_Plot[4]->SetMarkerColor(kRed);     // 50%
 
     TightIDEff->SetLineWidth(2); TightIDEff->SetMarkerStyle(34); TightIDEff->SetMarkerSize(1.50);
     for(int k=0; k<5; ++k) { Efficiency_1D_Plot[k]->SetLineWidth(2); Efficiency_1D_Plot[k]->SetMarkerStyle(20); Efficiency_1D_Plot[k]->SetMarkerSize(1.00); }
 
+    // New: different markerstyles for 80% and 60%
+    // circle:  20 & 24
+    // square:  21 & 25
+    // diamond: 33 & 27 --> rediculously small --> markersize 1.5
+    Efficiency_1D_Plot[1]->SetMarkerStyle(21);
+    Efficiency_1D_Plot[3]->SetMarkerStyle(33); Efficiency_1D_Plot[3]->SetMarkerSize(1.50);
+
+    /* Original Colors for showing 90% 80% 70% 60% 50% */ 
+    /*
     Efficiency_1D_Plot[5]->SetLineColor(kGreen+2);  Efficiency_1D_Plot[5]->SetMarkerColor(kGreen+2); Efficiency_1D_Plot[5]->SetLineWidth(2); Efficiency_1D_Plot[5]->SetLineStyle(2); Efficiency_1D_Plot[5]->SetMarkerStyle(24);
     Efficiency_1D_Plot[6]->SetLineColor(kOrange);   Efficiency_1D_Plot[6]->SetMarkerColor(kOrange);  Efficiency_1D_Plot[6]->SetLineWidth(2); Efficiency_1D_Plot[6]->SetLineStyle(2); Efficiency_1D_Plot[6]->SetMarkerStyle(24);
+    */
+    Efficiency_1D_Plot[5]->SetLineColor(kGreen+2);  Efficiency_1D_Plot[5]->SetMarkerColor(kGreen+2); Efficiency_1D_Plot[5]->SetLineWidth(2); Efficiency_1D_Plot[5]->SetLineStyle(2); Efficiency_1D_Plot[5]->SetMarkerStyle(24);
+    Efficiency_1D_Plot[6]->SetLineColor(kBlue);     Efficiency_1D_Plot[6]->SetMarkerColor(kBlue);    Efficiency_1D_Plot[6]->SetLineWidth(2); Efficiency_1D_Plot[6]->SetLineStyle(2); Efficiency_1D_Plot[6]->SetMarkerStyle(24);
+    // New: different markerstyles for 80% and 60%
+    Efficiency_1D_Plot[6]->SetMarkerStyle(25);
 
-    y_range_1 =  0.40;
+    y_range_1 =  0.60; // 0.40 Originally
     y_range_2 =  1.00;
     std::string yaxislabel_ineff = "RECO + ID Efficiency";
+    std::string xaxislabel_ineff = "#eta";
+    double x_title_offset_ineff = 0.75;
+    double y_title_offset_ineff = 1.00;
     // std::string info5 = "Stand Alone Muon Reco Efficiency";
     // std::string info6 = "one RPC hit / DT,CSC segment missing";
     y_title_offset = 1.25;
     // Ineff_All_histo->SetLineWidth(2.0); Ineff_All_histo->SetMarkerStyle(20); Ineff_All_histo->SetMarkerSize(1.25);
     std::stringstream pdfname6ss; pdfname6ss<<"STAMuonHits_2D_2015_"<<"GradualEfficiency"<<"_All"; std::string pdfname6 = pdfname6ss.str();
-    TCanvas * c6 = new TCanvas(pdfname6.c_str(), "", 800, 400); c6->cd(); c6->SetTicks(1,1); // c6->SetLeftMargin(0.05); c6->SetRightMargin(0.10); gStyle->SetPaintTextFormat("3.0f");
+    TCanvas * c6 = new TCanvas(pdfname6.c_str(), "", 800, 400); c6->cd(); c6->SetTicks(1,1); c6->SetLeftMargin(0.075); c6->SetRightMargin(0.025); // gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
-    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); Efficiency_1D_Plot[2]->Draw("HPSame"); Efficiency_1D_Plot[3]->Draw("HPSame"); Efficiency_1D_Plot[4]->Draw("HPSame"); 
-    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Simulation #sqrt{s} = 13 TeV"); latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str()); gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
-    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset);            // Ineff_All_histo->GetZaxis()->SetTitleOffset(z_title_offset);
-    TightIDEff->GetXaxis()->SetTitle(xaxislabel.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        // Ineff_All_histo->GetZaxis()->SetTitle(zaxislabel.c_str());  
+    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame"); */
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 1 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);      
+    TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        
+    TightIDEff->GetXaxis()->SetTitleSize(0.06);
     TightIDEff->GetYaxis()->SetRangeUser(y_range_1,y_range_2);
     c6->Update();
-    double leg2_x1 = 0.30, leg2_x2 = 0.70, leg2_y1 = 0.15, leg2_y2 = 0.50;
+    TightIDEff->GetYaxis()->SetNdivisions(504, kFALSE);
+    c6->Update();
+    gPad->RedrawAxis();
+    c6->Update();
+    // Originally:     double leg2_x1 = 0.30, leg2_x2 = 0.70, leg2_y1 = 0.15, leg2_y2 = 0.50;
+    double leg2_x1 = 0.30, leg2_x2 = 0.70, leg2_y1 = 0.15, leg2_y2 = 0.40;
     TLegend * legend = new TLegend(leg2_x1, leg2_y1, leg2_x2, leg2_y2, NULL,"brNDC"); legend->SetLineColor(1);    legend->SetLineStyle(1);  legend->SetLineWidth(1);  legend->SetFillColor(4000); legend->SetBorderSize(1);
     legend->AddEntry(TightIDEff,            "Tight ID (2012) Efficiency",   "fp");
     legend->AddEntry(Efficiency_1D_Plot[0], "Segments/hits  90% Efficient", "fp");
     legend->AddEntry(Efficiency_1D_Plot[1], "Segments/hits  80% Efficient", "fp");
-    legend->AddEntry(Efficiency_1D_Plot[2], "Segments/hits  70% Efficient", "fp");
+    // legend->AddEntry(Efficiency_1D_Plot[2], "Segments/hits  70% Efficient", "fp");
     legend->AddEntry(Efficiency_1D_Plot[3], "Segments/hits  60% Efficient", "fp");
-    legend->AddEntry(Efficiency_1D_Plot[4], "Segments/hits  50% Efficient", "fp");
+    // legend->AddEntry(Efficiency_1D_Plot[4], "Segments/hits  50% Efficient", "fp");
     legend->Draw();
     c6->Update();
     savePlot(c6, pdfname6.c_str());
@@ -381,25 +412,44 @@ void Simulate_Redundancy_2015() {
     std::stringstream pdfname7ss; pdfname7ss<<"STAMuonHits_2D_2015_"<<"GradualEfficiency"<<"_All_v2"; std::string pdfname7 = pdfname7ss.str();
     TCanvas * c7 = new TCanvas(pdfname7.c_str(), "", 800, 600); c7->cd(); c7->SetTicks(1,1); // c7->SetLeftMargin(0.05); c7->SetRightMargin(0.10); gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
-    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); Efficiency_1D_Plot[2]->Draw("HPSame"); Efficiency_1D_Plot[3]->Draw("HPSame"); Efficiency_1D_Plot[4]->Draw("HPSame"); 
-    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Simulation #sqrt{s} = 13 TeV"); latex_cmslab.DrawLatex(0.575, 0.925, label2.c_str()); gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
-    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset);            // Ineff_All_histo->GetZaxis()->SetTitleOffset(z_title_offset);
-    TightIDEff->GetXaxis()->SetTitle(xaxislabel.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        // Ineff_All_histo->GetZaxis()->SetTitle(zaxislabel.c_str());  
+    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame");*/ 
+    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Phase 1 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.575, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);
+    TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());
+    TightIDEff->GetXaxis()->SetTitleSize(0.06);
     TightIDEff->GetYaxis()->SetRangeUser(y_range_1,y_range_2);
+    TightIDEff->GetYaxis()->SetNdivisions(504, kFALSE);
     c7->Update();
     legend->Draw();
     c7->Update();
     savePlot(c7, pdfname7.c_str());
 
-    std::stringstream pdfname8ss; pdfname8ss<<"STAMuonHits_2D_2015_"<<"GradualEfficiency"<<"_All_SpecialScenarios"; std::string pdfname8 = pdfname8ss.str();
-    TCanvas * c8 = new TCanvas(pdfname8.c_str(), "", 800, 400); c8->cd(); c8->SetTicks(1,1); // c8->SetLeftMargin(0.05); c8->SetRightMargin(0.10); gStyle->SetPaintTextFormat("3.0f");
+    std::stringstream pdfname9ss; pdfname9ss<<"STAMuonHits_2D_2015_"<<"GradualEfficiency"<<"_All"; std::string pdfname9 = pdfname9ss.str();
+    TCanvas * c9 = new TCanvas(pdfname9.c_str(), "", 800, 400); c9->cd(); c9->SetTicks(1,1); c9->SetLeftMargin(0.075); c9->SetRightMargin(0.025); // gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
-    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); Efficiency_1D_Plot[2]->Draw("HPSame"); Efficiency_1D_Plot[3]->Draw("HPSame"); Efficiency_1D_Plot[4]->Draw("HPSame"); 
-    Efficiency_1D_Plot[5]->Draw("HPSame"); Efficiency_1D_Plot[6]->Draw("HPSame");
-    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Simulation #sqrt{s} = 13 TeV"); latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str()); gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
-    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset);            // Ineff_All_histo->GetZaxis()->SetTitleOffset(z_title_offset);
-    TightIDEff->GetXaxis()->SetTitle(xaxislabel.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        // Ineff_All_histo->GetZaxis()->SetTitle(zaxislabel.c_str());  
+    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame"); */
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 1 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);      
+    TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        
+    TightIDEff->GetXaxis()->SetTitleSize(0.06);
     TightIDEff->GetYaxis()->SetRangeUser(y_range_1,y_range_2);
+    TightIDEff->GetYaxis()->SetNdivisions(504, kFALSE);
+    c9->Update();
+    legend->Draw();
+    c9->Update();
+    savePlot(c9, pdfname9.c_str());
+
+    std::stringstream pdfname8ss; pdfname8ss<<"STAMuonHits_2D_2015_"<<"GradualEfficiency"<<"_All_SpecialScenarios"; std::string pdfname8 = pdfname8ss.str();
+    TCanvas * c8 = new TCanvas(pdfname8.c_str(), "", 800, 400); c8->cd(); c8->SetTicks(1,1); c8->SetLeftMargin(0.075); c8->SetRightMargin(0.025); // gStyle->SetPaintTextFormat("3.0f");
+    TightIDEff->Draw("HP");
+    Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame");*/ 
+    Efficiency_1D_Plot[5]->Draw("HPSame"); Efficiency_1D_Plot[6]->Draw("HPSame");
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 1 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str()); gPad->RedrawAxis();*/ // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);
+    TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());
+    TightIDEff->GetXaxis()->SetTitleSize(0.06);
+    TightIDEff->GetYaxis()->SetRangeUser(y_range_1,y_range_2);
+    TightIDEff->GetYaxis()->SetNdivisions(504, kFALSE);
     c8->Update();
     legend->AddEntry(Efficiency_1D_Plot[5], "1 Station off, Others 90% Efficient", "fp");
     legend->AddEntry(Efficiency_1D_Plot[6], "1 Station off, Others 80% Efficient", "fp");
