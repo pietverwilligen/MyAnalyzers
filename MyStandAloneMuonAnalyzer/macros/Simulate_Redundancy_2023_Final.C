@@ -27,7 +27,7 @@
 int factorial(int);
 void savePlot(TCanvas*, TString);
 
-void Simulate_Redundancy_2023_Final() {
+void Simulate_Redundancy_2023() {
 
     // Title
     // -----
@@ -386,7 +386,7 @@ void Simulate_Redundancy_2023_Final() {
     TCanvas * c6 = new TCanvas(pdfname6.c_str(), "", 800, 400); c6->cd(); c6->SetTicks(1,1); c6->SetLeftMargin(0.075); c6->SetRightMargin(0.025); // gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
     Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame"); */
-    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulation Preliminary"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
     TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);      
     TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        
     TightIDEff->GetXaxis()->SetTitleSize(0.06);
@@ -413,7 +413,7 @@ void Simulate_Redundancy_2023_Final() {
     TCanvas * c7 = new TCanvas(pdfname7.c_str(), "", 800, 600); c7->cd(); c7->SetTicks(1,1); // c7->SetLeftMargin(0.05); c7->SetRightMargin(0.10); gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
     Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame");*/ 
-    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Phase 2 Simulation Preliminary"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.575, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    latex_cmslab.DrawLatex(0.10, 0.925,"CMS Phase 2 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.575, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
     TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);
     TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());
     TightIDEff->GetXaxis()->SetTitleSize(0.06);
@@ -428,7 +428,7 @@ void Simulate_Redundancy_2023_Final() {
     TCanvas * c9 = new TCanvas(pdfname9.c_str(), "", 800, 400); c9->cd(); c9->SetTicks(1,1); c9->SetLeftMargin(0.075); c9->SetRightMargin(0.025); // gStyle->SetPaintTextFormat("3.0f");
     TightIDEff->Draw("HP");
     Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame"); */
-    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulation Preliminary"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str());*/ gPad->RedrawAxis(); // latex_cmslab.DrawLatex(0.125, 0.85, "All");
     TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);      
     TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());        
     TightIDEff->GetXaxis()->SetTitleSize(0.06);
@@ -444,7 +444,7 @@ void Simulate_Redundancy_2023_Final() {
     TightIDEff->Draw("HP");
     Efficiency_1D_Plot[0]->Draw("HPSame"); Efficiency_1D_Plot[1]->Draw("HPSame"); /*Efficiency_1D_Plot[2]->Draw("HPSame");*/ Efficiency_1D_Plot[3]->Draw("HPSame"); /*Efficiency_1D_Plot[4]->Draw("HPSame");*/ 
     Efficiency_1D_Plot[5]->Draw("HPSame"); Efficiency_1D_Plot[6]->Draw("HPSame");
-    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulatin Preliminary"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str()); gPad->RedrawAxis();*/ // latex_cmslab.DrawLatex(0.125, 0.85, "All");
+    latex_cmslab.DrawLatex(0.075, 0.925,"CMS Phase 2 Simulation"); /*#sqrt{s} = 13 TeV*/ /*latex_cmslab.DrawLatex(0.70, 0.925, label2.c_str()); gPad->RedrawAxis();*/ // latex_cmslab.DrawLatex(0.125, 0.85, "All");
     TightIDEff->GetXaxis()->SetTitleOffset(x_title_offset_ineff); TightIDEff->GetYaxis()->SetTitleOffset(y_title_offset_ineff);
     TightIDEff->GetXaxis()->SetTitle(xaxislabel_ineff.c_str());   TightIDEff->GetYaxis()->SetTitle(yaxislabel_ineff.c_str());
     TightIDEff->GetXaxis()->SetTitleSize(0.06);
