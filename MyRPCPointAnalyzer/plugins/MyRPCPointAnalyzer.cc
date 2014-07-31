@@ -114,8 +114,14 @@ class MyRPCPointAnalyzer : public edm::EDAnalyzer {
   edm::ESHandle <CSCGeometry> cscGeom;
 
   bool debug;
+  int nEvent, nCSCext, nDText;
+  int nCSCext_ME1, nCSCext_ME2, nCSCext_ME3, nCSCext_ME4;
+
   std::string rootFileName;
   TFile * outputfile;
+  TH1F * LocalFrame_DeltaX,  * LocalFrame_DeltaY,  * LocalFrame_DeltaZ;
+  TH1F * GlobalFrame_DeltaX, * GlobalFrame_DeltaY, * GlobalFrame_DeltaZ;
+  TH1F * LocalFrame_ME1_DeltaX, * LocalFrame_ME2_DeltaX, * LocalFrame_ME3_DeltaX, * LocalFrame_ME4_DeltaX;
 
   edm::InputTag cscSegments;
   edm::InputTag dt4DSegments;
@@ -154,6 +160,22 @@ MyRPCPointAnalyzer::MyRPCPointAnalyzer(const edm::ParameterSet& iConfig)
 
   outputfile = new TFile(rootFileName.c_str(), "RECREATE" );
 
+  LocalFrame_DeltaX  = new TH1F("LocalFrame_DeltaX",  "LocalFrame_DeltaX",  200, -10.00, 10.00);
+  LocalFrame_DeltaY  = new TH1F("LocalFrame_DeltaY",  "LocalFrame_DeltaY",  200, -10.00, 10.00);
+  LocalFrame_DeltaZ  = new TH1F("LocalFrame_DeltaZ",  "LocalFrame_DeltaZ",  200, -10.00, 10.00);
+  GlobalFrame_DeltaX = new TH1F("GlobalFrame_DeltaX", "GlobalFrame_DeltaX", 200, -10.00, 10.00);
+  GlobalFrame_DeltaY = new TH1F("GlobalFrame_DeltaY", "GlobalFrame_DeltaY", 200, -10.00, 10.00);
+  GlobalFrame_DeltaZ = new TH1F("GlobalFrame_DeltaZ", "GlobalFrame_DeltaZ", 200, -10.00, 10.00);
+
+  LocalFrame_ME1_DeltaX  = new TH1F("LocalFrame_ME1_DeltaX",  "LocalFrame_ME1_DeltaX",  200, -10.00, 10.00);
+  LocalFrame_ME2_DeltaX  = new TH1F("LocalFrame_ME2_DeltaX",  "LocalFrame_ME2_DeltaX",  200, -10.00, 10.00);
+  LocalFrame_ME3_DeltaX  = new TH1F("LocalFrame_ME3_DeltaX",  "LocalFrame_ME3_DeltaX",  200, -10.00, 10.00);
+  LocalFrame_ME4_DeltaX  = new TH1F("LocalFrame_ME4_DeltaX",  "LocalFrame_ME4_DeltaX",  200, -10.00, 10.00);
+
+  nEvent  = 0;
+  nCSCext = 0; 
+  nDText  = 0;
+  nCSCext_ME1 = 0; nCSCext_ME2 = 0; nCSCext_ME3 = 0; nCSCext_ME4 = 0;
 }
 
 
@@ -163,7 +185,28 @@ MyRPCPointAnalyzer::~MyRPCPointAnalyzer()
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
   outputfile->cd();
+  LocalFrame_DeltaX->Write();
+  LocalFrame_DeltaY->Write();
+  LocalFrame_DeltaZ->Write();
+  GlobalFrame_DeltaX->Write();
+  GlobalFrame_DeltaY->Write();
+  GlobalFrame_DeltaZ->Write();
 
+  LocalFrame_ME1_DeltaX->Write();
+  LocalFrame_ME2_DeltaX->Write();
+  LocalFrame_ME3_DeltaX->Write();
+  LocalFrame_ME4_DeltaX->Write();
+
+  std::cout<<"========================================="<<std::endl;
+  std::cout<<"= Amount of Events Processed:    "<<std::setw(6)<<nEvent <<" ="<<std::endl;
+  std::cout<<"= Successful  DT Extrapolations: "<<std::setw(6)<<nDText <<" ="<<std::endl;
+  std::cout<<"= Successful CSC Extrapolations: "<<std::setw(6)<<nCSCext<<" ="<<std::endl;
+  std::cout<<"-----------------------------------------"<<std::endl;
+  std::cout<<"=                ME1 Extrap:     "<<std::setw(6)<<nCSCext_ME1<<" ="<<std::endl;
+  std::cout<<"=                ME2 Extrap:     "<<std::setw(6)<<nCSCext_ME2<<" ="<<std::endl;
+  std::cout<<"=                ME3 Extrap:     "<<std::setw(6)<<nCSCext_ME3<<" ="<<std::endl;
+  std::cout<<"=                ME4 Extrap:     "<<std::setw(6)<<nCSCext_ME4<<" ="<<std::endl;
+  std::cout<<"========================================="<<std::endl;
 }
 
 
@@ -175,7 +218,7 @@ MyRPCPointAnalyzer::~MyRPCPointAnalyzer()
 void
 MyRPCPointAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-
+  ++nEvent;
   int evtNum = (iEvent.id()).event();
   int lumNum = (iEvent.id()).luminosityBlock();
   int runNum = (iEvent.id()).run();
@@ -299,6 +342,16 @@ MyRPCPointAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  std::cout<<" Global Position = "<<DTExtrap_RPCGlobalPoint;
 	  std::cout<<" Strip Predicted = "<<stripPredicted<<std::endl;
 	}
+
+	++nDText;
+
+	LocalFrame_DeltaX->Fill(DTExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());
+	LocalFrame_DeltaY->Fill(DTExtrap_RPCLocalPoint.y()-RPCLocalPoint.y());
+	LocalFrame_DeltaZ->Fill(DTExtrap_RPCLocalPoint.z()-RPCLocalPoint.z());
+	GlobalFrame_DeltaX->Fill(DTExtrap_RPCGlobalPoint.x()-RPCGlobalPoint.x());
+	GlobalFrame_DeltaY->Fill(DTExtrap_RPCGlobalPoint.y()-RPCGlobalPoint.y());
+	GlobalFrame_DeltaZ->Fill(DTExtrap_RPCGlobalPoint.z()-RPCGlobalPoint.z());
+
       } // End Loop over DT Extrap Points
     } // End Check whether DT Extrap Points are empty
 
@@ -337,6 +390,20 @@ MyRPCPointAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  std::cout<<" Global Position = "<<CSCExtrap_RPCGlobalPoint;
 	  std::cout<<" Strip Predicted = "<<stripPredicted<<std::endl;
 	}
+
+	++nCSCext;
+
+	LocalFrame_DeltaX->Fill(CSCExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());
+	LocalFrame_DeltaY->Fill(CSCExtrap_RPCLocalPoint.y()-RPCLocalPoint.y());
+	LocalFrame_DeltaZ->Fill(CSCExtrap_RPCLocalPoint.z()-RPCLocalPoint.z());
+	GlobalFrame_DeltaX->Fill(CSCExtrap_RPCGlobalPoint.x()-RPCGlobalPoint.x());
+	GlobalFrame_DeltaY->Fill(CSCExtrap_RPCGlobalPoint.y()-RPCGlobalPoint.y());
+	GlobalFrame_DeltaZ->Fill(CSCExtrap_RPCGlobalPoint.z()-RPCGlobalPoint.z());
+
+	if(rpcId.station()==1) { ++nCSCext_ME1; LocalFrame_ME1_DeltaX->Fill(CSCExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());}
+	if(rpcId.station()==2) { ++nCSCext_ME2; LocalFrame_ME2_DeltaX->Fill(CSCExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());}
+	if(rpcId.station()==3) { ++nCSCext_ME3; LocalFrame_ME3_DeltaX->Fill(CSCExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());}
+	if(rpcId.station()==4) { ++nCSCext_ME4; LocalFrame_ME4_DeltaX->Fill(CSCExtrap_RPCLocalPoint.x()-RPCLocalPoint.x());}
 
       } // End Loop over CSC Extrap Points
     } // End Check whether CSC Extrap Points are empty
