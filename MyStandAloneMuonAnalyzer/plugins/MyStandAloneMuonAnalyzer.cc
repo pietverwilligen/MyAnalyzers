@@ -133,15 +133,17 @@ class MyStandAloneMuonAnalyzer : public edm::EDAnalyzer {
   TH1F * Rechits_All_Hits,    * Rechits_DT_Hits,     * Rechits_CSC_Hits,      * Rechits_GEM_Hits;
   TH1F * Rechits_All_PhiHits, * Rechits_All_EtaHits, * Rechits_DT_Hits_EtaSL, * Rechits_DT_Hits_PhiSL; 
 
+
   TH1F * Rechits_All_Eta_1D,         * Rechits_DT_Eta_1D,            * Rechits_CSC_Eta_1D,           * Rechits_GEM_Eta_1D,           * Rechits_RPC_Eta_1D;
   TH1F * Rechits_All_Hits_Eta_1D,    * Rechits_DT_Hits_Eta_1D,       * Rechits_CSC_Hits_Eta_1D,      * Rechits_GEM_Hits_Eta_1D;
   TH1F * Rechits_All_PhiHits_Eta_1D, * Rechits_All_EtaHits_Eta_1D,   * Rechits_DT_Hits_EtaSL_Eta_1D, * Rechits_DT_Hits_PhiSL_Eta_1D; 
 
-  TH1F * Rechits_Fit_Hits, * Rechits_Trk_Hits, * Rechits_Fit_Hits_Eta_1D, * Rechits_Trk_Hits_Eta_1D;
-
   TH2F * Rechits_All_Eta_2D, * Rechits_DT_Eta_2D, * Rechits_CSC_Eta_2D, * Rechits_RPC_Eta_2D, * Rechits_GEM_Eta_2D;
   TH2F * Rechits_All_Eta_2D_MyReBin, * Rechits_DT_Eta_2D_MyReBin, * Rechits_CSC_Eta_2D_MyReBin, * Rechits_RPC_Eta_2D_MyReBin, * Rechits_GEM_Eta_2D_MyReBin;
   TH2F * Rechits_All_Eta_2D_Reduced, * Rechits_DT_Eta_2D_Reduced, * Rechits_CSC_Eta_2D_Reduced, * Rechits_RPC_Eta_2D_Reduced, * Rechits_GEM_Eta_2D_Reduced;
+  // New request Daniele
+  TH2F * Rechits_Seg_Eta_2D_Reduced, * Rechits_Hit_Eta_2D_Reduced;
+
 
   TH1F * StandAloneMuon_PT, * StandAloneMuon_Phi, * StandAloneMuon_Eta, * StandAloneMuon_Hit;
   TH1F * StandAloneMuon_1p8To2p5_2Hit_PT, * StandAloneMuon_1p8To2p5_2Hit_Phi, * StandAloneMuon_1p8To2p5_2Hit_Eta, * StandAloneMuon_1p8To2p5_2Hit_Hit, * StandAloneMuon_1p8To2p5_2Hit_Sta;
@@ -261,11 +263,6 @@ MyStandAloneMuonAnalyzer::MyStandAloneMuonAnalyzer(const edm::ParameterSet& iCon
   Rechits_DT_Hits_PhiSL_Eta_1D  = new TH1F("Rechits_DT_Hits_PhiSL_Eta_1D",  "Average amount of RecHits :: DT ::Phi",  50, -2.5, 2.5);
   Rechits_DT_Hits_EtaSL_Eta_1D  = new TH1F("Rechits_DT_Hits_EtaSL_Eta_1D",  "Average amount of RecHits :: DT ::Eta",  50, -2.5, 2.5);
 
-  Rechits_Fit_Hits        = new TH1F("Rechits_Fit_Hits", "RecHits :: Trk + Muon (Hits)", 50, -2.5, 2.5);
-  Rechits_Trk_Hits        = new TH1F("Rechits_Trk_Hits", "RecHits :: Trk (Hits)", 50, -2.5, 2.5);
-  Rechits_Fit_Hits_Eta_1D = new TH1F("Rechits_Fit_Hits_Eta_1D", "Average amount of RecHits :: Trk + Muon (Hits)", 50, -2.5, 2.5);
-  Rechits_Trk_Hits_Eta_1D = new TH1F("Rechits_Trk_Hits_Eta_1D", "Average amount of RecHits :: Trk (Hits)", 50, -2.5, 2.5);
-
   // 2D Plots are only for Segments + RPC Hits
   // -----------------------------------------
   // Nothing changed here
@@ -288,6 +285,9 @@ MyStandAloneMuonAnalyzer::MyStandAloneMuonAnalyzer(const edm::ParameterSet& iCon
   Rechits_CSC_Eta_2D_Reduced = new TH2F("Rechits_CSC_Eta_2D_Reduced", "Amount of RecHits :: CSC :: Rebinned #eta Range", 15, pogbinning, 101, -0.5, 100.5);
   Rechits_RPC_Eta_2D_Reduced = new TH2F("Rechits_RPC_Eta_2D_Reduced", "Amount of RecHits :: RPC :: Rebinned #eta Range", 15, pogbinning, 101, -0.5, 100.5);
   Rechits_GEM_Eta_2D_Reduced = new TH2F("Rechits_GEM_Eta_2D_Reduced", "Amount of RecHits :: GEM :: Rebinned #eta Range", 15, pogbinning, 101, -0.5, 100.5);
+
+  Rechits_Seg_Eta_2D_Reduced = new TH2F("Rechits_Seg_Eta_2D_Reduced", "Amount of RecHits :: All DT/CSC Segments :: Rebinned #eta Range", 15, pogbinning, 101, -0.5, 100.5);
+  Rechits_Hit_Eta_2D_Reduced = new TH2F("Rechits_Hit_Eta_2D_Reduced", "Amount of RecHits :: All RPC/GEM Hits    :: Rebinned #eta Range", 15, pogbinning, 101, -0.5, 100.5);
 
   // switch this off in CMSSW_6_2_0_SLHCX
   // also not necessary in CMSSW_7_X_Y if the Muon POG stuff is not used 
@@ -401,6 +401,10 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
   Rechits_CSC_Eta_2D_Reduced->Write();
   Rechits_RPC_Eta_2D_Reduced->Write();
   Rechits_GEM_Eta_2D_Reduced->Write();
+
+  Rechits_Seg_Eta_2D_Reduced->Write();
+  Rechits_Hit_Eta_2D_Reduced->Write();
+
   outputfile->cd();
 
   for(int i=0; i<50; ++i) {
@@ -414,16 +418,10 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
     int num6  = Rechits_DT_Hits_EtaSL->GetBinContent(i+1); 
     int num7  = Rechits_DT_Hits_PhiSL->GetBinContent(i+1); 
 
-    int num8 = Rechits_Fit_Hits->GetBinContent(i+1);
-    int num9 = Rechits_Trk_Hits->GetBinContent(i+1);
-
-    int num0 = Rechits_GEM_Hits->GetBinContent(i+1);
-
-
     int denom = Muon_All->GetBinContent(i+1);
 
-    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0, ave5 = 0.0, ave6 =0.0, ave7 = 0.0, ave8 = 0.0, ave9 = 0.0, ave0 = 0.0;
-    double err1=0.0, err2=0.0, err3=0.0, err4=0.0, err5 = 0.0, err6 =0.0, err7 = 0.0, err8 = 0.0, err9 = 0.0, err0 = 0.0;
+    double ave1=0.0, ave2=0.0, ave3=0.0, ave4=0.0, ave5 = 0.0, ave6 =0.0, ave7 = 0.0;
+    double err1=0.0, err2=0.0, err3=0.0, err4=0.0, err5 = 0.0, err6 =0.0, err7 = 0.0;
 
     if(denom>0) {
       ave1 = 1.0*num1/denom; err1 = sqrt(num1)/denom;
@@ -433,9 +431,6 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
       ave5 = 1.0*num5/denom; err5 = sqrt(num5)/denom;
       ave6 = 1.0*num6/denom; err6 = sqrt(num6)/denom;
       ave7 = 1.0*num7/denom; err7 = sqrt(num7)/denom;
-      ave8 = 1.0*num8/denom; err8 = sqrt(num8)/denom;
-      ave9 = 1.0*num9/denom; err9 = sqrt(num9)/denom;
-      ave0 = 1.0*num0/denom; err0 = sqrt(num0)/denom;
     }  
     Rechits_All_Hits_Eta_1D->SetBinContent(i+1, ave1);
     Rechits_DT_Hits_Eta_1D->SetBinContent(i+1,  ave2);
@@ -454,14 +449,6 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
     Rechits_All_EtaHits_Eta_1D->SetBinError(i+1,  err5);
     Rechits_DT_Hits_EtaSL_Eta_1D->SetBinError(i+1,  err6);
     Rechits_DT_Hits_PhiSL_Eta_1D->SetBinError(i+1,  err7);
-
-    Rechits_Fit_Hits_Eta_1D->SetBinContent(i+1, ave8);
-    Rechits_Trk_Hits_Eta_1D->SetBinContent(i+1, ave9);
-    Rechits_Fit_Hits_Eta_1D->SetBinError(i+1, err8);
-    Rechits_Trk_Hits_Eta_1D->SetBinError(i+1, err9);
-
-    Rechits_GEM_Hits_Eta_1D->SetBinContent(i+1, ave0);
-    Rechits_GEM_Hits_Eta_1D->SetBinError(i+1, err0);
   }
 
   AllHits->cd();
@@ -474,10 +461,6 @@ MyStandAloneMuonAnalyzer::~MyStandAloneMuonAnalyzer()
   Rechits_All_EtaHits_Eta_1D->Write();
   Rechits_DT_Hits_EtaSL_Eta_1D->Write();
   Rechits_DT_Hits_PhiSL_Eta_1D->Write();
-
-  Rechits_Fit_Hits_Eta_1D->Write();
-  Rechits_Trk_Hits_Eta_1D->Write();
-
   outputfile->cd();
 
 
@@ -722,17 +705,17 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     Muon_All_MyReBin->Fill(eta);
     Muon_All_Reduced->Fill(eta);
 
-    int All_Rechits = 0;
-    int RPC_Rechits = 0;
-    int GEM_Rechits = 0;
-    int CSC_Rechits = 0;
-    int DT_Rechits  = 0;
+    int All_Rechits   = 0;
+    int RPC_Rechits   = 0;
+    int GEM_Rechits   = 0;
+    int CSC_Rechits   = 0;
+    int DT_Rechits    = 0;
 
     if(physDebug) {
       std::cout<<"RecHits:"<<std::endl;
     }
 
-    int muonhits = 0; // allhits = 0, trkhits = 0;
+    int muonhits = 0;
     int station_fired_sel[8] = {0,0,0,0,0,0,0,0};
     bool gemstation_1_fired = false, gemstation_2_fired =false, gemstation_3_fired = false;
 
@@ -742,11 +725,6 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       double z = geomDet->toGlobal((*recHit)->localPosition()).z();
 
       DetId detid = DetId((*recHit)->geographicalId());
-
-      // All Hits
-      // --------
-      // ++allhits;
-      Rechits_Fit_Hits->Fill(eta);
 
       // Muon Hits
       // ---------
@@ -866,7 +844,6 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       // ------------
       if(detid.det()==DetId::Tracker) {
 	if(physDebug) std::cout<<"Tracker RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
-	Rechits_Trk_Hits->Fill(eta);
       }
     } // end loop rechits
 
@@ -883,10 +860,14 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     Rechits_DT_Eta_2D_MyReBin->Fill(eta, DT_Rechits);
 
     Rechits_All_Eta_2D_Reduced->Fill(eta, All_Rechits);
+    Rechits_Seg_Eta_2D_Reduced->Fill(eta, DT_Rechits+CSC_Rechits);
+    Rechits_Hit_Eta_2D_Reduced->Fill(eta, RPC_Rechits+GEM_Rechits);
     Rechits_RPC_Eta_2D_Reduced->Fill(eta, RPC_Rechits);
     Rechits_GEM_Eta_2D_Reduced->Fill(eta, GEM_Rechits);
     Rechits_CSC_Eta_2D_Reduced->Fill(eta, CSC_Rechits);
     Rechits_DT_Eta_2D_Reduced->Fill(eta, DT_Rechits);
+
+
 
     StandAloneMuon_Hit->Fill(muonhits);
     if(muonhits < 3 && fabs(track.impactPointTSCP().momentum().eta()) > 1.7 && fabs(track.impactPointTSCP().momentum().eta()) < 2.5) {
