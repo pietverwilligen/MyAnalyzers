@@ -120,9 +120,16 @@ RPCTiming::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::ESHandle<RPCGeometry> pDD;
   iSetup.get<MuonGeometryRecord>().get( pDD );
 
-  for(std::vector<RPCRoll*>::const_iterator it = pDD->rolls().begin(); it != pDD->rolls().end(); it++){
-    if( dynamic_cast<RPCRoll*>( *it ) != 0 ){ // check if dynamic cast is ok: cast ok => 1
-      RPCRoll* roll = dynamic_cast<RPCRoll*>( *it );
+  // Prehistoric CMSSW Releases --> non const roll
+  // ---------------------------------------------
+  // for(std::vector<RPCRoll*>::const_iterator it = pDD->rolls().begin(); it != pDD->rolls().end(); it++){
+  //   if( dynamic_cast<RPCRoll*>( *it ) != 0 ){ // check if dynamic cast is ok: cast ok => 1
+  // New CMSSW Releases --> const roll
+  // ---------------------------------
+  for(std::vector<const RPCRoll*>::const_iterator it = pDD->rolls().begin(); it != pDD->rolls().end(); it++){
+    if( dynamic_cast<const RPCRoll*>( *it ) != 0 ){ // check if dynamic cast is ok: cast ok => 1
+      // RPCRoll* roll = dynamic_cast<RPCRoll*>( *it );
+      const RPCRoll* roll = dynamic_cast<const RPCRoll*>( *it );
       RPCDetId detId = roll->id();
       int rawDetId = detId.rawId();
       RPCGeomServ rpcsrv(detId);
