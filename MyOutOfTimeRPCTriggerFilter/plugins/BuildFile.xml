@@ -1,0 +1,17 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+
+<use name="rootcore"/>
+<use name="rootgraphics"/>
+<use name="Root"/>
+
+<use name="DataFormats/L1GlobalTrigger"/>
+<use name="DataFormats/L1GlobalMuonTrigger"/>
+
+<use name="DataFormats/MuonReco"/>
+<use name="RecoMuon/TrackingTools"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="CLHEP"/>
+
+<flags EDM_PLUGIN="1"/>
