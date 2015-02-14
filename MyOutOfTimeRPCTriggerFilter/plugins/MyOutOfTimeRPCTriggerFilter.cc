@@ -101,6 +101,7 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   bool selectBX, selectTRK;
   bool selectOR, selectAND;
   bool selectNoDTSegments;
+  bool doFilter;
   bool analyzeTRK;
   int select_bx_rpc;
   int select_bx_dt;
@@ -168,6 +169,7 @@ MyOutOfTimeRPCTriggerFilter::MyOutOfTimeRPCTriggerFilter(const edm::ParameterSet
   selectAND  = iConfig.getUntrackedParameter<bool>("SelectAND");
   selectOR   = iConfig.getUntrackedParameter<bool>("SelectOR");
   selectNoDTSegments = iConfig.getUntrackedParameter<bool>("SelectNoDTSegments");
+  doFilter   = iConfig.getUntrackedParameter<bool>("DoFilter");
   rootFileName       = iConfig.getUntrackedParameter<std::string>("RootFileName");
   STAMuLabel = iConfig.getParameter<edm::InputTag>("STAMuonTrackCollectionLabel");
   TRACKLabel = iConfig.getParameter<edm::InputTag>("TrackerTrackCollectionLabel");
@@ -524,7 +526,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   if(debug) { 
     std::cout<<"||||||||||||||||||||||||||||||||||| ==> Event Kept :: "<<keepEvent<<std::endl;
   }
-  return keepEvent;
+  if(doFilter) return keepEvent;
+  else return false;
 }
 
 // ------------ method called once each job just before starting event loop  ------------

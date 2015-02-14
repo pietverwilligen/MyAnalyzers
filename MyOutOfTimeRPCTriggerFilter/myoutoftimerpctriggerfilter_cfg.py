@@ -30,8 +30,10 @@ process.Out = cms.OutputModule("PoolOutputModule",
 SelectEvents = cms.untracked.PSet(
 SelectEvents = cms.vstring('path')
 ),
+fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX1_DT_BX0.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX1.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_PointingMuons.root")
-fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoDTSegments.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoDTSegments.root")
 )
 process.filter = cms.EDFilter('MyOutOfTimeRPCTriggerFilter',
 Debug              = cms.untracked.bool(False),
@@ -42,7 +44,7 @@ TrackerTrackCollectionLabel = cms.InputTag("ctfWithMaterialTracksP5",""), # glob
 # TrackerTrackCollectionLabel = cms.InputTag("generalTracks",""), # for normal PP / ZMM MC
 SelectBX           = cms.untracked.bool(True),
 # config 1 :: RPC in bx=1, DT in bx=0
-bxRPC             = cms.untracked.int32(0),
+bxRPC             = cms.untracked.int32(1),
 bxDT              = cms.untracked.int32(0),
 # config 2 :: RPC in bx=0, DT in bx=1
 # bxRPC              = cms.untracked.int32(0),
@@ -51,9 +53,12 @@ AnalyzeTRK         = cms.untracked.bool(False),
 SelectTRK          = cms.untracked.bool(False),
 SelectAND          = cms.untracked.bool(False),
 SelectOR           = cms.untracked.bool(False),
-SelectNoDTSegments = cms.untracked.bool(True),
+SelectNoDTSegments = cms.untracked.bool(False),
+DoFilter           = cms.untracked.bool(False),
+RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX1_DT_BX0_.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX1_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_PointingMuons.root"),
-RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoDTSegments.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoDTSegments.root"),
 )
 process.path = cms.Path(process.filter)
 process.end = cms.EndPath(process.Out)
