@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("Filter")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(300) )
 process.load('Configuration.Geometry.GeometryExtended2015Reco_cff')
 process.load('Configuration.Geometry.GeometryExtended2015_cff')
 # process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
@@ -30,22 +30,27 @@ process.Out = cms.OutputModule("PoolOutputModule",
 SelectEvents = cms.untracked.PSet(
 SelectEvents = cms.vstring('path')
 ),
-fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX1_DT_BX0.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX0.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX1_DT_BX0.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX1.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_PointingMuons.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoDTSegments.root")
+fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoRPCRechits.root")
 )
 process.filter = cms.EDFilter('MyOutOfTimeRPCTriggerFilter',
-Debug              = cms.untracked.bool(False),
+Debug              = cms.untracked.bool(True),
 GTReadoutRcd       = cms.InputTag("gtDigis"),
 GMTReadoutRcd      = cms.InputTag("gtDigis" ),
 STAMuonTrackCollectionLabel = cms.InputTag("standAloneMuons",""),         # UpdatedAtVtx
 TrackerTrackCollectionLabel = cms.InputTag("ctfWithMaterialTracksP5",""), # globalMuons or globalCosmicMuons or globalCosmicMuons1Leg
 # TrackerTrackCollectionLabel = cms.InputTag("generalTracks",""), # for normal PP / ZMM MC
-SelectBX           = cms.untracked.bool(True),
+SelectBX           = cms.untracked.bool(False),
+# config 0 :: RPC in bx=0, DT in bx=0
+bxRPC              = cms.untracked.int32(0),
+bxDT               = cms.untracked.int32(0),
 # config 1 :: RPC in bx=1, DT in bx=0
-bxRPC             = cms.untracked.int32(1),
-bxDT              = cms.untracked.int32(0),
+# bxRPC             = cms.untracked.int32(1),
+# bxDT              = cms.untracked.int32(0),
 # config 2 :: RPC in bx=0, DT in bx=1
 # bxRPC              = cms.untracked.int32(0),
 # bxDT               = cms.untracked.int32(1),
@@ -54,11 +59,16 @@ SelectTRK          = cms.untracked.bool(False),
 SelectAND          = cms.untracked.bool(False),
 SelectOR           = cms.untracked.bool(False),
 SelectNoDTSegments = cms.untracked.bool(False),
-DoFilter           = cms.untracked.bool(False),
-RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX1_DT_BX0_.root"),
+SelectNoRPCRechits = cms.untracked.bool(True),
+SelectDTbutNoRPCTrig = cms.untracked.bool(False),
+SelectRPCbutNoDTTrig = cms.untracked.bool(False),
+DoFilter           = cms.untracked.bool(True),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX0_.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX1_DT_BX0_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX1_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_PointingMuons.root"),
-# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoDTSegments.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoDTSegments.root")
+RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoRPCRechits.root"),
 )
 process.path = cms.Path(process.filter)
 process.end = cms.EndPath(process.Out)
