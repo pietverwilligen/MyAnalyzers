@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("Filter")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(300) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load('Configuration.Geometry.GeometryExtended2015Reco_cff')
 process.load('Configuration.Geometry.GeometryExtended2015_cff')
 # process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
@@ -13,17 +13,26 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 
 process.source = cms.Source("PoolSource",
 fileNames = cms.untracked.vstring(
-'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00097CE4-A2B2-E411-8FEB-02163E011D8A.root',
-'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/0049B70A-8EB2-E411-8979-02163E011D1C.root',
-'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/004DEB4A-9DB2-E411-AB38-02163E011D06.root',
-'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D04605-A5B2-E411-A496-02163E0129F4.root',
-'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D21ADC-A2B2-E411-8861-02163E011D57.root',
+# Run 234029
+# '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00097CE4-A2B2-E411-8FEB-02163E011D8A.root',
+# '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/0049B70A-8EB2-E411-8979-02163E011D1C.root',
+# '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/004DEB4A-9DB2-E411-AB38-02163E011D06.root',
+# '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D04605-A5B2-E411-A496-02163E0129F4.root',
+# '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D21ADC-A2B2-E411-8861-02163E011D57.root',
+
+# Runs >= 234500
+'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/500/00000/3E97325D-17B6-E411-8908-02163E011D59.root',
+'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/500/00000/703041ED-16B6-E411-ABFE-02163E0123AE.root',
+'/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/521/00000/2ECA3A0A-17B6-E411-9363-02163E011890.root',
+
 # RelVal ZMM
 # '/store/relval/CMSSW_7_3_0/RelValZMM_13/GEN-SIM-RECO/MCRUN2_73_V9_71XGENSIM_FIXGT-v1/00000/0AC5D8E4-5DA2-E411-8B1D-0025905B8590.root',
 # '/store/relval/CMSSW_7_3_0/RelValZMM_13/GEN-SIM-RECO/MCRUN2_73_V9_71XGENSIM_FIXGT-v1/00000/AC3E5968-5CA2-E411-B77E-0025905938AA.root',
 # '/store/relval/CMSSW_7_3_0/RelValZMM_13/GEN-SIM-RECO/MCRUN2_73_V9_71XGENSIM_FIXGT-v1/00000/C69684E2-5DA2-E411-ADF0-0025905964C2.root',
 
-
+# My Filtered Rootfiles
+# 'file:MyFilteredEvents_234029_Test.root'
+# 'file:/afs/cern.ch/user/p/piet/public/ForFrancesca/MyFilteredEvents_234029_BX0_NoDTSegments.root'
 )
 )
 process.Out = cms.OutputModule("PoolOutputModule",
@@ -35,7 +44,9 @@ SelectEvents = cms.vstring('path')
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX1.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_PointingMuons.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoDTSegments.root")
-fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoRPCRechits.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_BX0_NoRPCRechits.root")
+# fileName = cms.untracked.string ("MyFilteredEvents_234029_Test.root")
+fileName = cms.untracked.string ("MyFilteredEvents_234500.root")
 )
 process.filter = cms.EDFilter('MyOutOfTimeRPCTriggerFilter',
 Debug              = cms.untracked.bool(True),
@@ -56,10 +67,10 @@ bxDT               = cms.untracked.int32(0),
 # bxDT               = cms.untracked.int32(1),
 AnalyzeTRK         = cms.untracked.bool(False),
 SelectTRK          = cms.untracked.bool(False),
-SelectAND          = cms.untracked.bool(False),
-SelectOR           = cms.untracked.bool(False),
-SelectNoDTSegments = cms.untracked.bool(False),
-SelectNoRPCRechits = cms.untracked.bool(True),
+SelectAND          = cms.untracked.bool(False),  # selectBX && selectTRK
+SelectOR           = cms.untracked.bool(True),   # selectBX || selectTRK, one has to choose one or the other
+SelectNoDTSegments = cms.untracked.bool(True),  # from here on selection is independent
+SelectNoRPCRechits = cms.untracked.bool(False),
 SelectDTbutNoRPCTrig = cms.untracked.bool(False),
 SelectRPCbutNoDTTrig = cms.untracked.bool(False),
 DoFilter           = cms.untracked.bool(True),
@@ -68,7 +79,9 @@ DoFilter           = cms.untracked.bool(True),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX1_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_PointingMuons.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoDTSegments.root")
-RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoRPCRechits.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_BX0_NoRPCRechits.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_Test.root"),
+RootFileName       = cms.untracked.string("MyFilteredHistograms_234500.root"),
 )
 process.path = cms.Path(process.filter)
 process.end = cms.EndPath(process.Out)
