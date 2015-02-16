@@ -57,6 +57,21 @@
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 
+// Muon Detector Geometries
+#include <Geometry/RPCGeometry/interface/RPCGeometry.h>
+// #include <Geometry/DTGeometry/interface/DTGeometry.h>
+// #include <Geometry/CSCGeometry/interface/CSCGeometry.h>
+// #include <Geometry/Records/interface/MuonGeometryRecord.h>
+// #include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
+// #include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
+// #include <Geometry/RPCGeometry/interface/RPCGeomServ.h>
+// #include <Geometry/CommonDetUnit/interface/GeomDet.h>
+
+// RPC Digis and Rechits
+#include <DataFormats/RPCDigi/interface/RPCDigiCollection.h>
+#include "DataFormats/RPCRecHit/interface/RPCRecHitCollection.h"
+#include <DataFormats/MuonDetId/interface/RPCDetId.h>
+
 // DT RecHits and Segments
 #include "DataFormats/DTRecHit/interface/DTRecHitCollection.h"
 #include <DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h>
@@ -255,7 +270,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // ==================================
   // === get GMT readout collection ===
   // ==================================
-  if(selectBX || selectNoDTSegments || selectNoRPCRechits) {
+  if(debug) { std::cout<<"SELECT BX"<<std::endl; }
+  if(selectBX) {
     for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
       // int BxInEvent = RRItr->getBxInEvent();
       // int BxInEventNew = RRItr->getBxNr();
@@ -282,6 +298,100 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	    quality_first_rpcb = RCItr->quality();
 	    eta_first_rpcb = RCItr->etaValue();
 	    phi_first_rpcb = RCItr->phiValue();
+
+	    // See whether we can match a Stand Alone Muon with those triggers ...
+	    reco::MuonCollection::const_iterator  recoMuon;
+	    for (recoMuon = recoMuons->begin(); recoMuon != recoMuons->end(); ++recoMuon) {
+	      if(!recoMuon->isStandAloneMuon()) continue;
+	      if(debug) std::cout<<"Trying to match to Stand Alone Muon :: dR = "<<deltaR(eta_first_rpcb,phi_first_rpcb,recoMuon->eta(),recoMuon->phi())<<std::endl;
+	      if(deltaR(eta_first_rpcb,phi_first_rpcb,recoMuon->eta(),recoMuon->phi())<0.5) {
+		if(debug) {
+		  std::cout<<" Matched Stand Alone Muon :: pt = "<<recoMuon->pt()<<" eta = "<<recoMuon->eta()<<" phi = "<<recoMuon->phi();
+		  if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpOutIn<<" +/- "<<recoMuon->time().timeAtIpOutInErr<<" ns";
+		  if(recoMuon->time().direction()>0)  std::cout<<" direction = "<<("InsideOut")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+		  if(recoMuon->time().direction()==0) std::cout<<" direction = "<<("Undefined")<<" time at IP = "<<("Undefined")<<" ns";
+		  // std::cout<<" direction = "<<(recoMuon->time().direction()<0?("OutsideIn"):("InsideOut"))<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" ns";
+		  // std::cout<<" # segments = "<<"";
+		  std::cout<<std::endl;
+		  // std::cout<<" d0: "<<recoMuon->outerTrack()->d0()<<" +/- "<<recoMuon->outerTrack()->d0Error()<<" cm dz: "<<recoMuon->outerTrack()->dz()<<" +/- "<<recoMuon->outerTrack()->dzError()<<" cm"<<std::endl; 
+		}
+		for(trackingRecHit_iterator recHit = recoMuon->outerTrack()->recHitsBegin(); recHit != recoMuon->outerTrack()->recHitsEnd(); ++recHit) {
+		  const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+		  // double r = geomDet->surface().position().perp();
+		  double r = geomDet->surface().position().mag();
+		  double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+		  DetId detid = DetId((*recHit)->geographicalId());
+		  int rpcrechits = 0, dtrechits = 0;
+		  if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+		    ++rpcrechits;
+		    if(debug) {                                                         
+		      std::cout<<"RPC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+		      // std::cout<<""<<std::endl; 
+		    }
+		    // RPC Geometry
+		    edm::ESHandle <RPCGeometry> rpcGeom;
+		    iSetup.get<MuonGeometryRecord>().get(rpcGeom);
+		    // RPC Digis
+		    // edm::Handle<RPCDigiCollection> rpcdigis;
+		    // iEvent.getByLabel("muonRPCDigis", rpcdigis);
+		    // RPCDigiCollection::DigiRangeIterator digiRpc;
+		    // Check Digis
+		    /*
+		    for(digiRpc=rpcdigis->begin(); digiRpc!=rpcdigis->end(); ++digiRpc){
+		      if((*digiRpc).first.rawId() != detid.rawId()) continue;
+		      RPCDetId detId=(*digiRpc).first;
+		      RPCDigiCollection::const_iterator digiRpcItr;
+		      std::cout<<"DetId = "<<detId.rawId()<<" digis: "<<std::endl;
+		      for (digiRpcItr =(*digiRpc ).second.first; digiRpcItr != (*digiRpc).second.second; ++digiRpcItr){
+			int strip= (*digiRpcItr).strip();
+			int bx=(*digiRpcItr).bx();
+			std::cout<<" RPC Digi: strip = "<<std::noshowpos<<std::setw(2)<<strip<<" bx = "<<std::showpos<<bx<<std::endl;
+		      }
+		    }
+		    */
+		    // Print again Tracking RecHits
+		    // if(debug) {                                                         
+		    //   std::cout<<"RPC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+		    // }
+		    int bx_rpc = -10;
+		    // RPC Rechits
+		    edm::Handle<RPCRecHitCollection> rpcRecHits;
+		    iEvent.getByLabel("rpcRecHits","",rpcRecHits);
+		    RPCRecHitCollection::const_iterator recHitRpc;
+		    // Check Rechits
+		    for (recHitRpc = rpcRecHits->begin(); recHitRpc != rpcRecHits->end(); ++recHitRpc) {
+		      if((*recHitRpc).rpcId().rawId() != detid.rawId()) continue;
+		      RPCDetId rollId = (RPCDetId)(*recHitRpc).rpcId();
+		      const RPCRoll* rollasociated = rpcGeom->roll(rollId);
+		      const BoundPlane & RPCSurface = rollasociated->surface();
+		      double r_rpc = RPCSurface.toGlobal(recHitRpc->localPosition()).mag();
+		      double z_rpc = RPCSurface.toGlobal(recHitRpc->localPosition()).z();
+		      bx_rpc = -10;
+		      // if(debug) std::cout<<"RPC RecHit at "<<"r: "<< r_rpc <<" cm"<<" z: "<<z_rpc<<" cm in DetId = "<<rollId.rawId()<<" with bx = "<<(*recHitRpc).BunchX();
+		      if(fabs(r-r_rpc) < 10 && fabs(z-z_rpc) < 10 ){
+			if(bx_rpc==-10) bx_rpc = (*recHitRpc).BunchX(); // take the first one ... they are ordered in time ... first comes bx -2,-1,0,1,2,3
+			// if(debug) {
+			//   std::cout<<" ==> Matched RPC RecHit with "<<"dr: "<< fabs(r-r_rpc) <<" cm"<<" dz: "<<fabs(z-z_rpc)<<" cm in DetId = "<<rollId.rawId();
+			//   std::cout<<" with bx = "<<(*recHitRpc).BunchX()<<" first strip = "<<(*recHitRpc).firstClusterStrip()<<" clustersize = "<<(*recHitRpc).clusterSize();
+			// }
+		      }
+		    }
+		    if(debug) {
+		      if(bx_rpc != -10) std::cout<<" bx = "<<bx_rpc<<std::endl;
+		      else std::cout<<""<<std::endl;
+		    }
+		  }                                                                    
+		  if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
+		    if(debug) {  
+		      ++dtrechits;                                                      
+		      // std::cout<<"DT Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId(); 
+		      // // std::cout<<" and BX = "<<(*recHit)->bx();                     
+		      // std::cout<<""<<std::endl;
+		    }
+		  }
+		}
+	      }
+	    } 
 	  }
 	}
       }
@@ -300,6 +410,21 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	    quality_first_dttf = RCItr->quality();
 	    eta_first_dttf = RCItr->etaValue();
 	    phi_first_dttf = RCItr->phiValue();
+
+	    // See whether we can match a Stand Alone Muon with those triggers ...
+	    reco::MuonCollection::const_iterator  recoMuon;
+	    for (recoMuon = recoMuons->begin(); recoMuon != recoMuons->end(); ++recoMuon) {
+	      if(!recoMuon->isStandAloneMuon()) continue;
+	      if(debug) std::cout<<"Trying to match to Stand Alone Muon :: dR = "<<deltaR(eta_first_dttf,phi_first_dttf,recoMuon->eta(),recoMuon->phi())<<std::endl;
+	      if(deltaR(eta_first_dttf,phi_first_dttf,recoMuon->eta(),recoMuon->phi())<0.5) {
+		if(debug) {
+		  std::cout<<" Matched Stand Alone Muon :: pt = "<<recoMuon->pt()<<" eta = "<<recoMuon->eta()<<" phi = "<<recoMuon->phi();
+		  std::cout<<" direction = "<<(recoMuon->time().direction()<0?("OutsideIn"):("InsideOut"))<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" ns";
+		  std::cout<<std::endl;
+		  // std::cout<<" d0: "<<recoMuon->outerTrack()->d0()<<" +/- "<<recoMuon->outerTrack()->d0Error()<<" cm dz: "<<recoMuon->outerTrack()->dz()<<" +/- "<<recoMuon->outerTrack()->dzError()<<" cm"<<std::endl; 
+		}
+	      }
+	    } 
 	  }
 	}
       }
@@ -312,6 +437,33 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
       // bx_firstcand_rpcb = RCItr->bx(); std::cout<<"bx_firstcand_rpcb = "<<bx_firstcand_rpcb<<std::endl;
       // RCItr = BrlDtCands.begin();
       // bx_firstcand_dttf = RCItr->bx(); std::cout<<"bx_firstcand_dttf = "<<bx_firstcand_dttf<<std::endl;
+
+      /*
+      reco::TrackCollection::const_iterator staTrack;
+      for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
+	if(debug) std::cout<<"Stand Alone Muon :: pt = "<<staTrack->pt()<<" eta = "<<staTrack->eta()<<" phi = "<<staTrack->phi()<<std::endl;
+	for(trackingRecHit_iterator recHit = staTrack->recHitsBegin(); recHit != staTrack->recHitsEnd(); ++recHit) {
+	  const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+	  double r = geomDet->surface().position().perp();
+	  double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+	  DetId detid = DetId((*recHit)->geographicalId());
+	  if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+	    if(debug) {
+	      std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm";
+	      // std::cout<<" and BX = "<<(*recHit)->bx();
+	      std::cout<<""<<std::endl;
+	    }
+	  }
+	  if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
+	    if(debug) {
+	      std::cout<<"DT RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm";
+	      // std::cout<<" and BX = "<<(*recHit)->bx();
+	      std::cout<<""<<std::endl;
+	    }
+	  }
+	}
+      }
+      */
     }
     // Fill Some histograms for the BX selected or for the missing triggers
     if((selectBX && bx_firstcand_dttf == select_bx_dt && bx_firstcand_rpcb == select_bx_rpc) || (selectRPCbutNoDTTrig && keepEventRPCNoDTTrigger) || (selectDTbutNoRPCTrig && keepEventDTNoRPCTrigger)) {
@@ -371,10 +523,24 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // =====================================
   // === Filter Events with 0 Segments ===
   // =====================================
+  if(debug) { std::cout<<"SELECT NO DT SEGMENTS"<<std::endl; }
   if(selectNoDTSegments) {
-    if(dtSegmentCollection->size()==0) keepEventNoDTSegments = true;
-    // DTRecSegment4DCollection::const_iterator segment;  
-    // for (segment = dtSegmentCollection->begin(); segment!=dtSegmentCollection->end(); ++segment){} 
+    for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
+      std::vector<L1MuRegionalCand> BrlDtCands = RRItr->getDTBXCands();
+      std::vector<L1MuRegionalCand>::const_iterator RCItr;
+      for(RCItr = BrlDtCands.begin(); RCItr !=BrlDtCands.end(); ++RCItr) {
+	if ( !(*RCItr).empty() ) {
+	  if(debug) {
+	    std::cout<<"Run :: "<<rnNum<<" Event :: "<<evNum<<" | ";
+	    std::cout<<"DTTF Trigger :: q = "<<RCItr->quality()<<" pt = "<<RCItr->ptValue()<<" eta = "<<RCItr->etaValue()<<" phi = "<<RCItr->phiValue()<<" bx = "<<RCItr->bx()<<std::endl;
+	  }
+	  if(dtSegmentCollection->size()==0) keepEventNoDTSegments = true;
+	  if(debug) std::cout<<"Amount of DT Segments in Event = "<<dtSegmentCollection->size()<<std::endl;
+	  // DTRecSegment4DCollection::const_iterator segment;  
+	  // for (segment = dtSegmentCollection->begin(); segment!=dtSegmentCollection->end(); ++segment){} 
+	}
+      }
+    }
   }
 
 
@@ -382,23 +548,36 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // =====================================
   // === Filter Events with 0 Segments ===
   // =====================================
+  if(debug) { std::cout<<"SELECT NO RPC RECHITS"<<std::endl; }
   if(selectNoRPCRechits) {
-    // Strategy :: Keep event as soon as there is a STA-Muon track within |eta| < 1.0 that has no RPC Rechits
-    reco::TrackCollection::const_iterator staTrack;
-    for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
-      if(debug) std::cout<<"Stand Alone Muon :: pt = "<<staTrack->pt()<<" eta = "<<staTrack->eta()<<" phi = "<<staTrack->phi()<<std::endl;
-      for(trackingRecHit_iterator recHit = staTrack->recHitsBegin(); recHit != staTrack->recHitsEnd(); ++recHit) {
-	const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
-	double r = geomDet->surface().position().perp();
-	double z = geomDet->toGlobal((*recHit)->localPosition()).z();
-	DetId detid = DetId((*recHit)->geographicalId());
-	int rpchitsontrack = 0; 
-	if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
-	  ++rpchitsontrack;
-	  if(debug) std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
-	}
-	if(rpchitsontrack==0 && fabs(staTrack->eta())<1.0) {
-	  keepEventNoRPCRechits = true;
+    for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
+      std::vector<L1MuRegionalCand> BrlRpcCands = RRItr->getBrlRPCCands();
+      std::vector<L1MuRegionalCand>::const_iterator RCItr;
+      for( RCItr = BrlRpcCands.begin(); RCItr !=BrlRpcCands.end(); ++RCItr) {
+	if ( !(*RCItr).empty() ) {
+	  if(debug) {
+	    std::cout<<"Run :: "<<rnNum<<" Event :: "<<evNum<<" | ";
+	    std::cout<<"RPCb Trigger :: q = "<<RCItr->quality()<<" pt = "<<RCItr->ptValue()<<" eta = "<<RCItr->etaValue()<<" phi = "<<RCItr->phiValue()<<" bx = "<<RCItr->bx()<<std::endl;
+	  }
+	  // Strategy :: Keep event as soon as there is a STA-Muon track within |eta| < 1.0 that has no RPC Rechits
+	  reco::TrackCollection::const_iterator staTrack;
+	  for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
+	    if(debug) std::cout<<"Stand Alone Muon :: pt = "<<staTrack->pt()<<" eta = "<<staTrack->eta()<<" phi = "<<staTrack->phi()<<std::endl;
+	    for(trackingRecHit_iterator recHit = staTrack->recHitsBegin(); recHit != staTrack->recHitsEnd(); ++recHit) {
+	      const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+	      double r = geomDet->surface().position().perp();
+	      double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+	      DetId detid = DetId((*recHit)->geographicalId());
+	      int rpchitsontrack = 0; 
+	      if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+		++rpchitsontrack;
+		if(debug) std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+	      }
+	      if(rpchitsontrack==0 && fabs(staTrack->eta())<1.0) {
+		keepEventNoRPCRechits = true;
+	      }
+	    }
+	  }
 	}
       }
     }
@@ -409,6 +588,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // =====================================
   // === Analysis of STA and GLB Muons ===
   // =====================================
+  if(debug) { std::cout<<"ANALYZE / SELECT TRK"<<std::endl; }
   if(analyzeTRK || selectTRK) {
     // iterators
     reco::TrackCollection::const_iterator staTrack;
@@ -543,6 +723,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // ======================================================
   // === Take decision here to keep or throw away Event ===
   // ======================================================
+  if(debug) { std::cout<<"TAKE FINAL FILTER DECISION"<<std::endl; }
   // === Select based on RPC / DT Trigger BX ==============
   if(selectBX && bx_firstcand_dttf == select_bx_dt && bx_firstcand_rpcb == select_bx_rpc) { keepEventBX = true; }
   else keepEventBX = false;
@@ -568,8 +749,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === Global Decision ==================================
   if(selectAND && ((selectBX && keepEventBX) && (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; } 
   if(selectOR  && ((selectBX && keepEventBX) || (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; }
-  if(selectNoDTSegments && keepEventNoDTSegments && keepEventBX) { keepEvent = true; ++eventsFiltered; }
-  if(selectNoRPCRechits && keepEventNoRPCRechits && keepEventBX) { keepEvent = true; ++eventsFiltered; }
+  if(selectNoDTSegments && keepEventNoDTSegments) { keepEvent = true; ++eventsFiltered; }
+  if(selectNoRPCRechits && keepEventNoRPCRechits)  { keepEvent = true; ++eventsFiltered; }
   if(selectRPCbutNoDTTrig && keepEventRPCNoDTTrigger) { keepEvent = true; ++eventsFiltered; }
   if(selectDTbutNoRPCTrig && keepEventDTNoRPCTrigger) { keepEvent = true; ++eventsFiltered; }
 
