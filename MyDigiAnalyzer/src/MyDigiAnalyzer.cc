@@ -98,7 +98,7 @@ class MyDigiAnalyzer : public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::PSimHitContainer> RPCSimHit_Token;
   edm::EDGetTokenT<RPCDigiCollection>     RPCDigi_Token;
 
-
+  TH1F * BXGap_CountPerDigi, * BXGap_CountPerEvent;
 };
 
 //
@@ -132,8 +132,6 @@ MyDigiAnalyzer::~MyDigiAnalyzer()
  
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
-  outputfile->cd();
-
 
 }
 
@@ -150,6 +148,14 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<RPCDigiCollection> rpcdigis;
   iEvent.getByToken(RPCDigi_Token, rpcdigis);
 
+  // count per event whether there was 
+  // - a digi duplicated (bx-gap 0, i.e. same bx)
+  // - a digi in the next bx (bx-gap 1)
+  // - a digi in the next-to-next bx (bx-gap 2)
+  // - ...
+  // up to five
+  bool bxgap_counted[] = {0,0,0,0,0,0};
+
   //Loop on digi collection
   for( RPCDigiCollection::DigiRangeIterator collectionItr=rpcdigis->begin(); collectionItr!=rpcdigis->end(); ++collectionItr){
 
@@ -160,9 +166,11 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // const BoundPlane & surface = gdet->surface();
 
     // get roll name
+    ///*
     RPCGeomServ RPCname(detId);
     std::string nameRoll = RPCname.name();
     std::stringstream os;
+    //*/
     // get info
     /*
     int region  = detId.region();
@@ -186,22 +194,76 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     int sector = detId.sector();
     */
-    std::cout<<" "<<std::endl;
+    // std::cout<<" "<<std::endl;
     // std::cout<<" RPC DetId: "<<std::setw(12)<<id<<" a.k.a. "<<std::setw(18)<<nameRoll<<" which is in "<<std::setw(5)<<wheelOrDiskType<<" "<<std::setw(2)<<wheelOrDiskNumber<<" ";
     // std::cout<<std::setw(7)<<stationOrRingType<<" "<<std::setw(2)<<stationOrRingNumber<<" sector "<<std::setw(2)<<sector<<std::endl;
+    ///*
     std::cout<<" RPC DetId: "<<std::setw(12)<<id<<" a.k.a. "<<std::setw(18)<<nameRoll<<" details: "<<detId<<std::endl;
     std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
-    RPCDigiCollection::const_iterator digiItr; 
-    //loop on digis of given roll
+    //*/
+
+
+    RPCDigiCollection::const_iterator digiItr;
+    // save digis of one roll in a vector (but save each strip only once, if same strip gives a second digi, fill histogram, but don't save it in the vector)
+    std::vector<RPCDigi> MyDigiVector;
+    std::vector<RPCDigi>::const_iterator MyDigiVectorItr;
+    // loop on digis of given roll
+
     for (digiItr =(*collectionItr ).second.first;digiItr != (*collectionItr ).second.second; ++digiItr){
       int strip= (*digiItr).strip();
       int bx=(*digiItr).bx();
+      // Print-Out
       std::cout<<"     Digi: strip = "<<std::setw(2)<<strip<<" bx = "<<std::setw(2)<<bx<<std::endl;
       // Fill here your histograms
-    }
-    std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
+      // -------------------------
+      // Analysis of bx gap
+      // -------------------------
+      // Count All Digis ... commented out for now ...
+      /*
+      BXGap_CountPerDigi->Fill(-1);
+      // If first digi of a Roll then save it in the vector and exit the loop
+      bool save_this_digi = false;
+      if(MyDigiVector.size()==0) {
+	MyDigiVector.push_back((*digiItr));
+	std::cout<<"     --> First Digi of Roll :: pushed back and going to the next Digi"<<std::endl;
+      }
+      else {
+	std::cout<<"     --> Not First Digi of Roll :: loop over all saved Digis to compare"<<std::endl;
+	// If second or more digi of a Roll compare it to the previous digis saved in the vector
+	// If there is a digi in the same strip, measure the bx gap
+	// If there is no digi with the same strip, save it in the vector
+	for(MyDigiVectorItr=MyDigiVector.begin(); MyDigiVectorItr!=MyDigiVector.end(); ++MyDigiVectorItr) {
+	  if((*digiItr).strip() == (*MyDigiVectorItr).strip()) {
+	    int bxgap = fabs((*MyDigiVectorItr).bx()-(*digiItr).bx());
+	    BXGap_CountPerDigi->Fill(bxgap);
+	    bxgap_counted[bxgap] = 1;
+	    std::cout<<"BX Gap found :: RPC DetId = "<<std::noshowpos<<id<<" ";
+	    std::cout<<"first digi = ["<<std::noshowpos<<(*MyDigiVectorItr).strip()<<","<<std::showpos<<(*MyDigiVectorItr).bx()<<"] ";
+	    std::cout<<"second digi = ["<<std::noshowpos<<(*digiItr).strip()<<","<<std::showpos<<(*digiItr).bx()<<"] ==> BX Gap = "<<bxgap<<std::endl;
+	  }
+	  else save_this_digi = true;
+	}
+	if(save_this_digi) MyDigiVector.push_back((*digiItr));
+      }
+      */
 
+
+    }
+    /*
+    std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
+    std::cout<<" "<<std::endl;
+    */
   }
+
+  // Now count Event-based
+  BXGap_CountPerEvent->Fill(-1); // Count Total Amount of Events
+  if(bxgap_counted[0]) BXGap_CountPerEvent->Fill(0);
+  if(bxgap_counted[1]) BXGap_CountPerEvent->Fill(1);
+  if(bxgap_counted[2]) BXGap_CountPerEvent->Fill(2);
+  if(bxgap_counted[3]) BXGap_CountPerEvent->Fill(3);
+  if(bxgap_counted[4]) BXGap_CountPerEvent->Fill(4);
+  if(bxgap_counted[5]) BXGap_CountPerEvent->Fill(5);
+
 }
 
 
@@ -221,16 +283,24 @@ MyDigiAnalyzer::endJob()
 void 
 MyDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
 {
+  // Book some Histograms
+  BXGap_CountPerDigi  = new TH1F("BXGap_CountPerDigi",  "BXGap_CountPerDigi",  8, -1.5, 6.5);
+  BXGap_CountPerEvent = new TH1F("BXGap_CountPerEvent", "BXGap_CountPerEvent", 8, -1.5, 6.5);
 
+  // GEOMETRY
   iSetup.get<MuonGeometryRecord>().get(rpcGeo);
-
+  /*
   // Loop on geometry for fun
   // ... can later be used to book histograms
   for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
-    if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
-      RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
-      std::vector< const RPCRoll*> roles = (ch->rolls());
-      for(std::vector<const RPCRoll*>::const_iterator r = roles.begin();r != roles.end(); ++r){
+    // Pre 7XY 
+    // if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
+    //   RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
+    // Post &XY
+    if(dynamic_cast< const RPCChamber* >( *it ) != 0 ){
+      const RPCChamber* ch = dynamic_cast< const RPCChamber* >( *it ); 
+      std::vector< const RPCRoll*> rolls = (ch->rolls());
+      for(std::vector<const RPCRoll*>::const_iterator r = rolls.begin();r != rolls.end(); ++r){
 	RPCDetId rpcId = (*r)->id();
 	int region=rpcId.region();
 	RPCGeomServ rpcsrv(rpcId);
@@ -244,12 +314,16 @@ MyDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
       }
     }
   }// end loop on geometry
+  */
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
 MyDigiAnalyzer::endRun(edm::Run const&, edm::EventSetup const&)
 {
+  outputfile->cd();
+  BXGap_CountPerDigi->Write();
+  BXGap_CountPerEvent->Write();
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
