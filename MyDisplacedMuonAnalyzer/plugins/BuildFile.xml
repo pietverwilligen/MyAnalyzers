@@ -1,0 +1,22 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+
+<use name="DataFormats/Candidate"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/DetId"/>
+<use name="DataFormats/GeometrySurface"/>
+<use name="DataFormats/GeometryVector"/>
+<use name="DataFormats/MuonDetId"/>
+<use name="DataFormats/RPCDigi"/>
+<use name="DataFormats/RPCRecHit"/>
+
+<use name="DataFormats/MuonReco"/>
+<use name="RecoMuon/TrackingTools"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="CLHEP"/>
+<use name="rootcore"/>
+<use name="rootgraphics"/>
+<use name="Root"/>
+
+<flags EDM_PLUGIN="1"/>
