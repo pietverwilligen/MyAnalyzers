@@ -98,7 +98,11 @@ class MyDigiAnalyzer : public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::PSimHitContainer> RPCSimHit_Token;
   edm::EDGetTokenT<RPCDigiCollection>     RPCDigi_Token;
 
-  TH1F * BXGap_CountPerDigi, * BXGap_CountPerEvent;
+  TH1F * BXGap_CountPerDigi,   * BXGap_CountPerEvent;
+  TH1F * Results_CountPerDigi, * Results_CountPerEvent;
+  bool debug;
+  std::vector< std::pair<uint32_t,int> > DetIdBookKeeping;
+
 };
 
 //
@@ -166,11 +170,11 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // const BoundPlane & surface = gdet->surface();
 
     // get roll name
-    ///*
+    /*
     RPCGeomServ RPCname(detId);
     std::string nameRoll = RPCname.name();
     std::stringstream os;
-    //*/
+    */
     // get info
     /*
     int region  = detId.region();
@@ -197,10 +201,13 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // std::cout<<" "<<std::endl;
     // std::cout<<" RPC DetId: "<<std::setw(12)<<id<<" a.k.a. "<<std::setw(18)<<nameRoll<<" which is in "<<std::setw(5)<<wheelOrDiskType<<" "<<std::setw(2)<<wheelOrDiskNumber<<" ";
     // std::cout<<std::setw(7)<<stationOrRingType<<" "<<std::setw(2)<<stationOrRingNumber<<" sector "<<std::setw(2)<<sector<<std::endl;
-    ///*
-    std::cout<<" RPC DetId: "<<std::setw(12)<<id<<" a.k.a. "<<std::setw(18)<<nameRoll<<" details: "<<detId<<std::endl;
-    std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
-    //*/
+    if(debug) {
+      RPCGeomServ RPCname(detId);
+      std::string nameRoll = RPCname.name();
+      std::stringstream os;
+      std::cout<<" RPC DetId: "<<std::setw(12)<<id<<" a.k.a. "<<std::setw(18)<<nameRoll<<" details: "<<detId<<std::endl;
+      std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
+    }
 
 
     RPCDigiCollection::const_iterator digiItr;
@@ -210,53 +217,79 @@ MyDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // loop on digis of given roll
 
     for (digiItr =(*collectionItr ).second.first;digiItr != (*collectionItr ).second.second; ++digiItr){
-      int strip= (*digiItr).strip();
-      int bx=(*digiItr).bx();
-      // Print-Out
-      std::cout<<"     Digi: strip = "<<std::setw(2)<<strip<<" bx = "<<std::setw(2)<<bx<<std::endl;
+      if(debug) {
+	int strip= (*digiItr).strip();
+	int bx=(*digiItr).bx();
+	if(debug) {std::cout<<"     Digi: strip = "<<std::setw(2)<<strip<<" bx = "<<std::setw(2)<<bx<<std::endl;}
+      }
       // Fill here your histograms
       // -------------------------
       // Analysis of bx gap
       // -------------------------
       // Count All Digis ... commented out for now ...
-      /*
-      BXGap_CountPerDigi->Fill(-1);
+      BXGap_CountPerDigi->Fill(-2); // std::cout<<"Count Digi"<<std::endl; 
       // If first digi of a Roll then save it in the vector and exit the loop
-      bool save_this_digi = false;
+      bool save_this_digi = true; // start with true, as soon as you find a match, you put it to false ...
       if(MyDigiVector.size()==0) {
 	MyDigiVector.push_back((*digiItr));
-	std::cout<<"     --> First Digi of Roll :: pushed back and going to the next Digi"<<std::endl;
+	if(debug) {std::cout<<"     --> First Digi of Roll :: pushed back and going to the next Digi"<<std::endl;}
       }
       else {
-	std::cout<<"     --> Not First Digi of Roll :: loop over all saved Digis to compare"<<std::endl;
+	if(debug) {std::cout<<"     --> Not First Digi of Roll :: loop over all saved Digis to compare"<<std::endl;}
 	// If second or more digi of a Roll compare it to the previous digis saved in the vector
 	// If there is a digi in the same strip, measure the bx gap
 	// If there is no digi with the same strip, save it in the vector
 	for(MyDigiVectorItr=MyDigiVector.begin(); MyDigiVectorItr!=MyDigiVector.end(); ++MyDigiVectorItr) {
 	  if((*digiItr).strip() == (*MyDigiVectorItr).strip()) {
+	    save_this_digi = false;
 	    int bxgap = fabs((*MyDigiVectorItr).bx()-(*digiItr).bx());
-	    BXGap_CountPerDigi->Fill(bxgap);
+	    BXGap_CountPerDigi->Fill(bxgap); // std::cout<<"filled "<<bxgap<<std::endl;
 	    bxgap_counted[bxgap] = 1;
-	    std::cout<<"BX Gap found :: RPC DetId = "<<std::noshowpos<<id<<" ";
-	    std::cout<<"first digi = ["<<std::noshowpos<<(*MyDigiVectorItr).strip()<<","<<std::showpos<<(*MyDigiVectorItr).bx()<<"] ";
-	    std::cout<<"second digi = ["<<std::noshowpos<<(*digiItr).strip()<<","<<std::showpos<<(*digiItr).bx()<<"] ==> BX Gap = "<<bxgap<<std::endl;
+	    if(debug) {
+	      std::cout<<"BX Gap found :: RPC DetId = "<<std::noshowpos<<id<<" ";
+	      std::cout<<"first digi = ["<<std::noshowpos<<(*MyDigiVectorItr).strip()<<","<<std::showpos<<(*MyDigiVectorItr).bx()<<"] ";
+	      std::cout<<"second digi = ["<<std::noshowpos<<(*digiItr).strip()<<","<<std::showpos<<(*digiItr).bx()<<"] ==> BX Gap = "<<bxgap<<std::endl;
+	    }
+	    // Store DetId Information for BX Gaps = 1,2,3
+	    if(bxgap < 4 && bxgap > 0) { // 1,2,3 should not happen ... store their detids
+	      std::vector< std::pair<uint32_t, int> >::iterator MyDetIdVectorItr;
+	      // check whether roll was already a source for this type of digis
+	      bool detidfound = false;
+	      for(MyDetIdVectorItr=DetIdBookKeeping.begin(); MyDetIdVectorItr!=DetIdBookKeeping.end(); ++MyDetIdVectorItr) {
+		if((*MyDetIdVectorItr).first == id) { ++(*MyDetIdVectorItr).second; detidfound = true;}
+	      }
+	      // if roll was not found, then save it now
+	      if(detidfound==false) {
+		std::pair<uint32_t, int> mypair(id,1);
+		DetIdBookKeeping.push_back(mypair); 
+	      }
+	    }
 	  }
-	  else save_this_digi = true;
 	}
-	if(save_this_digi) MyDigiVector.push_back((*digiItr));
+	if(save_this_digi) { MyDigiVector.push_back((*digiItr)); /*std::cout<<"Digi added to vector"<<std::endl;*/ }
       }
-      */
-
-
+    }
+    if(debug) {
+      std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
     }
     /*
-    std::cout<<" ---------------------------------------------------------------------------------------------"<<std::endl;
+    std::cout<<" "<<std::endl;
+    std::cout<<"======================================="<<std::endl;
+    std::cout<<"=== Digis ::          "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(1)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 0 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(2)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 1 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(3)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 2 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(4)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 3 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(5)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 4 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(6)<<" ==="<<std::endl;
+    std::cout<<"=== |--> bxgap = 5 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(7)<<" ==="<<std::endl;
+    std::cout<<"======================================="<<std::endl;
     std::cout<<" "<<std::endl;
     */
+
   }
 
   // Now count Event-based
-  BXGap_CountPerEvent->Fill(-1); // Count Total Amount of Events
+  BXGap_CountPerEvent->Fill(-2); // Count Total Amount of Events
   if(bxgap_counted[0]) BXGap_CountPerEvent->Fill(0);
   if(bxgap_counted[1]) BXGap_CountPerEvent->Fill(1);
   if(bxgap_counted[2]) BXGap_CountPerEvent->Fill(2);
@@ -283,10 +316,13 @@ MyDigiAnalyzer::endJob()
 void 
 MyDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
 {
-  // Book some Histograms
-  BXGap_CountPerDigi  = new TH1F("BXGap_CountPerDigi",  "BXGap_CountPerDigi",  8, -1.5, 6.5);
-  BXGap_CountPerEvent = new TH1F("BXGap_CountPerEvent", "BXGap_CountPerEvent", 8, -1.5, 6.5);
+  // DEBUG
+  debug = false;
 
+  // Book some Histograms
+  BXGap_CountPerDigi  = new TH1F("BXGap_CountPerDigi",  "BXGap_CountPerDigi",  9, -2.5, 6.5);
+  BXGap_CountPerEvent = new TH1F("BXGap_CountPerEvent", "BXGap_CountPerEvent", 9, -2.5, 6.5);
+  
   // GEOMETRY
   iSetup.get<MuonGeometryRecord>().get(rpcGeo);
   /*
@@ -321,9 +357,102 @@ MyDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
 void 
 MyDigiAnalyzer::endRun(edm::Run const&, edm::EventSetup const&)
 {
+
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"=== Events ::         "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(1)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 0 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(2)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 1 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(3)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 2 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(4)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 3 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(5)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 4 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(6)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 5 :: "<<std::setw(12)<<BXGap_CountPerEvent->GetBinContent(7)<<" ==="<<std::endl;
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"=== Digis ::          "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(1)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 0 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(2)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 1 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(3)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 2 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(4)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 3 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(5)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 4 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(6)<<" ==="<<std::endl;
+  std::cout<<"=== |--> bxgap = 5 :: "<<std::setw(12)<<BXGap_CountPerDigi->GetBinContent(7)<<" ==="<<std::endl;
+  std::cout<<"======================================="<<std::endl;
+
+  BXGap_CountPerEvent->SetBinContent(2,BXGap_CountPerEvent->GetBinContent(1));
+  BXGap_CountPerDigi->SetBinContent(2,BXGap_CountPerDigi->GetBinContent(1)-BXGap_CountPerDigi->GetBinContent(3));
+
+  BXGap_CountPerEvent->GetYaxis()->SetTitle("Events (-)");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(1,"All Events");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(2,"Unique Digis");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(3,"Copied Digis");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(4,"Digi BX+1");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(5,"Digi BX+2");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(6,"Digi BX+3");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(7,"Digi BX+4");
+  BXGap_CountPerEvent->GetXaxis()->SetBinLabel(8,"Digi BX+5");
+  BXGap_CountPerEvent->LabelsOption("u");
+
+  BXGap_CountPerDigi->GetYaxis()->SetTitle("Digis (-)");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(1,"All Digis");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(2,"Unique Digis");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(3,"Copied Digis");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(4,"Digi BX+1");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(5,"Digi BX+2");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(6,"Digi BX+3");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(7,"Digi BX+4");
+  BXGap_CountPerDigi->GetXaxis()->SetBinLabel(8,"Digi BX+5");
+  BXGap_CountPerDigi->LabelsOption("u");
+
+  Results_CountPerDigi = new TH1F("Results_CountPerDigi",  "Results_CountPerDigi",  8, -1.5, 6.5);
+  int uniquedigis = BXGap_CountPerDigi->GetBinContent(2);
+  Results_CountPerDigi->GetYaxis()->SetTitle("% of Unique Digis (-)");
+  Results_CountPerDigi->SetBinContent(1,BXGap_CountPerDigi->GetBinContent(2)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(1,"Unique Digis");
+  Results_CountPerDigi->SetBinContent(2,BXGap_CountPerDigi->GetBinContent(3)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(2,"Copied Digis");
+  Results_CountPerDigi->SetBinContent(3,BXGap_CountPerDigi->GetBinContent(4)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(3,"Digis in BX+1");
+  Results_CountPerDigi->SetBinContent(4,BXGap_CountPerDigi->GetBinContent(5)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(4,"Digis in BX+2");
+  Results_CountPerDigi->SetBinContent(5,BXGap_CountPerDigi->GetBinContent(6)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(5,"Digis in BX+3");
+  Results_CountPerDigi->SetBinContent(6,BXGap_CountPerDigi->GetBinContent(7)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(6,"Digis in BX+4");
+  Results_CountPerDigi->SetBinContent(7,BXGap_CountPerDigi->GetBinContent(8)*100.0/uniquedigis); Results_CountPerDigi->GetXaxis()->SetBinLabel(7,"Digis in BX+5");
+  Results_CountPerDigi->LabelsOption("u");
+
+  Results_CountPerEvent = new TH1F("Results_CountPerEvent",  "Results_CountPerEvent",  8, -1.5, 6.5);
+  int events = BXGap_CountPerEvent->GetBinContent(1);
+  Results_CountPerEvent->GetYaxis()->SetTitle("% of Events (-)");
+  Results_CountPerEvent->SetBinContent(1,BXGap_CountPerEvent->GetBinContent(2)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(1,"Unique Digis");
+  Results_CountPerEvent->SetBinContent(2,BXGap_CountPerEvent->GetBinContent(3)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(2,"Copied Digis");
+  Results_CountPerEvent->SetBinContent(3,BXGap_CountPerEvent->GetBinContent(4)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(3,"Digis in BX+1");
+  Results_CountPerEvent->SetBinContent(4,BXGap_CountPerEvent->GetBinContent(5)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(4,"Digis in BX+2");
+  Results_CountPerEvent->SetBinContent(5,BXGap_CountPerEvent->GetBinContent(6)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(5,"Digis in BX+3");
+  Results_CountPerEvent->SetBinContent(6,BXGap_CountPerEvent->GetBinContent(7)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(6,"Digis in BX+4");
+  Results_CountPerEvent->SetBinContent(7,BXGap_CountPerEvent->GetBinContent(8)*100.0/events); Results_CountPerEvent->GetXaxis()->SetBinLabel(7,"Digis in BX+5");
+  Results_CountPerEvent->LabelsOption("u");
+
+  std::cout<<""<<std::endl;
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"=== DetIds with BXGap = 1,2 or 3    ==="<<std::endl;
+  std::cout<<"===    rolls affected === "<<std::setw(8)<<DetIdBookKeeping.size()<<" ==="<<std::endl;
+  // Sort the rolls according to occurence ...
+  std::sort(DetIdBookKeeping.begin(), DetIdBookKeeping.end(),
+	    [](const std::pair<uint32_t,int>& a, const std::pair<uint32_t,int>& b) {
+	      return a.second> b.second;
+	    });
+  // Print the sorted rolls ...
+  std::vector< std::pair<uint32_t, int> >::const_iterator MyDetIdVectorItr;
+  for(MyDetIdVectorItr=DetIdBookKeeping.begin(); MyDetIdVectorItr!=DetIdBookKeeping.end(); ++MyDetIdVectorItr) {
+
+    RPCDetId detId((*MyDetIdVectorItr).first);
+    RPCGeomServ RPCname(detId);
+    std::string nameRoll = RPCname.name();
+
+    std::cout<<"=== "<<std::setw(12)<<(*MyDetIdVectorItr).first<<" with "<<std::setw(6)<<(*MyDetIdVectorItr).second<<" counts ==="<<"   --->   "<<nameRoll<<std::endl;
+  }
+  std::cout<<"======================================="<<std::endl;
+
+
+
   outputfile->cd();
   BXGap_CountPerDigi->Write();
   BXGap_CountPerEvent->Write();
+  Results_CountPerDigi->Write();
+  Results_CountPerEvent->Write();
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
