@@ -22,21 +22,24 @@ process.source = cms.Source("PoolSource",
         # 'file:/build/piet/Upgrade/Eta_2p4_Releases/CMSSW_6_2_0_SLHC5/src/MyCmsDriverCommands/SingleMuPt100_1p6_2p4_256_cfi_DIGI-RAW.root'
         # 'file:/build/piet/Upgrade/Eta_2p4_Releases/CMSSW_6_2_0_SLHC7/src/MyCmsDriverCommands/SingleMuPt100_cfi_DIGI-RAW-newCond.root'
 
-        # 2015 --- Run 234
+        # 2015 --- Cruzet --- Run 234556
         '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/556/00000/002EA6F7-A0B6-E411-9FBF-02163E011D47.root',
         '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/556/00000/00996C86-9AB6-E411-B8B2-02163E012720.root',
         '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/556/00000/0240143B-A4B6-E411-A064-02163E01263E.root',
         '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/556/00000/025AA905-9EB6-E411-B40B-02163E011CF0.root',
         '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/556/00000/02A5200C-9EB6-E411-9BF2-02163E012120.root',
 
-        # 2015 --- Run 234029
+        # 2015 --- Cruzet --- Run 234029
         # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00097CE4-A2B2-E411-8FEB-02163E011D8A.root',
         # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/0049B70A-8EB2-E411-8979-02163E011D1C.root',
         # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/004DEB4A-9DB2-E411-AB38-02163E011D06.root',
         # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D04605-A5B2-E411-A496-02163E0129F4.root',
         # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/234/029/00000/00D21ADC-A2B2-E411-8861-02163E011D57.root',
 
-        # 2012 --- Run 209283
+        # 2015 --- MWGR10 --- Run 232956 and 233121
+        # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/232/956/00001/000ADBF9-50A8-E411-8DE8-02163E012B06.root'
+
+        # 2012 --- Run2012D --- Run 209283
         # '/store/data/Run2012D/Cosmics/RECO/22Jan2013-v1/10000/0E265F20-0F8B-E211-A022-0025901248FA.root',
         # '/store/data/Run2012D/Cosmics/RECO/22Jan2013-v1/10000/1A655E1C-0F8B-E211-B57D-001E67397D64.root', 
         # '/store/data/Run2012D/Cosmics/RECO/22Jan2013-v1/10000/3652CC13-0F8B-E211-970C-001E67398110.root', 
