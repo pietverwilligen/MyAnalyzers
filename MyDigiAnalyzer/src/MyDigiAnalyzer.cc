@@ -238,7 +238,7 @@ MyDigiAnalyzer::~MyDigiAnalyzer()
   std::cout<<""<<std::endl;
   std::cout<<"======================================="<<std::endl;
   std::cout<<"=== DetIds with BXGap = 1,2 or 3    ==="<<std::endl;
-  std::cout<<"===    rolls affected ======== "<<std::setw(4)<<DetIdBookKeeping.size()<<" ===";
+  std::cout<<"====== rolls affected ======== "<<std::setw(4)<<DetIdBookKeeping.size()<<" ===";
   std::cout<<"====================================================================================================================="<<std::endl;
   // Sort the rolls according to occurence ...
   std::sort(DetIdBookKeeping.begin(), DetIdBookKeeping.end(),
@@ -256,7 +256,7 @@ MyDigiAnalyzer::~MyDigiAnalyzer()
     std::string nameRoll = RPCname.name();
     accumulation += (*MyDetIdVectorItr).second;
     std::cout<<"=== "<<std::setw(12)<<(*MyDetIdVectorItr).first<<" with "<<std::setw(6)<<(*MyDetIdVectorItr).second<<" counts  = ";
-    std::cout<<std::setw(6)<<(*MyDetIdVectorItr).second*100.0/total_BX123<<" % [of total] and "<<std::setw(6)<<accumulation*100.0/total_BX123<<" % [accumulated] ===";
+    std::cout<<std::setw(9)<<(*MyDetIdVectorItr).second*100.0/total_BX123<<" % [of total] and "<<std::setw(9)<<accumulation*100.0/total_BX123<<" % [accumulated] ===";
     std::cout<<"   --->   "<<nameRoll<<std::endl;
   }
   std::cout<<"============================================================================================================================================================"<<std::endl;
