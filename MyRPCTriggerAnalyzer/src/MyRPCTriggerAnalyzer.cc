@@ -244,7 +244,7 @@ using namespace edm;
   
   for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
     
-    int BxInEvent = RRItr->getBxInEvent();
+    // int BxInEvent = RRItr->getBxInEvent();
     int BxInEventNew = RRItr->getBxNr();
     
     // RPC barrel muon candidates
