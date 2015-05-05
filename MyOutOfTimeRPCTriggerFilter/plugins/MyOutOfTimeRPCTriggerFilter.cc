@@ -119,6 +119,9 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   bool selectNoRPCRechits;
   bool selectDTbutNoRPCTrig;
   bool selectRPCbutNoDTTrig;
+  bool selectTRKTrack;
+  bool selectSTATrack;
+  bool selectMUOTrack;
   bool doFilter;
   bool analyzeTRK;
   int select_bx_rpc;
@@ -192,6 +195,9 @@ MyOutOfTimeRPCTriggerFilter::MyOutOfTimeRPCTriggerFilter(const edm::ParameterSet
   selectNoRPCRechits   = iConfig.getUntrackedParameter<bool>("SelectNoRPCRechits"); 
   selectDTbutNoRPCTrig = iConfig.getUntrackedParameter<bool>("SelectDTbutNoRPCTrig");
   selectRPCbutNoDTTrig = iConfig.getUntrackedParameter<bool>("SelectRPCbutNoDTTrig");
+  selectTRKTrack       = iConfig.getUntrackedParameter<bool>("SelectTRKTrack");
+  selectSTATrack       = iConfig.getUntrackedParameter<bool>("SelectSTATrack");
+  selectMUOTrack       = iConfig.getUntrackedParameter<bool>("SelectMUOTrack");
   doFilter             = iConfig.getUntrackedParameter<bool>("DoFilter");
   rootFileName         = iConfig.getUntrackedParameter<std::string>("RootFileName");
   STAMuLabel           = iConfig.getParameter<edm::InputTag>("STAMuonTrackCollectionLabel");
@@ -228,6 +234,9 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   bool keepEventNoRPCRechits = false;
   bool keepEventRPCNoDTTrigger = false;
   bool keepEventDTNoRPCTrigger = false;
+  bool keepEventTRKTrack = false;
+  bool keepEventSTATrack = false;
+  bool keepEventMUOTrack = false;
   bool keepEvent = false;
   int quality_first_rpcb = -10, quality_first_dttf = -10; 
   double eta_first_rpcb  = -10, eta_first_dttf = -10; 
@@ -307,7 +316,15 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	      if(deltaR(eta_first_rpcb,phi_first_rpcb,recoMuon->eta(),recoMuon->phi())<0.5) {
 		if(debug) {
 		  std::cout<<" Matched Stand Alone Muon :: pt = "<<recoMuon->pt()<<" eta = "<<recoMuon->eta()<<" phi = "<<recoMuon->phi();
-		  if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpOutIn<<" +/- "<<recoMuon->time().timeAtIpOutInErr<<" ns";
+		  // Piotr Traczyk ::
+		  // For the timing calculation OutsideIn and InsideOut really mean along/opposite to the momentum direction. 
+		  // So if an outside-in cosmic muon would be reconstructed by the _collision_ algorithm in the upper hemisphere, then the OutsideIn timing calculation would make sense. 
+		  // For cosmics reconstructed with the _cosmic_ algorithm, I believe InsideOut is always the one to use.
+		  // ---> Cosmics reconstructed with _collision_ algorithm
+		  // if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpOutIn<<" +/- "<<recoMuon->time().timeAtIpOutInErr<<" ns";
+		  // ---> Cosmics reconstructed with _cosmic_ algorithm:
+		  if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+		  // For cosmics in lower hemisphere nothing changes
 		  if(recoMuon->time().direction()>0)  std::cout<<" direction = "<<("InsideOut")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
 		  if(recoMuon->time().direction()==0) std::cout<<" direction = "<<("Undefined")<<" time at IP = "<<("Undefined")<<" ns";
 		  // std::cout<<" direction = "<<(recoMuon->time().direction()<0?("OutsideIn"):("InsideOut"))<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" ns";
@@ -545,9 +562,9 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 
 
 
-  // =====================================
-  // === Filter Events with 0 Segments ===
-  // =====================================
+  // ========================================
+  // === Filter Events with 0 RPC Rechits ===
+  // ========================================
   if(debug) { std::cout<<"SELECT NO RPC RECHITS"<<std::endl; }
   if(selectNoRPCRechits) {
     for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
@@ -589,7 +606,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === Analysis of STA and GLB Muons ===
   // =====================================
   if(debug) { std::cout<<"ANALYZE / SELECT TRK"<<std::endl; }
-  if(analyzeTRK || selectTRK) {
+  if(analyzeTRK || selectTRK || selectTRKTrack) {
     // iterators
     reco::TrackCollection::const_iterator staTrack;
     reco::TrackCollection::const_iterator trkTrack;
@@ -622,6 +639,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	std::cout<<" with "<<staTrack->recHitsSize()<<" rechits"<<std::endl;
 	std::cout<<"--------------------------------------------------------------"<<std::endl;
       }
+      keepEventSTATrack = true;
       // double track_eta = track.impactPointTSCP().momentum().eta();
       // double track_phi = track.impactPointTSCP().momentum().phi();
       // double sta_eta = staTrack->eta();
@@ -667,6 +685,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	std::cout<<" with "<<trkTrack->recHitsSize()<<" rechits"<<std::endl;
 	std::cout<<"--------------------------------------------------------------"<<std::endl;
       }
+      keepEventTRKTrack = true;
     }
     // === All Muons =======================
     // const reco::Muon * myMuon = &(*recoMuons->begin());
@@ -684,6 +703,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	}
 	std::cout<<" is Stand Alone Muon = "<<recoMuon->isStandAloneMuon()<<" is GlobalMuon = "<<recoMuon->isGlobalMuon();
 	std::cout<<" is TrackerMuon = "<<recoMuon->isTrackerMuon()<<" is ParticleFlowMuon = "<<recoMuon->isPFMuon()<<std::endl;
+	keepEventMUOTrack = true;	
       }
       // recoMuon->innerTrack();
       // recoMuon->outerTrack();
@@ -734,7 +754,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === Select based on STA Muon Tracks ==================
   if(debug) {
     std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
-    std::cout<<" ==> Event Kept (TRK) :: "<<std::noshowpos<<keepEventTRK<<std::endl;
+    std::cout<<" Event Kept (STA) :: "<<std::noshowpos<<keepEventTRK<<std::endl;
   }
   // === Select based on DT Segments ======================
   if(debug) {
@@ -746,6 +766,21 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
     std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
     std::cout<<" Event Kept (BX) :: "<<std::noshowpos<<keepEventBX<<" Event Kept (RPC) :: "<<std::noshowpos<<keepEventNoRPCRechits<<" ==> Event Kept :: "<<std::noshowpos<<keepEventBX*keepEventNoRPCRechits<<std::endl;
   }
+  // === Select based on TRK Tracks ======================
+  if(debug) {
+    std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
+    std::cout<<" Event Kept (TRK) :: "<<std::noshowpos<<keepEventTRKTrack<<std::endl;
+  }
+  // === Select based on STA Tracks ======================
+  if(debug) {
+    std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
+    std::cout<<" Event Kept (STA) :: "<<std::noshowpos<<keepEventSTATrack<<std::endl;
+  }
+  // === Select based on MUO Tracks ======================
+  if(debug) {
+    std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
+    std::cout<<" Event Kept (MUO) :: "<<std::noshowpos<<keepEventMUOTrack<<std::endl;
+  }
   // === Global Decision ==================================
   if(selectAND && ((selectBX && keepEventBX) && (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; } 
   if(selectOR  && ((selectBX && keepEventBX) || (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; }
@@ -753,6 +788,9 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   if(selectNoRPCRechits && keepEventNoRPCRechits)  { keepEvent = true; ++eventsFiltered; }
   if(selectRPCbutNoDTTrig && keepEventRPCNoDTTrigger) { keepEvent = true; ++eventsFiltered; }
   if(selectDTbutNoRPCTrig && keepEventDTNoRPCTrigger) { keepEvent = true; ++eventsFiltered; }
+  if(selectSTATrack && keepEventSTATrack) { keepEvent = true; ++eventsFiltered; }
+  if(selectTRKTrack && keepEventTRKTrack) { keepEvent = true; ++eventsFiltered; }
+  if(selectMUOTrack && keepEventMUOTrack) { keepEvent = true; ++eventsFiltered; }
 
   if(debug) { 
     std::cout<<"||||||||||||||||||||||||||||||||||| ==> Event Kept :: "<<keepEvent<<std::endl;
