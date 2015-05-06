@@ -112,11 +112,15 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   edm::InputTag m_gtReadoutLabel;
   edm::InputTag m_gmtReadoutLabel;
   edm::InputTag STAMuLabel, TRACKLabel;
+  edm::InputTag MuLabel;
+
   bool debug;
   bool selectBX, selectTRK;
   bool selectOR, selectAND;
   bool selectNoDTSegments;
   bool selectNoRPCRechits;
+  bool selectDTSegments;
+  bool selectCSCSegments;
   bool selectDTbutNoRPCTrig;
   bool selectRPCbutNoDTTrig;
   bool selectTRKTrack;
@@ -126,6 +130,8 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   bool analyzeTRK;
   int select_bx_rpc;
   int select_bx_dt;
+  uint32_t select_minseg;
+  uint32_t select_maxseg;
   int eventsProcessed;
   int eventsFiltered;
 
@@ -192,16 +198,21 @@ MyOutOfTimeRPCTriggerFilter::MyOutOfTimeRPCTriggerFilter(const edm::ParameterSet
   selectAND            = iConfig.getUntrackedParameter<bool>("SelectAND");
   selectOR             = iConfig.getUntrackedParameter<bool>("SelectOR");
   selectNoDTSegments   = iConfig.getUntrackedParameter<bool>("SelectNoDTSegments");
-  selectNoRPCRechits   = iConfig.getUntrackedParameter<bool>("SelectNoRPCRechits"); 
+  selectNoRPCRechits   = iConfig.getUntrackedParameter<bool>("SelectNoRPCRechits");
   selectDTbutNoRPCTrig = iConfig.getUntrackedParameter<bool>("SelectDTbutNoRPCTrig");
   selectRPCbutNoDTTrig = iConfig.getUntrackedParameter<bool>("SelectRPCbutNoDTTrig");
   selectTRKTrack       = iConfig.getUntrackedParameter<bool>("SelectTRKTrack");
   selectSTATrack       = iConfig.getUntrackedParameter<bool>("SelectSTATrack");
   selectMUOTrack       = iConfig.getUntrackedParameter<bool>("SelectMUOTrack");
+  selectDTSegments     = iConfig.getUntrackedParameter<bool>("SelectDTSegments");
+  selectCSCSegments    = iConfig.getUntrackedParameter<bool>("SelectCSCSegments");
+  select_minseg        = iConfig.getUntrackedParameter<uint32_t>("SelectMinSegments");
+  select_maxseg        = iConfig.getUntrackedParameter<uint32_t>("SelectMaxSegments");
   doFilter             = iConfig.getUntrackedParameter<bool>("DoFilter");
   rootFileName         = iConfig.getUntrackedParameter<std::string>("RootFileName");
   STAMuLabel           = iConfig.getParameter<edm::InputTag>("STAMuonTrackCollectionLabel");
   TRACKLabel           = iConfig.getParameter<edm::InputTag>("TrackerTrackCollectionLabel");
+  MuLabel              = iConfig.getParameter<edm::InputTag>("MuonLabel");
 }
 
 
@@ -232,6 +243,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   bool keepEventBX = false, keepEventTRK = false;
   bool keepEventNoDTSegments = false;
   bool keepEventNoRPCRechits = false;
+  bool keepEventDTSegments   = false;
+  bool keepEventCSCSegments  = false;
   bool keepEventRPCNoDTTrigger = false;
   bool keepEventDTNoRPCTrigger = false;
   bool keepEventTRKTrack = false;
@@ -258,8 +271,21 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // DT Segments
   edm::Handle<DTRecSegment4DCollection> dtSegmentCollection;
   iEvent.getByLabel("dt4DSegments", dtSegmentCollection);
+  if(select_minseg == 0 && dtSegmentCollection->size() > 0 && dtSegmentCollection->size() < select_maxseg+1) keepEventDTSegments = true;
+  if(select_maxseg == 0 && dtSegmentCollection->size() > 0 && dtSegmentCollection->size() > select_minseg-1) keepEventDTSegments = true; 
+  if((select_minseg !=0 && dtSegmentCollection->size() > select_minseg-1) && 
+     (select_maxseg !=0 && dtSegmentCollection->size() < select_maxseg+1)) keepEventDTSegments = true;
   // edm::Handle<DTRecHit1DPair> dtRecHitCollection;
   // iEvent.getByLabel("dt1DRecHits", dtRecHitCollection);
+
+  // CSC Segments
+  edm::Handle<CSCSegmentCollection> cscSegmentCollection;
+  iEvent.getByLabel("cscSegments", cscSegmentCollection);
+  if(select_minseg == 0 && cscSegmentCollection->size() > 0 && cscSegmentCollection->size() < select_maxseg+1) keepEventCSCSegments = true;
+  if(select_maxseg == 0 && cscSegmentCollection->size() > 0 && cscSegmentCollection->size() > select_minseg-1) keepEventCSCSegments = true; 
+  if((select_minseg !=0 && cscSegmentCollection->size() > select_minseg-1) && 
+     (select_maxseg !=0 && cscSegmentCollection->size() < select_maxseg+1)) keepEventCSCSegments = true;
+
 
   // Muons & Tracks
   edm::Handle<reco::TrackCollection> staTracks;
@@ -267,7 +293,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   edm::Handle<reco::TrackCollection> trkTracks;
   iEvent.getByLabel(TRACKLabel, trkTracks);
   edm::Handle<reco::MuonCollection> recoMuons;
-  iEvent.getByLabel("muons", recoMuons);
+  // iEvent.getByLabel("muons", recoMuons);
+  iEvent.getByLabel(MuLabel, recoMuons);
 
   // Magnetic Field & Geometries
   edm::ESHandle<MagneticField> theMagneticField;
@@ -455,7 +482,6 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
       // RCItr = BrlDtCands.begin();
       // bx_firstcand_dttf = RCItr->bx(); std::cout<<"bx_firstcand_dttf = "<<bx_firstcand_dttf<<std::endl;
 
-      /*
       reco::TrackCollection::const_iterator staTrack;
       for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
 	if(debug) std::cout<<"Stand Alone Muon :: pt = "<<staTrack->pt()<<" eta = "<<staTrack->eta()<<" phi = "<<staTrack->phi()<<std::endl;
@@ -480,8 +506,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	  }
 	}
       }
-      */
     }
+
     // Fill Some histograms for the BX selected or for the missing triggers
     if((selectBX && bx_firstcand_dttf == select_bx_dt && bx_firstcand_rpcb == select_bx_rpc) || (selectRPCbutNoDTTrig && keepEventRPCNoDTTrigger) || (selectDTbutNoRPCTrig && keepEventDTNoRPCTrigger)) {
       RPCb_Triggers_Quality->Fill(quality_first_rpcb);
@@ -622,7 +648,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
     
     
     // === STA Tracks ======================
-    /*
+    ///*
     for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
       reco::TransientTrack track(*staTrack,&*theMagneticField,theTrackingGeometry);
       if(debug) {
@@ -646,6 +672,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
       // double sta_phi = staTrack->phi();
       // double glb_eta;
       // double glb_phi;
+
+      // Extrapolation of stand alone muon is inside Tracker Volume?
       if(fabs(staTrack->d0()) < 80 && fabs(staTrack->dz()) < 100) {
 	// in case you want to loop over all inner tracks
 	// for (trkTrack = trkTracks->begin(); trkTrack!=trkTracks->end(); ++trkTrack) {
@@ -659,6 +687,51 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	  D0_TrackTrk->Fill(fabs(staTrack->d0())); DZ_TrackTrk->Fill(fabs(staTrack->dz())); D0DZ_TrackTrk->Fill(fabs(staTrack->dz()),fabs(staTrack->d0())); 
 	}
       }
+
+      // Print out Segment Times if StandAloneMuon Track is found
+      for(trackingRecHit_iterator recHit = staTrack->recHitsBegin(); recHit != staTrack->recHitsEnd(); ++recHit) {
+	const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+	double r = geomDet->surface().position().mag();
+	double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+	DetId detid = DetId((*recHit)->geographicalId());
+	// int rpcrechits = 0, dtrechits = 0, cscrechits = 0;
+	if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+	  // ++rpcrechits;
+	  if(debug) {                                                         
+	    std::cout<<"RPC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+	    std::cout<<""<<std::endl; 
+	  }
+	}
+	if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::CSC) {
+	  // ++cscrechits;
+	  if(debug) {                                                         
+	    std::cout<<"CSC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+	    std::cout<<""<<std::endl; 
+	  }
+	}
+	if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
+	  // ++dtrechits;
+	  if(debug) {                                                         
+	    std::cout<<"DT Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+	    std::cout<<""<<std::endl; 
+	  }
+	}
+      }	
+
+      // Print Inner and Outer DetId 
+      if(debug) { std::cout<<"Sta Track :: innerDetId = "<<staTrack->innerDetId()<<" outerDetId = "<<staTrack->outerDetId()<<std::endl; }
+
+      // Print DT and CSC Segments
+      DTRecSegment4DCollection::const_iterator dtsegmentIt;                                                                                                                                                                                                          
+      for (dtsegmentIt = dtSegmentCollection->begin(); dtsegmentIt!=dtSegmentCollection->end(); ++dtsegmentIt){
+	std::cout<<" DT Segment in Event :: DetId = "<<(dtsegmentIt->chamberId()).rawId()<<" = "<<dtsegmentIt->chamberId()<<std::endl;
+	// std::cout<<" DT Segment Details = "<<*dtsegmentIt<<std::endl;
+      }       
+      CSCSegmentCollection::const_iterator cscsegmentIt;                                                                                                                                                                                                          
+      for (cscsegmentIt = cscSegmentCollection->begin(); cscsegmentIt!=cscSegmentCollection->end(); ++cscsegmentIt){
+	std::cout<<" CSC Segment in Event :: DetId = "<<(cscsegmentIt->cscDetId()).rawId()<<" = "<<cscsegmentIt->cscDetId()<<" Time :: "<<cscsegmentIt->time()<<std::endl;
+	// std::cout<<" CSC Segment Details = "<<*cscsegmentIt<<" Time :: "<<cscsegmentIt->time()<<std::endl;
+      }       
     }
     // === Analysis ========================
     if(GlobalTrackExpectedInEvent) { 
@@ -669,7 +742,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	// std::cout<<"filled bin 5"<<std::endl; 
       }
     }
-    */
+    //*/
 
     // === TRK Tracks ======================
     for (trkTrack = trkTracks->begin(); trkTrack!=trkTracks->end(); ++trkTrack) {
@@ -781,11 +854,23 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
     std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
     std::cout<<" Event Kept (MUO) :: "<<std::noshowpos<<keepEventMUOTrack<<std::endl;
   }
+  // === Select based on DT Segments ======================
+  if(debug) {
+    std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
+    std::cout<<" Event Kept (DT Seg) :: "<<std::noshowpos<<keepEventDTSegments<<std::endl;
+  }
+  // === Select based on CSC Segments ======================
+  if(debug) {
+    std::cout<<"Run "<<std::setw(9)<<rnNum<<" Luminosity Block "<<std::setw(4)<<lsNum<<" Event "<<std::setw(12)<<evNum<<" || ";
+    std::cout<<" Event Kept (CSC Seg) :: "<<std::noshowpos<<keepEventCSCSegments<<std::endl;
+  }
   // === Global Decision ==================================
   if(selectAND && ((selectBX && keepEventBX) && (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; } 
   if(selectOR  && ((selectBX && keepEventBX) || (selectTRK && keepEventTRK))) { keepEvent = true; ++eventsFiltered; }
   if(selectNoDTSegments && keepEventNoDTSegments) { keepEvent = true; ++eventsFiltered; }
-  if(selectNoRPCRechits && keepEventNoRPCRechits)  { keepEvent = true; ++eventsFiltered; }
+  if(selectNoRPCRechits && keepEventNoRPCRechits) { keepEvent = true; ++eventsFiltered; }
+  if(selectDTSegments   && keepEventDTSegments)   { keepEvent = true; ++eventsFiltered; }
+  if(selectCSCSegments  && keepEventCSCSegments)  { keepEvent = true; ++eventsFiltered; }
   if(selectRPCbutNoDTTrig && keepEventRPCNoDTTrigger) { keepEvent = true; ++eventsFiltered; }
   if(selectDTbutNoRPCTrig && keepEventDTNoRPCTrigger) { keepEvent = true; ++eventsFiltered; }
   if(selectSTATrack && keepEventSTATrack) { keepEvent = true; ++eventsFiltered; }
