@@ -1,15 +1,19 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process("Filter")
+process = cms.Process("MuonFilter")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load('Configuration.Geometry.GeometryExtended2015Reco_cff')
 process.load('Configuration.Geometry.GeometryExtended2015_cff')
-process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
-# process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+# process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
+process.load('Configuration.StandardSequences.MagneticField_0T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 # process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
+# process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
+# process.GlobalTag = GlobalTag(process.GlobalTag, 'GR_P_V54::All', '') # 74X data taking
+process.GlobalTag = GlobalTag(process.GlobalTag, 'GR_P_V50::All', '')   # 73X data taking 
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(25) )
+process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound'))
 
 process.source = cms.Source("PoolSource",
 fileNames = cms.untracked.vstring(
@@ -52,24 +56,25 @@ fileNames = cms.untracked.vstring(
 # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/238/929/00000/B2590513-09D3-E411-955A-02163E01379E.root',
 # '/store/express/Commissioning2015/ExpressCosmics/FEVT/Express-v1/000/238/929/00000/F0FA540D-08D3-E411-B72F-02163E01368B.root',
 
-# Run 234484
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/020BA8F9-17F3-E411-B392-02163E0133E3.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/0E3330F9-3DF3-E411-8378-02163E0128CB.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/101FDFC7-09F3-E411-AEB6-02163E0122E9.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/10CC5B2E-3DF3-E411-949B-02163E01395B.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/14FE02CC-17F3-E411-8C8C-02163E01358B.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/16C92324-0EF3-E411-AD67-02163E01381C.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2056654C-3AF3-E411-BD66-02163E011A2A.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/22570961-1FF3-E411-9CCA-02163E0137CE.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/22C9594F-0FF3-E411-AF49-02163E01380A.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2406AD45-0EF3-E411-B0C7-02163E0133A8.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/24671EC9-17F3-E411-8EE6-02163E013392.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2A51612D-12F3-E411-A4CF-02163E01384F.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2C5D8BFF-0CF3-E411-AC96-02163E01390C.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2CECEC3B-1CF3-E411-8FA3-02163E0133E2.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2ED32C3A-22F3-E411-93EA-02163E013459.root',
-'/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/32B37C91-19F3-E411-B3A1-02163E0133BB.root',
-
+# Run 243484
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/020BA8F9-17F3-E411-B392-02163E0133E3.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/0E3330F9-3DF3-E411-8378-02163E0128CB.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/101FDFC7-09F3-E411-AEB6-02163E0122E9.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/10CC5B2E-3DF3-E411-949B-02163E01395B.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/14FE02CC-17F3-E411-8C8C-02163E01358B.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/16C92324-0EF3-E411-AD67-02163E01381C.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2056654C-3AF3-E411-BD66-02163E011A2A.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/22570961-1FF3-E411-9CCA-02163E0137CE.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/22C9594F-0FF3-E411-AF49-02163E01380A.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2406AD45-0EF3-E411-B0C7-02163E0133A8.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/24671EC9-17F3-E411-8EE6-02163E013392.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2A51612D-12F3-E411-A4CF-02163E01384F.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2C5D8BFF-0CF3-E411-AC96-02163E01390C.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2CECEC3B-1CF3-E411-8FA3-02163E0133E2.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2ED32C3A-22F3-E411-93EA-02163E013459.root',
+# '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/32B37C91-19F3-E411-B3A1-02163E0133BB.root',
+# Filtered 243484
+'file:RecoMuons_243484_Collisions.root'
 
 # RelVal ZMM
 # '/store/relval/CMSSW_7_3_0/RelValZMM_13/GEN-SIM-RECO/MCRUN2_73_V9_71XGENSIM_FIXGT-v1/00000/0AC5D8E4-5DA2-E411-8B1D-0025905B8590.root',
@@ -82,9 +87,7 @@ fileNames = cms.untracked.vstring(
 )
 )
 process.Out = cms.OutputModule("PoolOutputModule",
-SelectEvents = cms.untracked.PSet(
-SelectEvents = cms.vstring('path')
-),
+SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('path')),
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX0.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX1_DT_BX0.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_RPC_BX0_DT_BX1.root")
@@ -94,37 +97,61 @@ SelectEvents = cms.vstring('path')
 # fileName = cms.untracked.string ("MyFilteredEvents_234029_Test.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234500.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234542_BX0_NoDTSegments.root")
-fileName = cms.untracked.string ("MyFilteredEvents_238929_PointingMuons.root")
-)
+# fileName = cms.untracked.string ("MyFilteredEvents_238929_PointingMuons.root")
+fileName = cms.untracked.string ("MyFilteredEvents_243484_CollisionMuon.root"))
+
+
 process.filter = cms.EDFilter('MyOutOfTimeRPCTriggerFilter',
-Debug                = cms.untracked.bool(False),
+Debug                = cms.untracked.bool(True),
 GTReadoutRcd         = cms.InputTag("gtDigis"),
 GMTReadoutRcd        = cms.InputTag("gtDigis" ),
-STAMuonTrackCollectionLabel = cms.InputTag("standAloneMuons",""),         # UpdatedAtVtx
-TrackerTrackCollectionLabel = cms.InputTag("ctfWithMaterialTracksP5",""), # globalMuons or globalCosmicMuons or globalCosmicMuons1Leg
-# TrackerTrackCollectionLabel = cms.InputTag("generalTracks",""), # for normal PP / ZMM MC
-SelectBX             = cms.untracked.bool(False),
-# config 0 :: RPC in bx=0, DT in bx=0
+# STAMuonTrackCollectionLabel = cms.InputTag("standAloneMuons","","RECO"),           # UpdatedAtVtx :: RECO
+STAMuonTrackCollectionLabel   = cms.InputTag("standAloneMuons","","RecoMuon"),       # UpdatedAtVtx :: MuonReco is my private MuonReco
+# TrackerTrackCollectionLabel   = cms.InputTag("ctfWithMaterialTracksP5",""),        # for Cosmics :: globalMuons or globalCosmicMuons or globalCosmicMuons1Leg
+TrackerTrackCollectionLabel = cms.InputTag("generalTracks",""),                      # for normal PP / ZMM MC
+MuonLabel                   = cms.InputTag("muons","","RECO"),  
+# MuonLabel                     = cms.InputTag("muons1stStep","","RecoMuon"),   
+
+# --- Original use of the Filter ----------------
+# -----------------------------------------------
+SelectBX             = cms.untracked.bool(True),  # select on the BX of the trigger
+# config 0 :: RPC in bx=0, DT in bx=0             # config 0, both DT and RPC trigger in BX=0
 bxRPC                = cms.untracked.int32(0),
 bxDT                 = cms.untracked.int32(0),
-# config 1 :: RPC in bx=1, DT in bx=0
+# config 1 :: RPC in bx=1, DT in bx=0             # config 1, DT triggers in BX=0, while RPC triggers in BX=1
 # bxRPC              = cms.untracked.int32(1),
 # bxDT               = cms.untracked.int32(0),
-# config 2 :: RPC in bx=0, DT in bx=1
+# config 2 :: RPC in bx=0, DT in bx=1             # config 2, DT triggers in BX=1, while RPC triggers in BX=0
 # bxRPC              = cms.untracked.int32(0),
 # bxDT               = cms.untracked.int32(1),
-AnalyzeTRK           = cms.untracked.bool(False),
-SelectTRK            = cms.untracked.bool(False),
-SelectAND            = cms.untracked.bool(False),  # selectBX && selectTRK
-SelectOR             = cms.untracked.bool(True),   # selectBX || selectTRK, one has to choose one or the other
-SelectNoDTSegments   = cms.untracked.bool(True),   # from here on selection is independent
-SelectNoRPCRechits   = cms.untracked.bool(False),
-SelectDTbutNoRPCTrig = cms.untracked.bool(False),
-SelectRPCbutNoDTTrig = cms.untracked.bool(False),
-SelectTRKTrack       = cms.untracked.bool(False),
-SelectMUOTrack       = cms.untracked.bool(False),
-SelectSTATrack       = cms.untracked.bool(True),
-DoFilter             = cms.untracked.bool(True),
+AnalyzeTRK           = cms.untracked.bool(True),   # see whether Tracker was in time and Track was reconstructed
+SelectTRK            = cms.untracked.bool(True),   # filter based on the availabilyt of a Track
+SelectAND            = cms.untracked.bool(True),  # selectBX && selectTRK
+SelectOR             = cms.untracked.bool(False),   # selectBX || selectTRK, one has to choose one or the other
+# -----------------------------------------------
+
+# --- from here on selection is independent -----
+# -----------------------------------------------
+SelectNoDTSegments   = cms.untracked.bool(False),  # search for events triggered by DTTF   without DT Segments
+SelectNoRPCRechits   = cms.untracked.bool(False),  # search for events triggered by RPCb/f without RPC RecHits
+# -----------------------------------------------
+SelectDTbutNoRPCTrig = cms.untracked.bool(False),  # select events triggered by DT but not by RPC
+SelectRPCbutNoDTTrig = cms.untracked.bool(False),  # select events triggered by RPC but not by DT
+# -----------------------------------------------
+SelectTRKTrack       = cms.untracked.bool(False),  # select events with Tracker track
+SelectSTATrack       = cms.untracked.bool(True),   # select events with Stand Alone Muon
+SelectMUOTrack       = cms.untracked.bool(True),   # select events with any kind of Reco Muon
+# -----------------------------------------------
+SelectDTSegments     = cms.untracked.bool(False),  # select events with DT  segments
+SelectCSCSegments    = cms.untracked.bool(False),  # select events with CSC segments
+SelectMinSegments    = cms.untracked.uint32(2),    # [>=] minimum amount of segments required (set 0 to have no lower limit)
+SelectMaxSegments    = cms.untracked.uint32(4),    # [<=] maximum amount of segments required (set 0 to have no higher limit)
+# -----------------------------------------------  # the maximum can be used to reject cosmics (two legs = 8 seg) and beam-halo (two endcaps = 8 seg)
+
+# -----------------------------------------------
+DoFilter             = cms.untracked.bool(True),   # !!! Very important !!! no filtering without this being True
+# -----------------------------------------------
+
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX0_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX1_DT_BX0_.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_RPC_BX0_DT_BX1_.root"),
@@ -134,7 +161,8 @@ DoFilter             = cms.untracked.bool(True),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234029_Test.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234500.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234542_BX0_NoDTSegments.root")
-RootFileName       = cms.untracked.string("MyFilteredHistograms_243484_PointingMuons.root"),
+# RootFileName       = cms.untracked.string("MyFilteredHistograms_238929_PointingMuons.root"),
+RootFileName       = cms.untracked.string("MyFilteredHistograms_243484_CollisionMuon.root"),
 )
 process.path = cms.Path(process.filter)
 process.end = cms.EndPath(process.Out)
