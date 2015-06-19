@@ -611,21 +611,59 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 
   bool mu1_tk_matched = false, mu2_tk_matched = false;
   // ===================================================================
-  // ===      Loop over Stand Alone Muon Collection                  === 
+  // ===      Loop over Stand Alone Muon TRACK Collection            === 
   // ===        ---> and use the MC Truth Matching                   ===
   // ===        ---> or Tight Muon ID and pt cut                     ===
   // ===================================================================
+  // Quick Loop just for Printout
+  if(physDebug) {
+    std::cout<<"--------------------------------------------------------------"<<std::endl;
+    for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
+      reco::TransientTrack track(*staTrack,&*theMGField,theTrackingGeometry); 
+      std::cout<<"TRACKS :: Stand Alone Muon :: ";
+      std::cout<<" Track pt: "<<std::setw(9)<<track.impactPointTSCP().momentum().perp();
+      std::cout<<" eta: "     <<std::setw(9)<<track.impactPointTSCP().momentum().eta();
+      std::cout<<" phi: "     <<std::setw(9)<<track.impactPointTSCP().momentum().phi();
+      std::cout<<" p: "       <<std::setw(9)<<track.impactPointTSCP().momentum().mag();
+      std::cout<<" chi2: "    <<std::setw(9)<<track.chi2();
+      std::cout<<" with "     <<std::setw(2)<<staTrack->recHitsSize()<<" rechits"<<std::endl;
+    }
+    std::cout<<"--------------------------------------------------------------"<<std::endl;
+    for (recoMuon = recoMuons->begin(); recoMuon != recoMuons->end(); ++recoMuon) {
+      if(recoMuon->isStandAloneMuon()) {
+	std::cout<<" MUONS :: Stand Alone Muon :: Muon pt = "<<std::setw(9)<<recoMuon->pt()<<" eta = "<<std::setw(6)<<recoMuon->eta()<<" phi= "<<std::setw(6)<<recoMuon->phi();
+	if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+	if(recoMuon->time().direction()>0)  std::cout<<" direction = "<<("InsideOut")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+	if(recoMuon->time().direction()==0) std::cout<<" direction = "<<("Undefined")<<" time at IP = "<<("Undefined")<<" ns";
+	std::cout<<std::endl;
+      }
+    }
+    std::cout<<"--------------------------------------------------------------"<<std::endl;
+    for (recoMuon = recoMuons->begin(); recoMuon != recoMuons->end(); ++recoMuon) {
+      if(recoMuon->isGlobalMuon()) {
+	std::cout<<" MUONS ::      Global Muon :: Muon pt = "<<std::setw(9)<<recoMuon->pt()<<" eta = "<<std::setw(6)<<recoMuon->eta()<<" phi= "<<std::setw(6)<<recoMuon->phi();
+	if(recoMuon->time().direction()<0)  std::cout<<" direction = "<<("OutsideIn")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+	if(recoMuon->time().direction()>0)  std::cout<<" direction = "<<("InsideOut")<<" time at IP = "<<recoMuon->time().timeAtIpInOut<<" +/- "<<recoMuon->time().timeAtIpInOutErr<<" ns";
+	if(recoMuon->time().direction()==0) std::cout<<" direction = "<<("Undefined")<<" time at IP = "<<("Undefined")<<" ns";
+	std::cout<<std::endl;
+      }
+    }
+    std::cout<<"--------------------------------------------------------------"<<std::endl;
+    std::cout<<"\n\n\n"<<std::endl;
+  }
+  // Starts the real stuff
   for (staTrack = staTracks->begin(); staTrack != staTracks->end(); ++staTrack) {
     reco::TransientTrack track(*staTrack,&*theMGField,theTrackingGeometry); 
 
     if(physDebug) {
-      std::cout<<" Stand Alone Muon% Track :: ";
-      std::cout<<" p: "<<track.impactPointTSCP().momentum().mag();
-      std::cout<<" pT: "<<track.impactPointTSCP().momentum().perp();
-      std::cout<<" eta: "<<track.impactPointTSCP().momentum().eta();
-      std::cout<<" phi: "<<track.impactPointTSCP().momentum().phi();
-      std::cout<<" chi2: "<<track.chi2();
-      std::cout<<" with "<<staTrack->recHitsSize()<<" rechits"<<std::endl;
+      std::cout<<"--------------------------------------------------------------"<<std::endl;
+      std::cout<<"--- Stand Alone Muon Track :: ";
+      std::cout<<" pT: "  <<std::setw(9)<<track.impactPointTSCP().momentum().perp();
+      std::cout<<" eta: " <<std::setw(9)<<track.impactPointTSCP().momentum().eta();
+      std::cout<<" phi: " <<std::setw(9)<<track.impactPointTSCP().momentum().phi();
+      std::cout<<" p: "   <<std::setw(9)<<track.impactPointTSCP().momentum().mag();
+      std::cout<<" chi2: "<<std::setw(9)<<track.chi2();
+      std::cout<<" with " <<std::setw(2)<<staTrack->recHitsSize()<<" rechits"<<std::endl;
       std::cout<<"--------------------------------------------------------------"<<std::endl;
     }
     double track_eta = track.impactPointTSCP().momentum().eta();
@@ -655,16 +693,31 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       const reco::Muon * myMuon = &(*recoMuons->begin());
       bool foundMyMuon = false;
       for (recoMuon = recoMuons->begin(); recoMuon != recoMuons->end(); ++recoMuon) {
-	if(physDebug) {
-	  std::cout<<" Reco Muon :: pt = "<<recoMuon->pt()<<" eta = "<<recoMuon->eta()<<" phi= "<<recoMuon->phi();
-	  std::cout<<" is TrackerMuon = "<<recoMuon->isTrackerMuon()<<" is GlobalMuon = "<<recoMuon->isGlobalMuon()<<" is ParticleFlowMuon = "<<recoMuon->isPFMuon()<<std::endl;
-	}
-	if(deltaR(track_eta, track_phi, recoMuon->eta(), recoMuon->phi())< delta_R) {
+	if(deltaR(track_eta, track_phi, recoMuon->eta(), recoMuon->phi())< delta_R && recoMuon->isStandAloneMuon()) {
 	  myMuon = &(*recoMuon); foundMyMuon = true; 
-	  if(physDebug) std::cout<<" ---> this Reco Muon is dR matched to the StandAlone Muon"<<std::endl;
+	  if(physDebug) {
+	    std::cout<<" Reco Muon :: pt = "<<std::setw(9)<<recoMuon->pt()<<" eta = "<<std::setw(5)<<recoMuon->eta()<<" phi= "<<std::setw(5)<<recoMuon->phi();
+	    std::cout<<" is StandAloneMuon = "<<recoMuon->isStandAloneMuon()<<" is GlobalMuon = "<<recoMuon->isGlobalMuon();
+	    std::cout<<" is TrackerMuon = "<<recoMuon->isTrackerMuon()<<" is ParticleFlowMuon = "<<recoMuon->isPFMuon()<<std::endl;
+	  }
+	  if(physDebug) std::cout<<" ---> this Reco (STA) Muon is dR matched to the StandAlone Muon"<<std::endl;
+	}
+	else {
+	  if(techDebug) {
+	    std::cout<<" Reco Muon :: pt = "<<std::setw(9)<<recoMuon->pt()<<" eta = "<<std::setw(5)<<recoMuon->eta()<<" phi= "<<std::setw(5)<<recoMuon->phi();
+	    std::cout<<" is StandAloneMuon = "<<recoMuon->isStandAloneMuon()<<" is GlobalMuon = "<<recoMuon->isGlobalMuon();
+	    std::cout<<" is TrackerMuon = "<<recoMuon->isTrackerMuon()<<" is ParticleFlowMuon = "<<recoMuon->isPFMuon()<<std::endl;
+	  }
 	}
       }
-      if(physDebug) std::cout<<" ---> this Reco Muon is a Tight Muon = "<<muon::isTightMuon(*myMuon, *(recoVertices->begin()))<<" and StandAlone Pt = "<<track.impactPointTSCP().momentum().perp()<<std::endl;
+      if(foundMyMuon==false) { std::cout<<" ---> No Reco (STA) Muon found that is dR matched to the StandAlone Muon"<<std::endl; }
+      if(foundMyMuon==true) {
+	if(physDebug) {
+	  std::cout<<" ---> this Reco Muon is a Tight Muon = "<<muon::isTightMuon(*myMuon, *(recoVertices->begin()));
+	  std::cout<<" and StandAlone Pt = "<<track.impactPointTSCP().momentum().perp()<<std::endl;
+	  std::cout<<"--------------------------------------------------------------"<<std::endl;
+	}
+      }
       if (wantTightId && foundMyMuon && muon::isTightMuon(*myMuon, *(recoVertices->begin())) && track.impactPointTSCP().momentum().perp() > 10) {
 	matched = true;
       }
@@ -685,8 +738,8 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 
     if(!matched) continue;
     if(physDebug) {
-      std::cout<<"---   MATCHED"<<std::endl;
-      std::cout<<"--------------------------------------------------------------"<<std::endl;
+      std::cout<<"      ---   RECHITS of the MATCHED MUON"<<std::endl;
+      std::cout<<"      --------------------------------------------------------------"<<std::endl;
     }
 
     StandAloneMuon_PT->Fill(track.impactPointTSCP().momentum().perp());
@@ -711,10 +764,6 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     int CSC_Rechits   = 0;
     int DT_Rechits    = 0;
 
-    if(physDebug) {
-      std::cout<<"RecHits:"<<std::endl;
-    }
-
     int muonhits = 0;
     int station_fired_sel[8] = {0,0,0,0,0,0,0,0};
     bool gemstation_1_fired = false, gemstation_2_fired =false, gemstation_3_fired = false;
@@ -738,9 +787,9 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	++All_Rechits; ++RPC_Rechits; Rechits_All->Fill(eta); Rechits_RPC->Fill(eta);
 	Rechits_All_Hits->Fill(eta);
 	Rechits_All_EtaHits->Fill(eta); Rechits_All_PhiHits->Fill(eta);
-	if(physDebug) std::cout<<"RPC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
 	DetId idRivHit = (*recHit)->geographicalId();
 	RPCDetId rollId(idRivHit.rawId());
+	if(physDebug) std::cout<<"      RPC RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<idRivHit.rawId()<<" = "<<rollId<<std::endl;
 	// which RPC stations fired for a muon in 1.7 < eta < 2.5
 	if(fabs(track.impactPointTSCP().momentum().eta()) > 1.7 && fabs(track.impactPointTSCP().momentum().eta()) < 2.5) {
 	  station_fired_sel[3+rollId.station()] = 1;
@@ -754,8 +803,8 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	DetId idRivHit = (*recHit)->geographicalId();
 	GEMDetId rollId(idRivHit.rawId());
 
-	if(physDebug) std::cout<<"GEM RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
-	if(physDebug) std::cout<<"GEM DetId = "<<rollId<<std::endl;
+	if(physDebug) std::cout<<"      GEM RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<idRivHit.rawId()<<" = "<<rollId<<std::endl;
+	// if(physDebug) std::cout<<"GEM DetId = "<<rollId<<std::endl;
 
 	// count only one hit per station and skip station 2
 	// GE21 short will disappear in the future 
@@ -788,10 +837,11 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       // -------
       if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
 	++All_Rechits; ++DT_Rechits; Rechits_All->Fill(eta); Rechits_DT->Fill(eta);
-	if(physDebug) std::cout<<"DT RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
-	// This is actually a Segment ... Try to access different rechits of Segment
+	// DetId & Printout
 	DetId idRivHit = (*recHit)->geographicalId();
 	DTChamberId    chamberId(idRivHit.rawId()); DTSuperLayerId sulayerId(idRivHit.rawId()); DTLayerId layerId(idRivHit.rawId()); DTWireId wireId(idRivHit.rawId());
+	if(physDebug) std::cout<<"      DT RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<chamberId.rawId()<<" = "<<chamberId<<std::endl;
+	// This is actually a Segment ... Try to access different rechits of Segment
 	if(techDebug) std::cout<<"DT Rec Hit in Raw ID = "<<idRivHit.rawId()<<" Chamber ID = "<<chamberId<<" SL ID = "<<sulayerId<<" Layer ID = "<<layerId<<" Wire ID = "<<wireId<<std::endl;
 	std::vector< const TrackingRecHit * > DTRecHitsL1 = (*recHit)->recHits();	
 	if(techDebug) std::cout<<"Number of constituting rechits = "<<DTRecHitsL1.size()<<std::endl;
@@ -823,7 +873,10 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       // --------
       if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::CSC) {
 	++All_Rechits; ++CSC_Rechits; Rechits_All->Fill(eta); Rechits_CSC->Fill(eta);
-	if(physDebug) std::cout<<"CSC RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+	// DetId & Printout
+	DetId idRivHit = (*recHit)->geographicalId();
+        CSCDetId chamberId(idRivHit.rawId());
+	if(physDebug) std::cout<<"      CSC RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<chamberId.rawId()<<" = "<<chamberId<<std::endl;
         // This is actually a Segment ... Try to access different rechits of Segment
 	std::vector< const TrackingRecHit * > CSCRecHitsL1 = (*recHit)->recHits();	
 	if(techDebug) std::cout<<"Number of constituting rechits = "<<CSCRecHitsL1.size()<<std::endl;
@@ -833,8 +886,6 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	  Rechits_All_Hits->Fill(eta);
 	  Rechits_All_EtaHits->Fill(eta); Rechits_All_PhiHits->Fill(eta);
 	}
-	DetId idRivHit = (*recHit)->geographicalId();
-        CSCDetId chamberId(idRivHit.rawId());
 	if(fabs(track.impactPointTSCP().momentum().eta()) > 1.7 && fabs(track.impactPointTSCP().momentum().eta()) < 2.5) {
           station_fired_sel[chamberId.station()-1] = 1;
         }
@@ -843,9 +894,11 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
       // Tracker Hits
       // ------------
       if(detid.det()==DetId::Tracker) {
-	if(physDebug) std::cout<<"Tracker RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
+	if(physDebug) std::cout<<"      Tracker RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm"<<std::endl;
       }
     } // end loop rechits
+    if(physDebug) std::cout<<"\n"<<std::endl;
+
 
     Rechits_All_Eta_2D->Fill(eta, All_Rechits);
     Rechits_RPC_Eta_2D->Fill(eta, RPC_Rechits);
@@ -899,7 +952,7 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   Event_NumStaMuons->Fill(stamuons);
   Event_NumStaMuons_1p8To2p5_2Hit->Fill(stamuons_eta_hits);
 
-  if(physDebug) std::cout<<"=============================================================="<<std::endl;
+  if(physDebug) {std::cout<<"=============================================================="<<std::endl; std::cout<<"\n\n\n"<<std::endl;}
 
   // Code from: DQMOffline/Muon/src/SegmentTrackAnalyzer.cc
   // GLOBAL MUONS
@@ -907,7 +960,8 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
    
     reco::TransientTrack track(*glbTrack,&*theMGField,theTrackingGeometry); 
     if(physDebug) {
-      std::cout<<" Global Muon Track :: ";
+      std::cout<<"--------------------------------------------------------------"<<std::endl;
+      std::cout<<"--- Global Muon Track :: ";
       std::cout<<" p: "<<track.impactPointTSCP().momentum().mag();
       std::cout<<" pT: "<<track.impactPointTSCP().momentum().perp();
       std::cout<<" eta: "<<track.impactPointTSCP().momentum().eta();
@@ -963,6 +1017,63 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   }
   if(physDebug) std::cout<<"=============================================================="<<std::endl;
   */
+
+  // Special :: Analyze the DT Segments of W+0/S11
+  /*
+  edm::Handle<DTRecSegment4DCollection> dtSegmentCollection;
+  iEvent.getByLabel("dt4DSegments", dtSegmentCollection);
+  if(physDebug) std::cout<<"Size of DT 4D Segment Collection :: "<<dtSegmentCollection->size()<<std::endl;
+  DTRecSegment4DCollection::const_iterator segmentDT;
+  for (segmentDT = dtSegmentCollection->begin(); segmentDT != dtSegmentCollection->end(); ++segmentDT){
+    // const GeomDet* geomDet = theTrackingGeometry->idToDet((*segmentDT).geographicalId());
+    DetId idSeg = (*segmentDT).geographicalId();
+    DTChamberId chamberId(idSeg.rawId());
+    if(physDebug && (chamberId.wheel()==0 && chamberId.sector()==11)) {
+      std::cout << " DT 4D Segment in DetId "<<idSeg.rawId()<<" = "<<chamberId;
+      // std::cout << " global pos: " << geomDet->toGlobal((*segmentDT).localPosition()) << "global dir: "<<geomDet->toGlobal((*segmentDT).localDirection());
+      std::cout << " local pos: " << (*segmentDT).localPosition() << "local dir: "<<(*segmentDT).localDirection()<< std::endl;
+
+      // Searching for RecHits inside DT Segment:
+      DTSuperLayerId sulayerId(idSeg.rawId());
+      if(physDebug) std::cout<<"DT Rec Hit in Raw ID = "<<idSeg.rawId()<<" Chamber ID = "<<chamberId<<std::endl;
+      std::vector< const TrackingRecHit * > DTRecHitsL1 = (*segmentDT).recHits();
+      if(physDebug) std::cout<<"Number of constituting rechits = "<<DTRecHitsL1.size()<<std::endl;
+      // First Hierarchical Layer :: Phi and Theta SuperLayers
+      std::vector< const TrackingRecHit * >::const_iterator recHitl1;
+      for(recHitl1 = DTRecHitsL1.begin(); recHitl1 != DTRecHitsL1.end(); ++recHitl1) {
+	DetId detidl1 = DetId((*recHitl1)->geographicalId());
+	DTChamberId    chamberIdL1(detidl1.rawId()); DTSuperLayerId sulayerIdL1(detidl1.rawId());
+	if(physDebug) std::cout<<"     |--> DT Rec Hit in Raw ID = "<<detidl1.rawId()<<" SuperLayer ID = "<<sulayerIdL1<<std::endl;
+	std::vector< const TrackingRecHit * > DTRecHitsL2 = (*recHitl1)->recHits();
+	if(physDebug) std::cout<<"     |--> Number of constituting rechits = "<<DTRecHitsL2.size()<<std::endl;
+	// Second Hierarchical Layer :: Layers (1-4) Theta SuperLayer and (1-8) for Combined Phi SuperLayer
+	std::vector< const TrackingRecHit * >::const_iterator recHitl2;
+	for(recHitl2 = DTRecHitsL2.begin(); recHitl2 != DTRecHitsL2.end(); ++recHitl2) {
+	  DetId detidl2 = DetId((*recHitl2)->geographicalId());
+	  DTChamberId    chamberIdL2(detidl2.rawId()); DTSuperLayerId sulayerIdL2(detidl2.rawId()); DTLayerId layerIdL2(detidl2.rawId());
+	  if(physDebug) std::cout<<"          |--> DT Rec Hit in Raw ID = "<<detidl2.rawId()<<" Layer ID = "<<layerIdL2<<std::endl;
+	  std::vector< const TrackingRecHit * > DTRecHitsL3 = (*recHitl2)->recHits();
+	  // if(physDebug) std::cout<<"          |--> Number of constituting rechits = "<<DTRecHitsL3.size()<<std::endl;
+	  // Third Hierarchical Layer :: Wires inside a Layer
+	  // Information unfortunately not saved ...
+	  / *
+	  std::vector< const TrackingRecHit * >::const_iterator recHitl3;
+	  for(recHitl3 = DTRecHitsL3.begin(); recHitl3 != DTRecHitsL3.end(); ++recHitl3) {
+	    DetId detidl3 = DetId((*recHitl3)->geographicalId());
+	    DTChamberId    chamberIdL3(detidl3.rawId()); DTSuperLayerId sulayerIdL3(detidl3.rawId()); DTLayerId layerIdL3(detidl3.rawId()); DTWireId wireIdL3(detidl3.rawId());
+	    if(physDebug) std::cout<<"               |--> DT Rec Hit in Raw ID = "<<detidl3.rawId()<<" Wire ID = "<<wireIdL3<<std::endl;
+	    // if(physDebug) std::cout<<"Super Layer Number = "<<sulayerIdL2.superLayer();
+	    // if(sulayerIdL2.superLayer()==0)      { if(physDebug) { std::cout<<" chamber"<<std::endl; } }
+	    // else if(sulayerIdL2.superLayer()==2) { if(physDebug) { std::cout<<" theta-SL"<<std::endl; } }
+	    // else                                 { if(physDebug) { std::cout<<" phi-SL"<<std::endl;   } }
+	  }
+	  * /
+	}
+      }
+    }
+  }
+  */
+
 }
 
 
