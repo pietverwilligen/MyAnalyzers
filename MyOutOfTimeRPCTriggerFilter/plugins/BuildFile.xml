@@ -9,6 +9,10 @@
 <use name="DataFormats/L1GlobalTrigger"/>
 <use name="DataFormats/L1GlobalMuonTrigger"/>
 
+<use name="Geometry/RPCGeometry"/>
+<use name="Geometry/CSCGeometry"/>
+<use name="Geometry/DTGeometry"/>
+
 <use name="DataFormats/MuonReco"/>
 <use name="RecoMuon/TrackingTools"/>
 <use name="TrackingTools/TransientTrack"/>
