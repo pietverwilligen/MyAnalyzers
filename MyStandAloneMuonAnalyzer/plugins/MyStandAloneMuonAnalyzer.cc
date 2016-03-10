@@ -155,6 +155,16 @@ class MyStandAloneMuonAnalyzer : public edm::EDAnalyzer {
   // Find the segments associated to the track
   // SegmentsTrackAssociator* theSegmentsAssociator;
   // MuonServiceProxy * theService;
+
+  // switch this off in CMSSW_6_2_0_SLHCX
+  edm::EDGetTokenT<reco::TrackCollection>       StaMuTrack_Token;
+  edm::EDGetTokenT<reco::TrackCollection>       GlbMuTrack_Token;
+  edm::EDGetTokenT<reco::MuonCollection>        Muon_Token;
+  edm::EDGetTokenT<DTRecSegment4DCollection>    DTSegment4D_Token;
+  edm::EDGetTokenT<reco::VertexCollection>      Vertex_Token;
+  edm::EDGetTokenT<reco::GenParticleCollection> GenParticle_Token;
+  edm::EDGetTokenT<edm::SimTrackContainer>      SimTrack_Token;
+
 };
 
 //
@@ -194,6 +204,15 @@ MyStandAloneMuonAnalyzer::MyStandAloneMuonAnalyzer(const edm::ParameterSet& iCon
   // muonLabel2     = iConfig.getUntrackedParameter<std::string>("MuonLabel2");
   STAMuLabel = iConfig.getParameter<edm::InputTag>("StandAloneTrackCollectionLabel");
   GLBMuLabel = iConfig.getParameter<edm::InputTag>("GlobalTrackCollectionLabel");
+
+  // switch this off in CMSSW_6_2_0_SLHCX
+  StaMuTrack_Token  = consumes<reco::TrackCollection>(STAMuLabel);
+  GlbMuTrack_Token  = consumes<reco::TrackCollection>(GLBMuLabel);
+  Muon_Token        = consumes<reco::MuonCollection>(edm::InputTag("muons"));
+  DTSegment4D_Token = consumes<DTRecSegment4DCollection>(edm::InputTag("dt4DSegments"));
+  Vertex_Token      = consumes<reco::VertexCollection>(edm::InputTag("offlinePrimaryVertices"));
+  GenParticle_Token = consumes<reco::GenParticleCollection>(edm::InputTag("genParticles"));
+  SimTrack_Token    = consumes<edm::SimTrackContainer>(edm::InputTag("g4SimHits"));
 
   // switch this off in CMSSW_6_2_0_SLHCX
   // also not necessary in CMSSW_7_X_Y if the Muon POG stuff is not used
@@ -481,16 +500,20 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   // theService->update(iSetup);
 
   edm::Handle<reco::TrackCollection> staTracks;
-  iEvent.getByLabel(STAMuLabel, staTracks);
+  // iEvent.getByLabel(STAMuLabel, staTracks);
+  iEvent.getByToken(StaMuTrack_Token, staTracks);
 
   edm::Handle<reco::TrackCollection> glbTracks;
-  iEvent.getByLabel(GLBMuLabel, glbTracks);
+  // iEvent.getByLabel(GLBMuLabel, glbTracks);
+  iEvent.getByToken(GlbMuTrack_Token, glbTracks);
 
   edm::Handle<reco::MuonCollection> recoMuons;
-  iEvent.getByLabel("muons", recoMuons);
+  // iEvent.getByLabel("muons", recoMuons);
+  iEvent.getByToken(Muon_Token, recoMuons);
 
   edm::Handle<reco::VertexCollection> recoVertices;
-  iEvent.getByLabel("offlinePrimaryVertices", recoVertices);
+  // iEvent.getByLabel("offlinePrimaryVertices", recoVertices);
+  iEvent.getByToken(Vertex_Token, recoVertices);
 
   reco::TrackCollection::const_iterator staTrack;
   if(techDebug) std::cout<<"Reconstructed STA Muon Tracks: " <<staTracks->size()<< std::endl;
@@ -522,7 +545,8 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   if(mcTruthMatch) {
     // 1) GEN-LEVEL :: Save Matrix Element Muon Properties (PT, ETA, PHI)
     edm::Handle<reco::GenParticleCollection>      genParticles;
-    iEvent.getByLabel("genParticles", genParticles);
+    // iEvent.getByLabel("genParticles", genParticles);
+    iEvent.getByToken(GenParticle_Token, genParticles);
     bool ZbosonFound = 0;
     for(unsigned int i=0; i<genParticles->size(); ++i) {
       if(ZbosonFound) continue;
@@ -553,7 +577,8 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     bool mu1_me_matched = false, mu2_me_matched = false;
     std::vector<SimTrack> theSimTracks;
     edm::Handle<edm::SimTrackContainer> SimTk;
-    iEvent.getByLabel("g4SimHits",SimTk);
+    // iEvent.getByLabel("g4SimHits",SimTk);
+    iEvent.getByToken(SimTrack_Token,SimTk);
     theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
     for (std::vector<SimTrack>::const_iterator iTrack = theSimTracks.begin(); iTrack != theSimTracks.end(); ++iTrack) {
       SimTrack simtrack = (*iTrack);
@@ -843,16 +868,16 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	if(physDebug) std::cout<<"      DT RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<chamberId.rawId()<<" = "<<chamberId<<std::endl;
 	// This is actually a Segment ... Try to access different rechits of Segment
 	if(techDebug) std::cout<<"DT Rec Hit in Raw ID = "<<idRivHit.rawId()<<" Chamber ID = "<<chamberId<<" SL ID = "<<sulayerId<<" Layer ID = "<<layerId<<" Wire ID = "<<wireId<<std::endl;
-	std::vector< const TrackingRecHit * > DTRecHitsL1 = (*recHit)->recHits();	
+	std::vector< TrackingRecHit * > DTRecHitsL1 = (*recHit)->recHits();	
 	if(techDebug) std::cout<<"Number of constituting rechits = "<<DTRecHitsL1.size()<<std::endl;
-	std::vector< const TrackingRecHit * >::const_iterator recHitl1;
+	std::vector< TrackingRecHit * >::iterator recHitl1;
 	for(recHitl1 = DTRecHitsL1.begin(); recHitl1 != DTRecHitsL1.end(); ++recHitl1) {
 	  DetId detidl1 = DetId((*recHitl1)->geographicalId());
 	  DTChamberId    chamberIdL1(detidl1.rawId()); DTSuperLayerId sulayerIdL1(detidl1.rawId()); DTLayerId layerIdL1(detidl1.rawId()); DTWireId wireIdL1(detidl1.rawId());
 	  if(techDebug) std::cout<<"     |--> DT Rec Hit in Raw ID = "<<detidl1.rawId()<<" Chamber ID = "<<chamberIdL1<<" SL ID = "<<sulayerIdL1<<" Layer ID = "<<layerIdL1<<" Wire ID = "<<wireIdL1<<std::endl;
-	  std::vector< const TrackingRecHit * > DTRecHitsL2 = (*recHitl1)->recHits();
+	  std::vector< TrackingRecHit * > DTRecHitsL2 = (*recHitl1)->recHits();
 	  if(techDebug) std::cout<<"     |--> Number of constituting rechits = "<<DTRecHitsL2.size()<<std::endl;
-	  std::vector< const TrackingRecHit * >::const_iterator recHitl2;
+	  std::vector< TrackingRecHit * >::iterator recHitl2;
 	  for(recHitl2 = DTRecHitsL2.begin(); recHitl2 != DTRecHitsL2.end(); ++recHitl2) {
 	    DetId detidl2 = DetId((*recHitl2)->geographicalId());
 	    DTChamberId    chamberIdL2(detidl2.rawId()); DTSuperLayerId sulayerIdL2(detidl2.rawId()); DTLayerId layerIdL2(detidl2.rawId()); DTWireId wireIdL2(detidl2.rawId());
@@ -878,9 +903,9 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
         CSCDetId chamberId(idRivHit.rawId());
 	if(physDebug) std::cout<<"      CSC RecHit at "<<"r: "<<std::setw(9)<<r<<" cm"<<" z: "<<std::setw(9)<<z<<" cm in DetId "<<chamberId.rawId()<<" = "<<chamberId<<std::endl;
         // This is actually a Segment ... Try to access different rechits of Segment
-	std::vector< const TrackingRecHit * > CSCRecHitsL1 = (*recHit)->recHits();	
+	std::vector< TrackingRecHit * > CSCRecHitsL1 = (*recHit)->recHits();	
 	if(techDebug) std::cout<<"Number of constituting rechits = "<<CSCRecHitsL1.size()<<std::endl;
-	std::vector< const TrackingRecHit * >::const_iterator recHitl1;
+	std::vector< TrackingRecHit * >::iterator recHitl1;
 	for(recHitl1 = CSCRecHitsL1.begin(); recHitl1 != CSCRecHitsL1.end(); ++recHitl1) {
 	  Rechits_CSC_Hits->Fill(eta);
 	  Rechits_All_Hits->Fill(eta);
@@ -1022,6 +1047,7 @@ MyStandAloneMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   /*
   edm::Handle<DTRecSegment4DCollection> dtSegmentCollection;
   iEvent.getByLabel("dt4DSegments", dtSegmentCollection);
+  iEvent.getByToken(DTSegment4D_Token, dtSegmentCollection);
   if(physDebug) std::cout<<"Size of DT 4D Segment Collection :: "<<dtSegmentCollection->size()<<std::endl;
   DTRecSegment4DCollection::const_iterator segmentDT;
   for (segmentDT = dtSegmentCollection->begin(); segmentDT != dtSegmentCollection->end(); ++segmentDT){
