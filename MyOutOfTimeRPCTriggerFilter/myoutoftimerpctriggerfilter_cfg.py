@@ -3,14 +3,15 @@ process = cms.Process("MuonFilter")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load('Configuration.Geometry.GeometryExtended2015Reco_cff')
 process.load('Configuration.Geometry.GeometryExtended2015_cff')
-# process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
-process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
+# process.load('Configuration.StandardSequences.MagneticField_0T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 # process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
 # process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 # process.GlobalTag = GlobalTag(process.GlobalTag, 'GR_P_V54::All', '') # 74X data taking
-process.GlobalTag = GlobalTag(process.GlobalTag, 'GR_P_V50::All', '')   # 73X data taking 
+# process.GlobalTag = GlobalTag(process.GlobalTag, 'GR_P_V50::All', '') # 73X data taking 
+process.GlobalTag = GlobalTag(process.GlobalTag, '76X_dataRun2_16Dec2015_v0', '')   # 763 data reprocessing
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(25) )
 process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound'))
@@ -74,7 +75,13 @@ fileNames = cms.untracked.vstring(
 # '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/2ED32C3A-22F3-E411-93EA-02163E013459.root',
 # '/store/express/Commissioning2015/ExpressPhysics/FEVT/Express-v1/000/243/484/00000/32B37C91-19F3-E411-B3A1-02163E0133BB.root',
 # Filtered 243484
-'file:RecoMuons_243484_Collisions.root'
+# 'file:RecoMuons_243484_Collisions.root'
+
+# Test single Event 2015
+'file:/afs/cern.ch/work/p/piet/Analysis/SLC6/Data2015/CMSSW_7_6_3/src/MyData/StaMuAtEta6_AOD.root',
+# 'file:/afs/cern.ch/work/p/piet/Analysis/SLC6/Data2015/CMSSW_7_6_3/src/MyData/StaMuAtEta6_RECO.root'
+# '/store/data/Run2015D/SingleElectron/RAW-RECO/LogError-16Dec2015-v1/20000/1E807E74-43A8-E511-B80B-00266CFAE788.root'
+
 
 # RelVal ZMM
 # '/store/relval/CMSSW_7_3_0/RelValZMM_13/GEN-SIM-RECO/MCRUN2_73_V9_71XGENSIM_FIXGT-v1/00000/0AC5D8E4-5DA2-E411-8B1D-0025905B8590.root',
@@ -84,7 +91,8 @@ fileNames = cms.untracked.vstring(
 # My Filtered Rootfiles
 # 'file:MyFilteredEvents_234029_Test.root'
 # 'file:/afs/cern.ch/user/p/piet/public/ForFrancesca/MyFilteredEvents_234029_BX0_NoDTSegments.root'
-)
+),
+eventsToProcess = cms.untracked.VEventRange('258446:36:44388272',),
 )
 process.Out = cms.OutputModule("PoolOutputModule",
 SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('path')),
@@ -98,36 +106,43 @@ SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('path')),
 # fileName = cms.untracked.string ("MyFilteredEvents_234500.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_234542_BX0_NoDTSegments.root")
 # fileName = cms.untracked.string ("MyFilteredEvents_238929_PointingMuons.root")
-fileName = cms.untracked.string ("MyFilteredEvents_243484_CollisionMuon.root"))
+# fileName = cms.untracked.string ("MyFilteredEvents_243484_CollisionMuon.root"))
+fileName = cms.untracked.string ("MyFilteredEvents_258446_StaMuonOutofMuonDet.root"))
 
 
 process.filter = cms.EDFilter('MyOutOfTimeRPCTriggerFilter',
 Debug                = cms.untracked.bool(True),
+AnalyzeTrigger       = cms.untracked.bool(False),
+AnalyzeRECO          = cms.untracked.bool(True),
+EventContentRECO     = cms.untracked.bool(False),
 GTReadoutRcd         = cms.InputTag("gtDigis"),
 GMTReadoutRcd        = cms.InputTag("gtDigis" ),
-# STAMuonTrackCollectionLabel = cms.InputTag("standAloneMuons","","RECO"),           # UpdatedAtVtx :: RECO
-STAMuonTrackCollectionLabel   = cms.InputTag("standAloneMuons","","RecoMuon"),       # UpdatedAtVtx :: MuonReco is my private MuonReco
+# STAMuonTrackCollectionLabel     = cms.InputTag("standAloneMuons","","RECO"),               # not UpdatedAtVtx :: RECO
+STAMuonTrackCollectionLabel   = cms.InputTag("standAloneMuons","UpdatedAtVtx","RECO"),   # UpdatedAtVtx :: RECO
+# STAMuonTrackCollectionLabel   = cms.InputTag("standAloneMuons","","RecoMuon"),     # UpdatedAtVtx :: MuonReco is my private MuonReco
 # TrackerTrackCollectionLabel   = cms.InputTag("ctfWithMaterialTracksP5",""),        # for Cosmics :: globalMuons or globalCosmicMuons or globalCosmicMuons1Leg
-TrackerTrackCollectionLabel = cms.InputTag("generalTracks",""),                      # for normal PP / ZMM MC
-MuonLabel                   = cms.InputTag("muons","","RECO"),  
+# STAMuUpdatedLabel               = cms.InputTag("standAloneMuons","UpdatedAtVtx","RECO"),
+# STAMuNotUpdatedLabel            = cms.InputTag("standAloneMuons","","RECO"),
+TrackerTrackCollectionLabel     = cms.InputTag("generalTracks",""),                  # for normal PP / ZMM MC
+MuonLabel                       = cms.InputTag("muons","","RECO"),  
 # MuonLabel                     = cms.InputTag("muons1stStep","","RecoMuon"),   
 
 # --- Original use of the Filter ----------------
 # -----------------------------------------------
-SelectBX             = cms.untracked.bool(True),  # select on the BX of the trigger
-# config 0 :: RPC in bx=0, DT in bx=0             # config 0, both DT and RPC trigger in BX=0
+SelectBX             = cms.untracked.bool(True),    # select on the BX of the trigger
+# config 0 :: RPC in bx=0, DT in bx=0               # config 0, both DT and RPC trigger in BX=0
 bxRPC                = cms.untracked.int32(0),
 bxDT                 = cms.untracked.int32(0),
-# config 1 :: RPC in bx=1, DT in bx=0             # config 1, DT triggers in BX=0, while RPC triggers in BX=1
+# config 1 :: RPC in bx=1, DT in bx=0               # config 1, DT triggers in BX=0, while RPC triggers in BX=1
 # bxRPC              = cms.untracked.int32(1),
 # bxDT               = cms.untracked.int32(0),
-# config 2 :: RPC in bx=0, DT in bx=1             # config 2, DT triggers in BX=1, while RPC triggers in BX=0
+# config 2 :: RPC in bx=0, DT in bx=1               # config 2, DT triggers in BX=1, while RPC triggers in BX=0
 # bxRPC              = cms.untracked.int32(0),
 # bxDT               = cms.untracked.int32(1),
-AnalyzeTRK           = cms.untracked.bool(True),   # see whether Tracker was in time and Track was reconstructed
-SelectTRK            = cms.untracked.bool(True),   # filter based on the availabilyt of a Track
-SelectAND            = cms.untracked.bool(True),  # selectBX && selectTRK
-SelectOR             = cms.untracked.bool(False),   # selectBX || selectTRK, one has to choose one or the other
+AnalyzeTRK           = cms.untracked.bool(True),    # see whether Tracker was in time and Track was reconstructed
+SelectTRK            = cms.untracked.bool(True),    # filter based on the availabilyt of a Track
+SelectAND            = cms.untracked.bool(False),   # selectBX && selectTRK
+SelectOR             = cms.untracked.bool(True),    # selectBX || selectTRK, one has to choose one or the other
 # -----------------------------------------------
 
 # --- from here on selection is independent -----
@@ -162,7 +177,7 @@ DoFilter             = cms.untracked.bool(True),   # !!! Very important !!! no f
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234500.root"),
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_234542_BX0_NoDTSegments.root")
 # RootFileName       = cms.untracked.string("MyFilteredHistograms_238929_PointingMuons.root"),
-RootFileName       = cms.untracked.string("MyFilteredHistograms_243484_CollisionMuon.root"),
+RootFileName       = cms.untracked.string("MyFilteredHistograms_258446_StaMuonOutofMuonDet.root"),
 )
 process.path = cms.Path(process.filter)
 process.end = cms.EndPath(process.Out)
