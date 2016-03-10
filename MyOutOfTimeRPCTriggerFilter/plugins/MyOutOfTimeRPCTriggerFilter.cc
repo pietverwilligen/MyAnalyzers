@@ -115,6 +115,7 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   edm::InputTag MuLabel;
 
   bool debug;
+  bool analyzeTrig, analyzeReco, eventContentReco;
   bool selectBX, selectTRK;
   bool selectOR, selectAND;
   bool selectNoDTSegments;
@@ -156,6 +157,17 @@ class MyOutOfTimeRPCTriggerFilter : public edm::EDFilter {
   TH2F * D0DZ_TrackExp, * D0DZ_TrackFnd, * D0DZ_TrackEff; 
   TH2F * D0DZ_TrackTrk;
 
+  edm::EDGetTokenT<L1MuGMTReadoutCollection> GMT_Token;
+  edm::EDGetTokenT<DTRecSegment4DCollection> DTSegment4D_Token;
+  edm::EDGetTokenT<DTRecHit1DPair>           DTRecHit1D_Token;
+  edm::EDGetTokenT<CSCSegmentCollection>     CSCSegment_Token;
+  edm::EDGetTokenT<reco::TrackCollection>    StaMuTrack_Token;
+  edm::EDGetTokenT<reco::TrackCollection>    AllTrack_Token;
+  edm::EDGetTokenT<reco::MuonCollection>     Muon_Token;
+  edm::EDGetTokenT<RPCDigiCollection>        RPCDigi_Token;
+  edm::EDGetTokenT<RPCRecHitCollection>      RPCRecHit_Token;
+
+
 };
 
 //
@@ -190,6 +202,9 @@ MyOutOfTimeRPCTriggerFilter::MyOutOfTimeRPCTriggerFilter(const edm::ParameterSet
   m_gtReadoutLabel     = iConfig.getParameter<edm::InputTag>("GTReadoutRcd");
   m_gmtReadoutLabel    = iConfig.getParameter<edm::InputTag>("GMTReadoutRcd");
   debug                = iConfig.getUntrackedParameter<bool>("Debug");
+  analyzeTrig          = iConfig.getUntrackedParameter<bool>("AnalyzeTrigger");
+  analyzeReco          = iConfig.getUntrackedParameter<bool>("AnalyzeRECO");
+  eventContentReco     = iConfig.getUntrackedParameter<bool>("EventContentRECO");
   selectBX             = iConfig.getUntrackedParameter<bool>("SelectBX");
   select_bx_rpc        = iConfig.getUntrackedParameter<int>("bxRPC");
   select_bx_dt         = iConfig.getUntrackedParameter<int>("bxDT");
@@ -213,6 +228,17 @@ MyOutOfTimeRPCTriggerFilter::MyOutOfTimeRPCTriggerFilter(const edm::ParameterSet
   STAMuLabel           = iConfig.getParameter<edm::InputTag>("STAMuonTrackCollectionLabel");
   TRACKLabel           = iConfig.getParameter<edm::InputTag>("TrackerTrackCollectionLabel");
   MuLabel              = iConfig.getParameter<edm::InputTag>("MuonLabel");
+
+  GMT_Token         = consumes<L1MuGMTReadoutCollection>(m_gmtReadoutLabel);
+  DTSegment4D_Token = consumes<DTRecSegment4DCollection>(edm::InputTag("dt4DSegments"));
+  DTRecHit1D_Token  = consumes<DTRecHit1DPair>(edm::InputTag("dt1DRecHits"));
+  CSCSegment_Token  = consumes<CSCSegmentCollection>(edm::InputTag("cscSegments"));
+  StaMuTrack_Token  = consumes<reco::TrackCollection>(STAMuLabel);
+  AllTrack_Token    = consumes<reco::TrackCollection>(TRACKLabel);
+  Muon_Token        = consumes<reco::MuonCollection>(MuLabel);
+  RPCDigi_Token     = consumes<RPCDigiCollection>(edm::InputTag("muonRPCDigis"));
+  RPCRecHit_Token   = consumes<RPCRecHitCollection>(edm::InputTag("rpcRecHits"));
+
 }
 
 
@@ -263,24 +289,33 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // ==========================
   // Triggers
   edm::Handle<L1MuGMTReadoutCollection> pCollection;
-  iEvent.getByLabel(m_gmtReadoutLabel,pCollection);
-  const L1MuGMTReadoutCollection * gmtRC = pCollection.product();
+  const L1MuGMTReadoutCollection * gmtRC;
   std::vector<L1MuGMTReadoutRecord>::const_iterator RRItr;
-  std::vector<L1MuGMTReadoutRecord> gmt_records = gmtRC->getRecords();
-    
+  std::vector<L1MuGMTReadoutRecord> gmt_records;
+
+  if(analyzeTrig) {
+    // iEvent.getByLabel(m_gmtReadoutLabel,pCollection);
+    iEvent.getByToken(GMT_Token,pCollection);
+    gmtRC = pCollection.product();
+    gmt_records = gmtRC->getRecords();
+  }    
+
   // DT Segments
   edm::Handle<DTRecSegment4DCollection> dtSegmentCollection;
-  iEvent.getByLabel("dt4DSegments", dtSegmentCollection);
+  // iEvent.getByLabel("dt4DSegments", dtSegmentCollection);
+  iEvent.getByToken(DTSegment4D_Token, dtSegmentCollection);
   if(select_minseg == 0 && dtSegmentCollection->size() > 0 && dtSegmentCollection->size() < select_maxseg+1) keepEventDTSegments = true;
   if(select_maxseg == 0 && dtSegmentCollection->size() > 0 && dtSegmentCollection->size() > select_minseg-1) keepEventDTSegments = true; 
   if((select_minseg !=0 && dtSegmentCollection->size() > select_minseg-1) && 
      (select_maxseg !=0 && dtSegmentCollection->size() < select_maxseg+1)) keepEventDTSegments = true;
   // edm::Handle<DTRecHit1DPair> dtRecHitCollection;
   // iEvent.getByLabel("dt1DRecHits", dtRecHitCollection);
+  // iEvent.getByToken(DTRecHit1D_Token, dtRecHitCollection);
 
   // CSC Segments
   edm::Handle<CSCSegmentCollection> cscSegmentCollection;
-  iEvent.getByLabel("cscSegments", cscSegmentCollection);
+  // iEvent.getByLabel("cscSegments", cscSegmentCollection);
+  iEvent.getByToken(CSCSegment_Token, cscSegmentCollection);
   if(select_minseg == 0 && cscSegmentCollection->size() > 0 && cscSegmentCollection->size() < select_maxseg+1) keepEventCSCSegments = true;
   if(select_maxseg == 0 && cscSegmentCollection->size() > 0 && cscSegmentCollection->size() > select_minseg-1) keepEventCSCSegments = true; 
   if((select_minseg !=0 && cscSegmentCollection->size() > select_minseg-1) && 
@@ -289,12 +324,15 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 
   // Muons & Tracks
   edm::Handle<reco::TrackCollection> staTracks;
-  iEvent.getByLabel(STAMuLabel, staTracks);
+  // iEvent.getByLabel(STAMuLabel, staTracks);
+  iEvent.getByToken(StaMuTrack_Token, staTracks);
   edm::Handle<reco::TrackCollection> trkTracks;
-  iEvent.getByLabel(TRACKLabel, trkTracks);
+  // iEvent.getByLabel(TRACKLabel, trkTracks);
+  iEvent.getByToken(AllTrack_Token, trkTracks);
   edm::Handle<reco::MuonCollection> recoMuons;
   // iEvent.getByLabel("muons", recoMuons);
-  iEvent.getByLabel(MuLabel, recoMuons);
+  // iEvent.getByLabel(MuLabel, recoMuons);
+  iEvent.getByToken(Muon_Token, recoMuons);
 
   // Magnetic Field & Geometries
   edm::ESHandle<MagneticField> theMagneticField;
@@ -307,7 +345,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === get GMT readout collection ===
   // ==================================
   if(debug) { std::cout<<"SELECT BX"<<std::endl; }
-  if(selectBX) {
+  if(selectBX && analyzeTrig) {
     for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
       // int BxInEvent = RRItr->getBxInEvent();
       // int BxInEventNew = RRItr->getBxNr();
@@ -378,6 +416,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 		    // RPC Digis
 		    // edm::Handle<RPCDigiCollection> rpcdigis;
 		    // iEvent.getByLabel("muonRPCDigis", rpcdigis);
+		    // iEvent.getByToken(RPCDigi_Token, rpcdigis);
 		    // RPCDigiCollection::DigiRangeIterator digiRpc;
 		    // Check Digis
 		    /*
@@ -400,7 +439,8 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 		    int bx_rpc = -10;
 		    // RPC Rechits
 		    edm::Handle<RPCRecHitCollection> rpcRecHits;
-		    iEvent.getByLabel("rpcRecHits","",rpcRecHits);
+		    // iEvent.getByLabel("rpcRecHits","",rpcRecHits);
+		    iEvent.getByToken(RPCRecHit_Token,rpcRecHits);
 		    RPCRecHitCollection::const_iterator recHitRpc;
 		    // Check Rechits
 		    for (recHitRpc = rpcRecHits->begin(); recHitRpc != rpcRecHits->end(); ++recHitRpc) {
@@ -567,7 +607,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === Filter Events with 0 Segments ===
   // =====================================
   if(debug) { std::cout<<"SELECT NO DT SEGMENTS"<<std::endl; }
-  if(selectNoDTSegments) {
+  if(selectNoDTSegments && analyzeTrig) {
     for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
       std::vector<L1MuRegionalCand> BrlDtCands = RRItr->getDTBXCands();
       std::vector<L1MuRegionalCand>::const_iterator RCItr;
@@ -592,7 +632,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
   // === Filter Events with 0 RPC Rechits ===
   // ========================================
   if(debug) { std::cout<<"SELECT NO RPC RECHITS"<<std::endl; }
-  if(selectNoRPCRechits) {
+  if(selectNoRPCRechits && analyzeTrig) {
     for( RRItr = gmt_records.begin(); RRItr != gmt_records.end(); ++RRItr ) {
       std::vector<L1MuRegionalCand> BrlRpcCands = RRItr->getBrlRPCCands();
       std::vector<L1MuRegionalCand>::const_iterator RCItr;
@@ -747,6 +787,7 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
     // === TRK Tracks ======================
     for (trkTrack = trkTracks->begin(); trkTrack!=trkTracks->end(); ++trkTrack) {
       reco::TransientTrack track(*trkTrack,&*theMagneticField,theTrackingGeometry);
+      /*
       if(debug) {
 	std::cout<<" Tracker Track :: ";
 	std::cout<<" p: "<<track.impactPointTSCP().momentum().mag();
@@ -755,9 +796,11 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	std::cout<<" chi2: "<<track.chi2();
 	std::cout<<" d0: "<<trkTrack->d0()<<" +/- "<<trkTrack->d0Error()<<" cm dz: "<<trkTrack->dz()<<" +/- "<<trkTrack->dzError()<<" cm";
 	// std::cout<<" pos: "<<track.impactPointTSCP().position()<<" cm";
-	std::cout<<" with "<<trkTrack->recHitsSize()<<" rechits"<<std::endl;
+	if(eventContentReco) std::cout<<" with "<<trkTrack->recHitsSize()<<" rechits";
+	std::cout<<std::endl;
 	std::cout<<"--------------------------------------------------------------"<<std::endl;
       }
+      */
       keepEventTRKTrack = true;
     }
     // === All Muons =======================
@@ -776,7 +819,53 @@ MyOutOfTimeRPCTriggerFilter::filter(edm::Event& iEvent, const edm::EventSetup& i
 	}
 	std::cout<<" is Stand Alone Muon = "<<recoMuon->isStandAloneMuon()<<" is GlobalMuon = "<<recoMuon->isGlobalMuon();
 	std::cout<<" is TrackerMuon = "<<recoMuon->isTrackerMuon()<<" is ParticleFlowMuon = "<<recoMuon->isPFMuon()<<std::endl;
-	keepEventMUOTrack = true;	
+	keepEventMUOTrack = true;
+        if(recoMuon->isTrackerMuon()) {
+	  std::cout<<"    --> Tracker Track Info :: pT: "<<recoMuon->innerTrack()->pt();
+	  std::cout<<" eta: "<<recoMuon->innerTrack()->eta()<<" chi2: "<<recoMuon->innerTrack()->chi2();
+	  if(eventContentReco) std::cout<<" with "<<recoMuon->innerTrack()->recHitsSize()<<" rechits";
+	  std::cout<<std::endl;
+	}
+        if(recoMuon->isStandAloneMuon()) {
+	  std::cout<<"    --> Stand Alone Muon Track Info :: pT: "<<recoMuon->outerTrack()->pt();
+	  std::cout<<" eta: "<<recoMuon->outerTrack()->eta()<<" chi2: "<<recoMuon->outerTrack()->chi2()<<" with "<<recoMuon->outerTrack()->recHitsSize()<<" rechits"<<std::endl;
+	  for(trackingRecHit_iterator recHit = recoMuon->outerTrack()->recHitsBegin(); recHit != recoMuon->outerTrack()->recHitsEnd(); ++recHit) {
+	    const GeomDet* geomDet = theTrackingGeometry->idToDet((*recHit)->geographicalId());
+	    double r = geomDet->surface().position().mag();
+	    double z = geomDet->toGlobal((*recHit)->localPosition()).z();
+	    DetId detid = DetId((*recHit)->geographicalId());
+	    // int rpcrechits = 0, dtrechits = 0, cscrechits = 0;
+	    if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::RPC) {
+	      // ++rpcrechits;
+	      if(debug) {                                                         
+		std::cout<<"RPC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+		std::cout<<""<<std::endl; 
+	      }
+	    }
+	    if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::CSC) {
+	      // ++cscrechits;
+	      if(debug) {                                                         
+		std::cout<<"CSC Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+		std::cout<<""<<std::endl; 
+	      }
+	    }
+	    if(detid.det()==DetId::Muon && detid.subdetId()== MuonSubdetId::DT) {
+	      // ++dtrechits;
+	      if(debug) {                                                         
+		std::cout<<"DT Tracking RecHit at "<<"r: "<< r <<" cm"<<" z: "<<z<<" cm in DetId = "<<detid.rawId();
+		std::cout<<""<<std::endl; 
+	      }
+	    }
+	  }	
+	}
+        if(recoMuon->isGlobalMuon()) {
+	  std::cout<<"    --> Tracker Track Info :: pT: "<<recoMuon->innerTrack()->pt();
+	  std::cout<<" eta: "<<recoMuon->innerTrack()->eta()<<" chi2: "<<recoMuon->innerTrack()->chi2()<<" with "<<recoMuon->innerTrack()->recHitsSize()<<" rechits"<<std::endl;
+	  std::cout<<"    --> Stand Alone Muon Track Info :: pT: "<<recoMuon->outerTrack()->pt();
+	  std::cout<<" eta: "<<recoMuon->outerTrack()->eta()<<" chi2: "<<recoMuon->outerTrack()->chi2()<<" with "<<recoMuon->outerTrack()->recHitsSize()<<" rechits"<<std::endl;
+	  std::cout<<"    --> Global Muon Track Info :: pT: "<<recoMuon->globalTrack()->pt();
+	  std::cout<<" eta: "<<recoMuon->globalTrack()->eta()<<" chi2: "<<recoMuon->globalTrack()->chi2()<<" with "<<recoMuon->globalTrack()->recHitsSize()<<" rechits"<<std::endl;
+	}
       }
       // recoMuon->innerTrack();
       // recoMuon->outerTrack();
