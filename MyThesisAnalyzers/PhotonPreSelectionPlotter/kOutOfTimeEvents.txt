@@ -1,0 +1,14 @@
+Begin processing the 518th record. Run 146430, Event 1034516, LumiSection 5 at 03-Dec-2010 20:26:28 CET
+PAT Photon we work with: | et =      34.9116 GeV | eMax =      48.1001 | seedRecoFlag =            2
+Begin processing the 1394th record. Run 146430, Event 3151947, LumiSection 11 at 03-Dec-2010 20:26:30 CET
+PAT Photon we work with: | et =      53.1294 GeV | eMax =      42.1431 | seedRecoFlag =            2
+Begin processing the 4627th record. Run 146430, Event 9907935, LumiSection 38 at 03-Dec-2010 20:26:37 CET
+PAT Photon we work with: | et =      35.7848 GeV | eMax =      26.5511 | seedRecoFlag =            2
+Begin processing the 6651st record. Run 146430, Event 13945244, LumiSection 54 at 03-Dec-2010 20:26:42 CET
+PAT Photon we work with: | et =      38.2809 GeV | eMax =      13.3188 | seedRecoFlag =            2
+Begin processing the 10735th record. Run 146430, Event 22846788, LumiSection 85 at 03-Dec-2010 20:26:51 CET
+PAT Photon we work with: | et =      31.8072 GeV | eMax =      31.8268 | seedRecoFlag =            2
+Begin processing the 11212th record. Run 146430, Event 23847877, LumiSection 88 at 03-Dec-2010 20:26:52 CET
+PAT Photon we work with: | et =      43.3061 GeV | eMax =      53.8289 | seedRecoFlag =            2
+Begin processing the 12016th record. Run 146431, Event 847212, LumiSection 4 at 03-Dec-2010 20:26:57 CET
+PAT Photon we work with: | et =      49.8159 GeV | eMax =      25.0729 | seedRecoFlag =            2

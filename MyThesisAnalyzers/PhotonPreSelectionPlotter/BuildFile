@@ -1,0 +1,40 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/Utilities>
+
+<flags EDM_PLUGIN=1>
+
+<use name=root>
+<use name=rootgraphics>
+
+<use name=SimDataFormats/GeneratorProducts>
+<use name=SimDataFormats/Track>
+
+<use name=DataFormats/JetReco>
+<use name=DataFormats/CaloTowers>
+<use name=DataFormats/Common>
+<use name=DataFormats/ParticleFlowCandidate>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/PatCandidates>
+<use name=DataFormats/EgammaCandidates>
+<use name=DataFormats/VertexReco>
+<use name=DataFormats/METReco>
+<use name=DataFormats/EcalRecHit>
+
+<use name=CondFormats/DataRecord>
+<use name=CondFormats/EcalObjects>
+
+<use name=RecoEcal/EgammaCoreTools>
+<use name=RecoLocalCalo/EcalRecAlgos>
+
+<flags CXXFLAGS="-O0 -g3 -fno-inline">
+
+
+
+<export>
+   <lib name=MyAnalyzersPhotonPreSelectionPlotter>
+   <use name=FWCore/Framework>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>

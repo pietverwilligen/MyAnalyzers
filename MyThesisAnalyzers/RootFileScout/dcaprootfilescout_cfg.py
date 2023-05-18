@@ -1,0 +1,103 @@
+import FWCore.ParameterSet.Config as cms
+
+process = cms.Process("Demo")
+
+process.load("FWCore.MessageService.MessageLogger_cfi")
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.source = cms.Source("PoolSource",
+    # replace 'myfile.root' with the source file you want to use
+    fileNames = cms.untracked.vstring(
+    # 'file:myfile.root',
+    # 'file:/user/piet/CMSSW_Versions/Photon/DATA/PAT_PhotonJets_Pt40to100.root',
+    # 'file:/user/piet/CMSSW_Versions/Photon/DATA/PAT_PhotonJets_Pt100to200.root',
+    # 'file:/user/piet/CMSSW_Versions/Photon/DATA/PAT_QCDFlat_Pt15to3000.root',
+    # 'file:/user/piet/CMSSW_Versions/Photon/CMSSW_3_6_3/src/PATtifier/PAT_Test.root',
+    # 'file:/user/piet/CMSSW_Versions/Photon/DATA/QCD_Summer10_23_1_dUA.root',
+
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_15_1_BtD.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_17_1_w9T.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_29_1_Hfi.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_13_1_1Ak.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_10_1_V0s.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_12_1_OYm.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_31_1_TsU.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_14_1_geO.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_18_1_VjH.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_5_1_rLW.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_16_1_EYT.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_24_1_7NY.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_35_1_kPK.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_32_1_9uX.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_36_1_DGy.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_9_1_1Cm.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_28_1_lUB.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_39_1_9sG.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_33_1_n6u.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_27_1_1Yo.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_20_1_JBa.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_21_1_t2R.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_8_1_1cj.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_38_1_zeP.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_1_1_Qoq.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_2_1_wHN.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_37_1_GJd.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_4_1_Xaw.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_30_1_hFe.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_26_1_jrZ.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_3_1_U0I.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_25_1_2EF.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_22_1_DpE.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_11_1_c1V.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_23_1_dUA.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_6_1_gsR.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_7_1_AbE.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_19_1_Jz4.root',
+   # 'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet/PAT/QCD_Pt80_Summer10/QCD_Summer10_34_1_71B.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_3_1_5DG.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_31_1_SV7.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_20_1_fv5.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_25_1_Eq3.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_8_1_Lp8.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_35_1_PtZ.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_28_1_gX9.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_32_1_kVa.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_10_1_otC.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_2_1_S2h.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_16_1_f6c.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_6_1_iHl.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_18_1_O59.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_17_1_ngZ.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_21_1_6b9.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_26_1_w9p.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_19_1_kpC.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_29_1_bVC.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_12_1_mUY.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_1_1_BqM.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_30_1_gNp.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_34_1_o1b.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_23_1_JFT.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_33_1_Ano.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_5_1_BKl.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_14_1_Lh8.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_9_1_0ng.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_37_1_P4L.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_27_1_RVw.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_11_1_t4M.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_13_1_PK3.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_36_1_vlr.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_24_1_JNB.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_7_1_ILL.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_22_1_3Hz.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_4_1_NpM.root',
+'dcap://maite.iihe.ac.be//pnfs/iihe/cms/store/user/piet//PAT/QCD_Pt170_Summer10/QCD_Summer10_15_1_55z.root',
+    )
+)
+
+process.demo = cms.EDAnalyzer('RootFileScout',
+    # Debug = cms.bool(False)
+)
+
+
+process.p = cms.Path(process.demo)

@@ -1,0 +1,386 @@
+// -*- C++ -*-
+//
+// Package:    PhotonPreSelectionPlotter
+// Class:      PhotonPreSelectionPlotter
+// 
+/**\class PhotonPreSelectionPlotter PhotonPreSelectionPlotter.cc MyAnalyzers/PhotonPreSelectionPlotter/src/PhotonPreSelectionPlotter.cc
+
+ Description: [one line class summary]
+
+ Implementation:
+     [Notes on implementation]
+*/
+//
+// Original Author:  local user
+//         Created:  Thu Nov 25 19:02:51 CET 2010
+// $Id$
+//
+//
+
+
+// system include files
+#include <memory>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <algorithm>
+#include <stdio.h>
+#include <math.h>
+
+// ROOT include files
+#include "TROOT.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TF1.h"
+#include "TDirectoryFile.h"
+
+
+// user include files
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "DataFormats/Common/interface/RefVector.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/PatCandidates/interface/PFParticle.h"
+#include <DataFormats/PatCandidates/interface/Photon.h>
+#include <DataFormats/EgammaCandidates/interface/Photon.h>
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "MyAnalyzers/PhotonAnalyzer/interface/SHistContainer.h"
+
+//
+// class declaration
+//
+
+class PhotonPreSelectionPlotter : public edm::EDAnalyzer {
+   public:
+      explicit PhotonPreSelectionPlotter(const edm::ParameterSet&);
+      ~PhotonPreSelectionPlotter();
+
+
+   private:
+      virtual void beginJob() ;
+      virtual void analyze(const edm::Event&, const edm::EventSetup&);
+      virtual void endJob() ;
+
+      // ----------member data ---------------------------
+  TFile * outputfile;
+  TDirectoryFile *AllPhotons, *DirectPhotons, *FragmentationPhotons, *DecayPhotons;
+  // TH1F *PB_Et_B, *PB_Eta_B, *PB_TRK, *PB_ECAL, *PB_HCAL, *PB_PS, *PB_HE, *PB_SIEIE, *PB_Et_A, *PB_Eta_A, *PE_Et_B, *PE_Eta_B, *PE_TRK, *PE_ECAL, *PE_HCAL, *PE_PS, *PE_HE, *PE_SIEIE, *PE_Et_A, *PE_Eta_A, *P_Et_B, *P_Eta_B, *P_Et_A, *P_Eta_A;
+  TH1F *Selection1, *Selection2;
+  std::vector<SHistContainer> histcontainers;
+  const reco::Photon           *p, *p1, *p2;
+  bool photonFound, promptPhoton, directPhoton, fragPhoton, decayPhoton;
+};
+
+//
+// constants, enums and typedefs
+//
+double pi = 3.1415926535;
+
+// Photon ID cuts:                                                                                                                                                                                         
+int    photon_ptcut = 30.0;
+int    photon_etacut = 2.50;
+double egm_trk  = 2.0; double egm_trk_prop  = 0.001;
+double egm_ecal = 4.2; double egm_ecal_prop = 0.003;
+double egm_hcal = 2.2; double egm_hcal_prop = 0.001;
+double photon_he = 0.05;
+double sigma_barrel = 0.01;
+double sigma_endcap = 0.03;
+double sigma_spike = 0.001;
+
+// ECAL Geom def                                                                                                                                                                                           
+double EBEE_bord = 1.479;
+double EB_accept = 1.4442;  // use method: isEB()  --> implemented for supercluster Eta
+double EE_accept = 1.566;   // use method: isEE()                                                                                                                                                          
+
+// Conversion cuts:
+double dphi_cut = 0.2;
+double dcottheta_cut = 0.3;
+double chi2_cut = 0.0005;
+
+// TH1F Settings                                                                                                                                                                                           
+int n_eta  = 24;  double n1_eta  = -3.0,  n2_eta  = 3.0;
+int n_phi  = 18;  double n1_phi  = -3.14, n2_phi  = 3.14;
+int n_et   = 100; double n1_et   = 0.0,   n2_et   = 500;
+int n_iso  = 30;  double n1_iso  = 0.0,   n2_iso  = 15;
+int n_mult = 11;  double n1_mult = -0.5,  n2_mult = 10.5;
+int n_pe   = 15;  double n1_pe   = 0.0,   n2_pe   = 3.0;
+int n_he   = 20;  double n1_he   = 0.00,  n2_he   = 0.10;  
+int n_sb   = 30;  double n1_sb   = 0.00,  n2_sb   = 0.03; 
+int n_se   = 30;  double n1_se   = 0.015, n2_se   = 0.045;
+int n_ps   = 2;   double n1_ps   = -0.5,  n2_ps   = 1.5;  
+
+
+const char * HistContainerNameArray [] = {"AllPhotons", "DirectPhotons", "FragmentationPhotons", "DecayPhotons"}; 
+
+
+//
+// static data member definitions
+//
+
+//
+// constructors and destructor
+//
+PhotonPreSelectionPlotter::PhotonPreSelectionPlotter(const edm::ParameterSet& iConfig)
+
+{
+
+  // read parameters from config file
+  Data          = iConfig.getParameter<bool>("Data");
+
+   //now do what ever initialization is needed
+  outputfile = new TFile("PhotonPreSelectionPlots.root", "RECREATE" );
+
+  AllPhotons           = (TDirectoryFile*) outputfile->mkdir("AllPhotons","AllPhotons");
+  DirectPhotons        = (TDirectoryFile*) outputfile->mkdir("DirectPhotons","DirectPhotons");
+  FragmentationPhotons = (TDirectoryFile*) outputfile->mkdir("FragmentationPhotons","FragmentationPhotons");
+  DecayPhotons         = (TDirectoryFile*) outputfile->mkdir("DecayPhotons","DecayPhotons");
+
+  SHistContainer AllPhotons_c, DirectPhotons_c, FragmentationPhotons_c, DecayPhotons_c;
+  histcontainers.push_back(AllPhotons_c); histcontainers.push_back(DirectPhotons_c); 
+  histcontainers.push_back(FragmentationPhotons_c); histcontainers.push_back(DecayPhotons_c);
+
+  for(unsigned int h = 0; h<histcontainers.size(); ++h) {
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_TRK",        "N-1 Plot Photon Hollow Trk Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_ECAL",       "N-1 Plot Photon Ecal Iso Deposit (DR = 0.4) Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_HCAL",       "N-1 Plot Photon Hcal Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_PS",         "N-1 Plot Has Electron Pixel Seeds", n_ps, n1_ps, n2_ps));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_HE",         "N-1 Plot Hadronic over Electromagnetic Energy Fraction", n_he, 0.00, 0.10));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_SIEIE",      "N Plot #sigma_{i #eta i #eta} ShowerShape Variable", n_sb, n1_sb, n2_sb));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_Et_B",       "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_Eta_B",      "N Plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_Et_A",       "N+1 Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PB_Eta_A",      "N+1 Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_TRK",        "N-1 Plot Photon Hollow Trk Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_ECAL",       "N-1 Plot Photon Ecal Iso Deposit (DR = 0.4) Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_HCAL",       "N-1 Plot Photon Hcal Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_PS",         "N-1 Plot Has Electron Pixel Seeds", n_ps, n1_ps, n2_ps));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_HE",         "N-1 Plot Hadronic over Electromagnetic Energy Fraction", n_he, n1_he, n2_he));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_SIEIE",      "N Plot #sigma_{i #eta i #eta} ShowerShape Variable", n_se, n1_se, n2_se));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_Et_B",       "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_Eta_B",      "N plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_Et_A",       "N+1 Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("PE_Eta_A",      "N+1 Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("P_Et_B",        "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("P_Eta_B",       "N Plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("P_Et_B",        "N Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et));
+    histcontainers[h].book(HistContainerNameArray[h], new TH1F("P_Eta_B",       "N Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta));
+  }
+
+  /*
+  PB_TRK   = new TH1F("PB_TRK",        "N-1 Plot Photon Hollow Trk Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso);
+  PB_ECAL  = new TH1F("PB_ECAL",       "N-1 Plot Photon Ecal Iso Deposit (DR = 0.4) Distribution", n_iso, n1_iso, n2_iso);
+  PB_HCAL  = new TH1F("PB_HCAL",       "N-1 Plot Photon Hcal Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso);
+  PB_PS    = new TH1F("PB_PS",         "N-1 Plot Has Electron Pixel Seeds", n_ps, n1_ps, n2_ps);
+  PB_HE    = new TH1F("PB_HE",         "N-1 Plot Hadronic over Electromagnetic Energy Fraction", n_he, 0.00, 0.10);
+  PB_SIEIE = new TH1F("PB_SIEIE",      "N Plot #sigma_{i #eta i #eta} ShowerShape Variable", n_sb, n1_sb, n2_sb);
+  PB_Et_B  = new TH1F("PB_Et_B",       "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  PB_Eta_B = new TH1F("PB_Eta_B",      "N Plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+  PB_Et_A  = new TH1F("PB_Et_A",       "N+1 Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  PB_Eta_A = new TH1F("PB_Eta_A",      "N+1 Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+
+  PE_TRK   = new TH1F("PE_TRK",        "N-1 Plot Photon Hollow Trk Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso);
+  PE_ECAL  = new TH1F("PE_ECAL",       "N-1 Plot Photon Ecal Iso Deposit (DR = 0.4) Distribution", n_iso, n1_iso, n2_iso);
+  PE_HCAL  = new TH1F("PE_HCAL",       "N-1 Plot Photon Hcal Iso (DR = 0.4) Deposit Distribution", n_iso, n1_iso, n2_iso);
+  PE_PS    = new TH1F("PE_PS",         "N-1 Plot Has Electron Pixel Seeds", n_ps, n1_ps, n2_ps);
+  PE_HE    = new TH1F("PE_HE",         "N-1 Plot Hadronic over Electromagnetic Energy Fraction", n_he, n1_he, n2_he);
+  PE_SIEIE = new TH1F("PE_SIEIE",      "N Plot #sigma_{i #eta i #eta} ShowerShape Variable", n_se, n1_se, n2_se);
+  PE_Et_B  = new TH1F("PE_Et_B",       "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  PE_Eta_B = new TH1F("PE_Eta_B",      "N plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+  PE_Et_A  = new TH1F("PE_Et_A",       "N+1 Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  PE_Eta_A = new TH1F("PE_Eta_A",      "N+1 Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+
+  P_Et_B  = new TH1F("P_Et_B",       "N Plot Photon Et Distribution before #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  P_Eta_B = new TH1F("P_Eta_B",      "N Plot Photon Eta Distribution before #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+  P_Et_A  = new TH1F("P_Et_A",       "N+1 Plot Photon Et Distribution after #sigma_{i #eta i #eta} cut", n_et, n1_et, n2_et);
+  P_Eta_A = new TH1F("P_Eta_A",      "N+1 Plot Photon Eta Distribution after #sigma_{i #eta i #eta} cut", n_eta, n1_eta, n2_eta);
+  */ 
+  Selection1 = new TH1F("Selection", "[-] | HE | PS | SIEIE | ISO TRK | ISO ECAL | ISO HCAL", 7, 0.5, 7.5); 
+  Selection2 = new TH1F("Selection", "[-] | HE | PS | ISO TRK | ISO ECAL | ISO HCAL | SIEIE", 7, 0.5, 7.5); 
+
+  photonFound = 0, promptPhoton = 0, directPhoton = 0, fragPhoton = 0, decayPhoton = 0;
+}
+
+
+PhotonPreSelectionPlotter::~PhotonPreSelectionPlotter()
+{
+ 
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+  outputfile->cd();
+  for(int h=0; h<histcontainers.size(); ++h) {histcontainers[h].write();}
+  /*
+  PB_Et_B->Write();
+  PB_Eta_B->Write();
+  PB_TRK->Write();
+  PB_ECAL->Write();
+  PB_HCAL->Write();
+  PB_PS->Write();
+  PB_HE->Write();
+  PB_SIEIE->Write();
+  PB_Et_A->Write();
+  PB_Eta_A->Write();
+  PE_Et_B->Write();
+  PE_Eta_B->Write();
+  PE_TRK->Write();
+  PE_ECAL->Write();
+  PE_HCAL->Write();
+  PE_PS->Write();
+  PE_HE->Write();
+  PE_SIEIE->Write();
+  PE_Et_A->Write();
+  PE_Eta_A->Write();
+  P_Et_B->Write();
+  P_Eta_B->Write();
+  P_Et_A->Write();
+  P_Eta_A->Write();
+  */
+  Selection1->Write();
+  Selection2->Write();
+}
+
+
+//
+// member functions
+//
+
+// ------------ method called to for each event  ------------
+void
+PhotonPreSelectionPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+  // Selection counter: [-]
+  Selection1->Fill(1); Selection2->Fill(1);
+
+  // edm::Handle< std::vector<pat::Photon> >       patPhotons;
+  // iEvent.getByLabel("patPhotons", patPhotons);
+  edm::Handle< std::vector<reco::Photon> >       recoPhotons;
+  iEvent.getByLabel("photons", recoPhotons);
+
+  int n_photons = 0;
+  p = 0;
+  // Selecting the highest Et Photon
+  for(unsigned int i=0; i<recoPhotons->size(); ++i) {
+    p1 = &((*recoPhotons)[i]);
+    // within Kinematic & Geometric Cuts
+    if(p1->et() > photon_ptcut && ((p1->isEE() && fabs(p1->eta()) < 2.5) || p1->isEB())) {
+      ++n_photons;
+      if (n_photons == 1) p = &(*p1);
+      else if (p1->et() > p->et()) p = &(*p1);
+      else {}
+    }
+  }
+  if(p != 0) {
+    double p_sIEIE = p->sigmaIetaIeta(), p_HE = p->hadronicOverEm();
+    bool p_hPS = p->hasPixelSeed();
+    double p_trkIso = p->trkSumPtHollowConeDR04(), p_ecalIso = p->ecalRecHitSumEtConeDR04(), p_hcalIso = p->hcalTowerSumEtConeDR04();
+    double p_pt = p->pt(), p_et = p->et(), p_eta = p->eta(), p_phi = p->phi();
+    double p_maxTrkIso = egm_trk + egm_trk_prop*p_pt, p_maxEcalIso = egm_ecal + egm_ecal_prop*p_et, p_maxHcalIso = egm_hcal + egm_hcal_prop*p_et;
+
+    if(!Data) {
+      const reco::GenParticle & gen = (reco::GenParticle &) * (p->genPhoton());
+      g = &gen;
+      if (g != 0) {
+        histcontainers[0].get("Event","PATMatch")->Fill(1);
+        histcontainers[0].get("Event","Distance")->Fill(angle(g,p));
+        // Matching Debug Stream                                                                                                                                                                           
+        dss<<"GEN Photon found: ";
+        dss<<" | pt = "<<std::setw(12)<<g->pt()<<" GeV/c | et = "<<std::setw(12)<<g->et()<<" GeV | eta = "<<std::setw(12)<<g->eta()<<" | phi = "<<std::setw(12)<<g->phi()<<std::endl;
+        dss<<"PAT Photon found: ";
+        dss<<" | pt = "<<std::setw(12)<<p->pt()<<" GeV/c | et = "<<std::setw(12)<<p->et()<<" GeV | eta = "<<std::setw(12)<<p->eta()<<" | phi = "<<std::setw(12)<<p->phi()<<std::endl;
+        // mother?                                                                                                                                                                                         
+        const reco::GenParticle & mot = (reco::GenParticle &) *(g->mother());
+        dss<<"GenParticle | id = "<<std::setw(5)<<g->pdgId()<<" | st = "<<std::setw(5)<<g->status()<<" | pt = "<<std::setw(12)<<g->pt();
+        dss<<" GeV/c | et = "<<std::setw(12)<<g->et()<<" GeV | eta = "<<std::setw(12)<<g->eta()<<" | phi = "<<std::setw(12)<<g->phi()<<std::endl;
+        if(&mot != 0) {
+          dss<<"MotherPart  | id = "<<std::setw(5)<<mot.pdgId()<<" | st = "<<std::setw(5)<<mot.status()<<" | pt = "<<std::setw(12)<<mot.pt();
+          dss<<" GeV/c | et = "<<std::setw(12)<<mot.et()<<" GeV | eta = "<<std::setw(12)<<mot.eta()<<" | phi = "<<std::setw(12)<<mot.phi()<<std::endl;
+
+
+
+
+
+    /*
+    // N-1 Cuts without p_sIEIE
+    // N - 1 Cut: H/E
+    if (!p_hPS && p_trkIso < p_maxTrkIso && p_ecalIso < p_maxEcalIso && p_hcalIso < p_maxHcalIso) { p->isEB()? PB_HE->Fill(p_HE) : PE_HE->Fill(p_HE); }
+    // N - 1 Cut: hPS
+    if(p_HE < photon_he && p_trkIso < p_maxTrkIso && p_ecalIso < p_maxEcalIso && p_hcalIso < p_maxHcalIso) { p->isEB()? PB_PS->Fill(p_hPS) : PE_PS->Fill(p_hPS); }
+    // N - 1 Cut: Trk Iso
+    if(!p_hPS && p_HE < photon_he && p_ecalIso < p_maxEcalIso && p_hcalIso < p_maxHcalIso) { p->isEB()? PB_TRK->Fill(p_trkIso) : PE_TRK->Fill(p_trkIso); }
+    // N - 1 Cut: ECAL Iso
+    if(!p_hPS && p_HE < photon_he && p_trkIso < p_maxTrkIso && p_hcalIso < p_maxHcalIso) { p->isEB()? PB_ECAL->Fill(p_ecalIso) : PE_ECAL->Fill(p_ecalIso); }
+    // N - 1 Cut: HCAL Iso
+    if(!p_hPS && p_HE < photon_he && p_trkIso < p_maxTrkIso && p_ecalIso < p_maxEcalIso) { p->isEB()? PB_HCAL->Fill(p_hcalIso) : PE_HCAL->Fill(p_hcalIso); }
+    // N Cuts:
+    if(!p_hPS && p_HE < photon_he && p_trkIso < p_maxTrkIso && p_ecalIso < p_maxEcalIso && p_hcalIso < p_maxHcalIso) { 
+      p->isEB()? PB_SIEIE->Fill(p_sIEIE) : PE_SIEIE->Fill(p_sIEIE);
+      P_Et_B->Fill(p_et);   p->isEB()? PB_Et_B->Fill(p_et)   : PE_Et_B->Fill(p_et);
+      P_Eta_B->Fill(p_eta); p->isEB()? PB_Eta_B->Fill(p_eta) : PE_Eta_B->Fill(p_eta);
+    }
+    // N + 1 Cuts: p_sIEIE
+    if(!p_hPS && p_HE < photon_he && p_trkIso < p_maxTrkIso && p_ecalIso < p_maxEcalIso && p_hcalIso < p_maxHcalIso && ((p->isEB() && p_sIEIE < sigma_barrel) || (p->isEE() && p_sIEIE < sigma_endcap)) && p_sIEIE > sigma_spike) { 
+      P_Et_A->Fill(p_et);   p->isEB()? PB_Et_A->Fill(p_et) : PE_Et_A->Fill(p_et);
+      P_Eta_A->Fill(p_eta); p->isEB()? PB_Eta_A->Fill(p_eta) : PE_Eta_A->Fill(p_eta); 
+    }
+    */
+    // Selection 1 counter: [-] | HE | PS | SIEIE | ISO TRK | ISO ECAL | ISO HCAL
+    if(p_HE < photon_he) { Selection1->Fill(2);
+      if(!p_hPS) { Selection1->Fill(3); 
+	if (((p->isEB() && p_sIEIE < sigma_barrel) || (p->isEE() && p_sIEIE < sigma_endcap)) && p_sIEIE > sigma_spike) { Selection1->Fill(4); 
+	  if(p_trkIso < p_maxTrkIso) { Selection1->Fill(5);
+	    if(p_ecalIso < p_maxEcalIso) { Selection1->Fill(6);
+	      if(p_hcalIso < p_maxHcalIso) { Selection1->Fill(7);
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+    // Selection 2 counter: [-] | HE | PS | ISO TRK | ISO ECAL | ISO HCAL | SIEIE
+    if(p_HE < photon_he) { Selection2->Fill(2);
+      if(!p_hPS) { Selection2->Fill(3); 
+	if(p_trkIso < p_maxTrkIso) { Selection2->Fill(4);
+	  if(p_ecalIso < p_maxEcalIso) { Selection2->Fill(5);
+	    if(p_hcalIso < p_maxHcalIso) { Selection2->Fill(6);
+	      if (((p->isEB() && p_sIEIE < sigma_barrel) || (p->isEE() && p_sIEIE < sigma_endcap)) && p_sIEIE > sigma_spike) { Selection2->Fill(7); 
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+
+
+  } 
+
+}
+
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+PhotonPreSelectionPlotter::beginJob()
+{
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+PhotonPreSelectionPlotter::endJob() {
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(PhotonPreSelectionPlotter);

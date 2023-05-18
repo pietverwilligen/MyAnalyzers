@@ -1,0 +1,20 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<flags EDM_PLUGIN=1>
+
+<use name=root>
+<use name=rootgraphics>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/Common>
+<use name=DataFormats/EgammaCandidates>
+
+<flags CXXFLAGS="-O0 -g3 -fno-inline">
+
+
+<export>
+   <lib name=MyAnalyzersAcceptance>
+   <use name=FWCore/Framework>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>

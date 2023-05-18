@@ -1,0 +1,534 @@
+// -*- C++ -*-
+//
+// Package:    GenEventAnalyzer
+// Class:      GenEventAnalyzer
+// 
+/**\class GenEventAnalyzer GenEventAnalyzer.cc MyAnalyzers/GenEventAnalyzer/src/GenEventAnalyzer.cc
+
+ Description: [one line class summary]
+
+ Implementation:
+     [Notes on implementation]
+*/
+//
+// Original Author:  Piet Verwilligen,40 4-B15,+41227671568,
+//         Created:  Sat Dec  4 14:27:21 CET 2010
+// $Id$
+//
+//
+
+
+// system include files
+#include <memory>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <algorithm>
+#include <stdio.h>
+#include <math.h>
+
+// ROOT include files
+#include "TROOT.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TF1.h"
+#include "TTree.h"
+#include "TCanvas.h"
+#include "TDirectoryFile.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+#include "TStopwatch.h"
+
+// user include files
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/Track/interface/SimTrack.h"
+#include "SimDataFormats/Track/interface/SimTrackContainer.h"
+
+#include "DataFormats/Common/interface/MergeableCounter.h"
+#include "DataFormats/Common/interface/RefVector.h"
+
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+
+#include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
+#include <DataFormats/METReco/interface/MET.h>
+
+#include <DataFormats/PatCandidates/interface/Jet.h>
+
+//
+// class declaration
+//
+
+class GenEventAnalyzer : public edm::EDAnalyzer {
+   public:
+      explicit GenEventAnalyzer(const edm::ParameterSet&);
+      ~GenEventAnalyzer();
+
+
+   private:
+      virtual void beginJob() ;
+      virtual void analyze(const edm::Event&, const edm::EventSetup&);
+      virtual void endJob() ;
+
+  void Fill(TH1F*, int, double, double, double);
+
+      // ----------member data ---------------------------
+  // WRITE
+  TFile * outputfile;
+  TH1F *P_GJ_Eta_BS, *P_GJ_Phi_BS, *P_GJ_Et_BS, *P_GJ_Pt_BS, *P_GJ_Eta_AS, *P_GJ_Phi_AS, *P_GJ_Et_AS, *P_GJ_Pt_AS;
+  TH1F *P_RJ_Eta_BS, *P_RJ_Phi_BS, *P_RJ_Et_BS, *P_RJ_Pt_BS, *P_RJ_Eta_AS, *P_RJ_Phi_AS, *P_RJ_Et_AS, *P_RJ_Pt_AS;
+  TH1F *Z_GJ_Eta_BS, *Z_GJ_Phi_BS, *Z_GJ_Et_BS, *Z_GJ_Pt_BS, *Z_GJ_Eta_AS, *Z_GJ_Phi_AS, *Z_GJ_Et_AS, *Z_GJ_Pt_AS;
+  TH1F *Z_RJ_Eta_BS, *Z_RJ_Phi_BS, *Z_RJ_Et_BS, *Z_RJ_Pt_BS, *Z_RJ_Eta_AS, *Z_RJ_Phi_AS, *Z_RJ_Et_AS, *Z_RJ_Pt_AS;
+  TH1F *P_GJ_Eta_AA, *P_GJ_Phi_AA, *P_GJ_Et_AA, *P_GJ_Pt_AA, *P_GJ_Eta_AA_100, *P_GJ_Phi_AA_100, *P_GJ_Et_AA_100, *P_GJ_Pt_AA_100, *P_GJ_Eta_R, *P_GJ_Phi_R, *P_GJ_Et_R, *P_GJ_Pt_R;
+
+  TH1F *NJets, *Zmass_BS, *Zmass_AS;
+
+  // READ
+  bool Debug, Zinv, Pat;
+  std::string RootFileName, GenParticles, GenJets, RecoJets, PatJets;
+  // INTERNAL USE
+  const reco::GenParticle     *g, *p, *z;
+  const reco::GenJet          *gj, *gj1, *gj2, *gj3;
+  const reco::Jet             *rj, *rj1, *rj2, *rj3;
+  const pat::Jet              *pj, *pj1, *pj2, *pj3;
+  int Count3JetEvents;
+};
+
+//
+// constants, enums and typedefs
+//
+double pi = 3.1415926535;
+
+double jet_ptcut = 50.0;
+double jet_etacut = 2.5;
+
+double photon_ptcut = 100.0;
+double photon_etacut = 2.50;
+double EBEE_bord = 1.479;
+double EB_accept = 1.4442;
+double EE_accept = 1.566;
+
+int n_eta  = 50;  double n1_eta  = -5.0,  n2_eta  = 5.0;
+int n_phi  = 18;  double n1_phi  = -3.14, n2_phi  = 3.14;
+int n_et   = 100; double n1_et   = 0.0,   n2_et   = 500;
+
+int n_n = 6;   double n1_n = 0.0,  n2_n = 5.0;
+int n_m = 100; double n1_m = 65.0, n2_m = 115.0;
+//
+// static data member definitions
+//
+
+//
+// constructors and destructor
+//
+GenEventAnalyzer::GenEventAnalyzer(const edm::ParameterSet& iConfig)
+
+{
+   //now do what ever initialization is needed
+  Debug         = iConfig.getParameter<bool>("Debug");
+  Zinv          = iConfig.getParameter<bool>("Zinv");
+  Pat           = iConfig.getParameter<bool>("Pat");
+  RootFileName  = iConfig.getParameter<std::string>("RootFileName");
+  GenParticles  = iConfig.getParameter<std::string>("GenParticles");
+  GenJets       = iConfig.getParameter<std::string>("GenJets");
+  RecoJets      = iConfig.getParameter<std::string>("RecoJets");
+  PatJets       = iConfig.getParameter<std::string>("PatJets");
+
+  outputfile = new TFile(RootFileName.c_str(), "RECREATE" );
+
+  // ---   GEN   --- 
+  // Photon and Zboson Plots before Baseline Selection: 3 GenJets with Pt > 50 and |eta| < 2.5
+  P_GJ_Eta_BS = new TH1F("P_GJ_Eta_BS",           "Photon Eta before 3 Jets Selection with GenJets", n_eta, n1_eta, n2_eta);
+  P_GJ_Phi_BS = new TH1F("P_GJ_Phi_BS",           "Photon Phi before 3 Jets Selection with GenJets", n_phi, n1_phi, n2_phi);
+  P_GJ_Et_BS  = new TH1F("P_GJ_Et_BS",            "Photon Et before 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  P_GJ_Pt_BS  = new TH1F("P_GJ_Pt_BS",            "Photon Pt before 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  Z_GJ_Eta_BS = new TH1F("Z_GJ_Eta_BS",           "Zboson Eta before 3 Jets Selection with GenJets", n_eta, n1_eta, n2_eta);
+  Z_GJ_Phi_BS = new TH1F("Z_GJ_Phi_BS",           "Zboson Phi before 3 Jets Selection with GenJets", n_phi, n1_phi, n2_phi);
+  Z_GJ_Et_BS  = new TH1F("Z_GJ_Et_BS",            "Zboson Et before 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  Z_GJ_Pt_BS  = new TH1F("Z_GJ_Pt_BS",            "Zboson Pt before 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  // Photon and Zboson Plots after Baseline Selection: 3 RecoJets with Pt > 50 and |eta| < 2.5
+  P_GJ_Eta_AS = new TH1F("P_GJ_Eta_AS",           "Photon Eta after 3 Jets Selection with GenJets", n_eta, n1_eta, n2_eta);
+  P_GJ_Phi_AS = new TH1F("P_GJ_Phi_AS",           "Photon Phi after 3 Jets Selection with GenJets", n_phi, n1_phi, n2_phi);
+  P_GJ_Et_AS  = new TH1F("P_GJ_Et_AS",            "Photon Et after 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  P_GJ_Pt_AS  = new TH1F("P_GJ_Pt_AS",            "Photon Pt after 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  Z_GJ_Eta_AS = new TH1F("Z_GJ_Eta_AS",           "Zboson Eta after 3 Jets Selection with GenJets", n_eta, n1_eta, n2_eta);
+  Z_GJ_Phi_AS = new TH1F("Z_GJ_Phi_AS",           "Zboson Phi after 3 Jets Selection with GenJets", n_phi, n1_phi, n2_phi);
+  Z_GJ_Et_AS  = new TH1F("Z_GJ_Et_AS",            "Zboson Et after 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  Z_GJ_Pt_AS  = new TH1F("Z_GJ_Pt_AS",            "Zboson Pt after 3 Jets Selection with GenJets", n_et, n1_et, n2_et);
+  // ---   RECO   ---
+  // Photon and Zboson Plots before Baseline Selection: 3 RecoJets with Pt > 50 and |eta| < 2.5
+  P_RJ_Eta_BS = new TH1F("P_RJ_Eta_BS",           "Photon Eta before 3 Jets Selection with RecoJets", n_eta, n1_eta, n2_eta);
+  P_RJ_Phi_BS = new TH1F("P_RJ_Phi_BS",           "Photon Eta before 3 Jets Selection with RecoJets", n_phi, n1_phi, n2_phi);
+  P_RJ_Et_BS  = new TH1F("P_RJ_Et_BS",            "Photon Eta before 3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  P_RJ_Pt_BS  = new TH1F("P_RJ_Pt_BS",            "Photon Eta before 3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  Z_RJ_Eta_BS = new TH1F("Z_RJ_Eta_BS",           "Zboson Eta before 3 Jets Selection with RecoJets", n_eta, n1_eta, n2_eta);
+  Z_RJ_Phi_BS = new TH1F("Z_RJ_Phi_BS",           "Zboson Eta before 3 Jets Selection with RecoJets", n_phi, n1_phi, n2_phi);
+  Z_RJ_Et_BS  = new TH1F("Z_RJ_Et_BS",            "Zboson Eta before 3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  Z_RJ_Pt_BS  = new TH1F("Z_RJ_Pt_BS",            "Zboson Eta before 3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  // Photon and Zboson Plots after Baseline Selection: 3 RecoJets with Pt > 50 and |eta| < 2.5
+  P_RJ_Eta_AS = new TH1F("P_RJ_Eta_AS",           "Photon Eta after  3 Jets Selection with RecoJets", n_eta, n1_eta, n2_eta);
+  P_RJ_Phi_AS = new TH1F("P_RJ_Phi_AS",           "Photon Eta after  3 Jets Selection with RecoJets", n_phi, n1_phi, n2_phi);
+  P_RJ_Et_AS  = new TH1F("P_RJ_Et_AS",            "Photon Eta after  3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  P_RJ_Pt_AS  = new TH1F("P_RJ_Pt_AS",            "Photon Eta after  3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  Z_RJ_Eta_AS = new TH1F("Z_RJ_Eta_AS",           "Zboson Eta after  3 Jets Selection with RecoJets", n_eta, n1_eta, n2_eta);
+  Z_RJ_Phi_AS = new TH1F("Z_RJ_Phi_AS",           "Zboson Eta after  3 Jets Selection with RecoJets", n_phi, n1_phi, n2_phi);
+  Z_RJ_Et_AS  = new TH1F("Z_RJ_Et_AS",            "Zboson Eta after  3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  Z_RJ_Pt_AS  = new TH1F("Z_RJ_Pt_AS",            "Zboson Eta after  3 Jets Selection with RecoJets", n_et, n1_et, n2_et);
+  // Photon after Acceptance:
+  P_GJ_Eta_R  = new TH1F("P_GJ_Eta_R",           "Photon Eta Distribution after Acceptance w/o Jet req.", n_eta, n1_eta, n2_eta);
+  P_GJ_Phi_R  = new TH1F("P_GJ_Phi_R",           "Photon Phi Distribution after Acceptance w/o Jet req", n_phi, n1_phi, n2_phi);
+  P_GJ_Et_R   = new TH1F("P_GJ_Et_R",            "Photon Et Distribution after Acceptance w/o Jet req.", n_et, n1_et, n2_et);
+  P_GJ_Pt_R   = new TH1F("P_GJ_Pt_R",            "Photon Pt Distribution after Acceptance w/o Jet req.", n_et, n1_et, n2_et);
+  P_GJ_Eta_AA = new TH1F("P_GJ_Eta_AA",           "Photon Eta Distribution after Acceptance", n_eta, n1_eta, n2_eta);
+  P_GJ_Phi_AA = new TH1F("P_GJ_Phi_AA",           "Photon Phi Distribution after Acceptance", n_phi, n1_phi, n2_phi);
+  P_GJ_Et_AA  = new TH1F("P_GJ_Et_AA",            "Photon Et Distribution after Acceptance", n_et, n1_et, n2_et);
+  P_GJ_Pt_AA  = new TH1F("P_GJ_Pt_AA",            "Photon Pt Distribution after Acceptance", n_et, n1_et, n2_et);
+  P_GJ_Eta_AA_100 = new TH1F("P_GJ_Eta_AA_100",           "Photon Eta Distribution after Acceptance with Photon Et 100", n_eta, n1_eta, n2_eta);
+  P_GJ_Phi_AA_100 = new TH1F("P_GJ_Phi_AA_100",           "Photon Phi Distribution after Acceptance with Photon Et 100", n_phi, n1_phi, n2_phi);
+  P_GJ_Et_AA_100  = new TH1F("P_GJ_Et_AA_100",            "Photon Et Distribution after Acceptance with Photon Et 100", n_et, n1_et, n2_et);
+  P_GJ_Pt_AA_100  = new TH1F("P_GJ_Pt_AA_100",            "Photon Pt Distribution after Acceptance with Photon Et 100", n_et, n1_et, n2_et);
+
+
+  NJets = new TH1F("NJets", "Number Of Jets", n_n, n1_n, n2_n);
+  Zmass_BS = new TH1F("Zmass_BS", "Z mass before 3 Jets Selection", n_m, n1_m, n2_m);
+  Zmass_AS = new TH1F("Zmass_AS", "Z mass after  3 Jets Selection", n_m, n1_m, n2_m);
+
+  Count3JetEvents = 0;
+
+}
+
+
+GenEventAnalyzer::~GenEventAnalyzer()
+{
+ 
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+  outputfile->cd();
+  if(!Zinv) {
+    P_GJ_Eta_BS->Write();
+    P_GJ_Phi_BS->Write();
+    P_GJ_Et_BS->Write();
+    P_GJ_Pt_BS->Write();
+    P_GJ_Eta_AS->Write();
+    P_GJ_Phi_AS->Write();
+    P_GJ_Et_AS->Write();
+    P_GJ_Pt_AS->Write();
+    // acceptance
+    P_GJ_Eta_R->Write();
+    P_GJ_Phi_R->Write();
+    P_GJ_Et_R->Write();
+    P_GJ_Pt_R->Write();
+    P_GJ_Eta_AA->Write();
+    P_GJ_Phi_AA->Write();
+    P_GJ_Et_AA->Write();
+    P_GJ_Pt_AA->Write();
+    P_GJ_Eta_AA_100->Write();
+    P_GJ_Phi_AA_100->Write();
+    P_GJ_Et_AA_100->Write();
+    P_GJ_Pt_AA_100->Write();
+  }
+  else {
+    Z_GJ_Eta_BS->Write();
+    Z_GJ_Phi_BS->Write();
+    Z_GJ_Et_BS->Write();
+    Z_GJ_Pt_BS->Write();
+    Z_GJ_Eta_AS->Write();
+    Z_GJ_Phi_AS->Write();
+    Z_GJ_Et_AS->Write();
+    Z_GJ_Pt_AS->Write();
+    Zmass_BS->Write();
+    Zmass_AS->Write();
+  }
+  NJets->Write();
+
+  /*
+  P_RJ_Eta_BS->Write();
+  P_RJ_Phi_BS->Write();
+  P_RJ_Et_BS->Write();
+  P_RJ_Pt_BS->Write();
+  Z_RJ_Eta_BS->Write();
+  Z_RJ_Phi_BS->Write();
+  Z_RJ_Et_BS->Write();
+  Z_RJ_Pt_BS->Write();
+  P_RJ_Eta_AS->Write();
+  P_RJ_Phi_AS->Write();
+  P_RJ_Et_AS->Write();
+  P_RJ_Pt_AS->Write();
+  Z_RJ_Eta_AS->Write();
+  Z_RJ_Phi_AS->Write();
+  Z_RJ_Et_AS->Write();
+  Z_RJ_Pt_AS->Write();
+  */
+
+  std::cout<<"Total Amount of Z/Y + 3 Jets = "<<Count3JetEvents<<std::endl;
+
+}
+
+
+//
+// member functions
+//
+
+// ------------ method called to for each event  ------------
+void
+GenEventAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+  // EVENT INFORMATION
+  int evNum = (iEvent.id()).event();
+  int rnNum = (iEvent.id()).run();
+
+  // GEN INFORMATION
+  edm::Handle<GenEventInfoProduct> genEventInfo;
+  iEvent.getByLabel("generator",genEventInfo);
+  double evWeight = genEventInfo->weight();
+  double qScale   = genEventInfo->qScale();
+  double pthat    = (genEventInfo->hasBinningValues() ? (genEventInfo->binningValues())[0] : 0.0);
+  // std::cout<<"evWeight = "<<evWeight<<" qScale = "<<qScale<<" pthat = "<<pthat<<std::endl;
+
+  // GEN PARTICLES
+  edm::Handle<reco::GenParticleCollection>      genParticles;
+  iEvent.getByLabel(GenParticles, genParticles);
+  // GEN JETS
+  edm::Handle< std::vector<reco::GenJet> >      genJets;
+  iEvent.getByLabel(GenJets, genJets);
+  // RECO JETS
+  edm::Handle< std::vector<reco::Jet> >         recoJets;
+  iEvent.getByLabel(RecoJets, recoJets);
+  // PAT JETS ---> Later
+  edm::Handle< std::vector<reco::Jet> >         patJets;
+  if(Pat) iEvent.getByLabel(PatJets, patJets);
+
+  if(!Zinv) {
+    // Find the ME Photon and the GenPhoton linked to it
+    bool MEPhotonFound = 0;
+    for(unsigned int i=0; i<genParticles->size(); ++i) {
+      if(MEPhotonFound) continue;
+      g = &((*genParticles)[i]);
+      if (g->status() != 3) continue;
+      if (g->pdgId() == 22) {
+	if(Debug) std::cout<<"ME Photon: id = "<<std::setw(2)<<g->pdgId()<<" | st = "<<std::setw(2)<<g->status()<<" | eta = "<<std::setw(9)<<g->eta()<<" | phi = "<<std::setw(9)<<g->phi();
+	if(Debug) std::cout<<" | pt = "<<std::setw(9)<<g->pt()<<" GeV/c | et = "<<std::setw(9)<<g->et()<<" GeV | Energy = "<<g->energy()<<" GeV";
+	if(Debug) std::cout<<" | transverse mass = "<<std::setw(9)<<g->mt()<<" GeV/c^2"<<std::endl;
+	reco::GenParticle::daughters d = g->daughterRefVector();
+	for (reco::GenParticle::daughters::const_iterator it_d = d.begin(), e = d.end(); it_d != e; ++it_d) {
+	  if((*it_d)->status()==1 && (*it_d)->pdgId()==22) {
+	    p = &(*(*it_d));
+	if(Debug) std::cout<<"GenPhoton: id = "<<std::setw(2)<<p->pdgId()<<" | st = "<<std::setw(2)<<p->status()<<" | eta = "<<std::setw(9)<<p->eta()<<" | phi = "<<std::setw(9)<<p->phi();
+	if(Debug) std::cout<<" | pt = "<<std::setw(9)<<p->pt()<<" GeV/c | et = "<<std::setw(9)<<p->et()<<" GeV | Energy = "<<p->energy()<<" GeV ";
+	if(Debug) std::cout<<" | transverse mass = "<<std::setw(9)<<p->mt()<<" GeV/c^2"<<std::endl;
+	  }
+	}
+      }
+    }
+    if(p != 0) {
+      // Find PhotonGenJet and remove it from the GenJetCollection
+      // Not Necessary. Photon is not in GenJet
+
+      /*
+      bool PhotonGenJetFound = 0;
+      for(unsigned int i=0; i<genJets->size(); ++i) {
+	if(PhotonGenJetFound) continue;
+	r = &((*genJets)[i]);
+	std::vector <const reco::GenParticle*> genJetConstituents = r->getGenConstituents(); 
+	for(unsigned int j=0; j<genJetConstituents.size(); ++j) {
+	  g = genJetConstituents[j];
+	  if(g->pdgId() == 22 && g->pt() > 10) {
+	  if(Debug) std::cout<<"GenParticle: id = "<<std::setw(2)<<g->pdgId()<<" | st = "<<std::setw(2)<<g->status()<<" | eta = "<<std::setw(9)<<g->eta()<<" | phi = "<<std::setw(9)<<g->phi();
+	  if(Debug) std::cout<<" | pt = "<<std::setw(9)<<g->pt()<<" GeV/c | et = "<<std::setw(9)<<g->et()<<" GeV | Energy = "<<g->energy()<<" GeV ";
+	  if(Debug) std::cout<<" | transverse mass = "<<std::setw(9)<<g->mt()<<" GeV/c^2"<<std::endl;
+	  if(Debug) std::cout<<"Genparticle g = "<<&(*g)<<" == GenPhoton = "<<&(*p)<<" ? "<<std::endl;
+	  }
+	}
+      }
+      */
+
+      // Require 3 GenJets with pt > 50 and |eta| < 2.5
+      int goodGenJets = 0;
+      for(unsigned int i=0; i<genJets->size(); ++i) {
+        gj = &((*genJets)[i]);
+	if (gj->pt() > jet_ptcut && fabs(gj->eta()) < jet_etacut) ++goodGenJets;
+      }
+      Fill(NJets, n_n, n1_n, n2_n, goodGenJets);
+      // Require 3 RecoJets / PatJets with pt > 50 and |eta| < 2.5
+      // For RecoJets we have to filter out the Photon of course ...
+      // And this can only be done by dR and H/E cuts ...
+      // which is a bit messy
+      // and anyway we would not gain that much ...
+      // so until Steven is back for discussion I swich this off
+      /*
+      if(!Pat) {
+	int goodRecoJets = 0;
+	for(unsigned int i=0; i<recoJets->size(); ++i) {
+	  rj = &((*recoJets)[i]);
+	  if (rj->pt() > jet_ptcut && fabs(rj->eta()) < jet_etacut) ++goodGenJets;
+	}
+      }
+      else {
+	int goodPatJets = 0;
+	for(unsigned int i=0; i<genJets->size(); ++i) {
+	  pj = &((*genJets)[i]);
+	  if (pj->pt() > jet_ptcut && fabs(pj->eta()) < jet_etacut) ++goodGenJets;
+	}
+      }
+      */
+      // No Selection
+      Fill(P_GJ_Eta_BS, n_eta, n1_eta, n2_eta, p->eta());
+      Fill(P_GJ_Phi_BS, n_phi, n1_phi, n2_phi, p->phi());
+      Fill(P_GJ_Et_BS, n_et, n1_et, n2_et, p->et());
+      Fill(P_GJ_Pt_BS, n_et, n1_et, n2_et, p->pt());
+      // Baseline Selection
+      if(goodGenJets > 2) {
+	++Count3JetEvents;
+	if(Debug) std::cout<<"Photon + 3 Jets event Found! Amount of Good Jets = "<<goodGenJets<<std::endl;
+	Fill(P_GJ_Eta_AS, n_eta, n1_eta, n2_eta, p->eta());
+	Fill(P_GJ_Phi_AS, n_phi, n1_phi, n2_phi, p->phi());
+	Fill(P_GJ_Et_AS, n_et, n1_et, n2_et, p->et());
+	Fill(P_GJ_Pt_AS, n_et, n1_et, n2_et, p->pt());
+      }
+      /*
+      if(goodRecoJets > 2 || goodPatJets > 2) {
+	Fill(P_RJ_Eta_BS, n_eta, n1_eta, n2_eta, p->eta());
+	Fill(P_RJ_Phi_BS, n_phi, n1_phi, n2_phi, p->phi());
+	Fill(P_RJ_Et_BS, n_et, n1_et, n2_et, p->et());
+	Fill(P_RJ_Pt_BS, n_et, n1_et, n2_et, p->pt());
+      }
+      */
+      // Acceptance
+      if((fabs(p->eta()) < EB_accept) || (fabs(p->eta()) > EE_accept && fabs(p->eta()) < photon_etacut )) {
+	Fill(P_GJ_Eta_R, n_eta, n1_eta, n2_eta, p->eta());
+	Fill(P_GJ_Phi_R, n_phi, n1_phi, n2_phi, p->phi());
+	Fill(P_GJ_Et_R, n_et, n1_et, n2_et, p->et());
+	Fill(P_GJ_Pt_R, n_et, n1_et, n2_et, p->pt());
+      }
+      if(goodGenJets > 2) {
+	if((fabs(p->eta()) < EB_accept) || (fabs(p->eta()) > EE_accept && fabs(p->eta()) < photon_etacut )) {
+	  Fill(P_GJ_Eta_AA, n_eta, n1_eta, n2_eta, p->eta());
+	  Fill(P_GJ_Phi_AA, n_phi, n1_phi, n2_phi, p->phi());
+	  Fill(P_GJ_Et_AA, n_et, n1_et, n2_et, p->et());
+	  Fill(P_GJ_Pt_AA, n_et, n1_et, n2_et, p->pt());
+	  if(p->et() > 100) {
+	    Fill(P_GJ_Eta_AA_100, n_eta, n1_eta, n2_eta, p->eta());
+	    Fill(P_GJ_Phi_AA_100, n_phi, n1_phi, n2_phi, p->phi());
+	    Fill(P_GJ_Et_AA_100, n_et, n1_et, n2_et, p->et());
+	    Fill(P_GJ_Pt_AA_100, n_et, n1_et, n2_et, p->pt());
+	  }
+	}
+      }
+    }
+    else {
+      std::cout<<"No ME Photon found!"<<std::endl;
+    }
+  }
+  else {
+    // Find the ME Zboson
+    bool MEZbosonFound = 0;
+    for(unsigned int i=0; i<genParticles->size(); ++i) {
+      if(MEZbosonFound) continue;
+      g = &((*genParticles)[i]);
+      if (g->status() != 3) continue;
+      if (g->pdgId() == 23) {
+	if(Debug) std::cout<<"ME Zboson: id = "<<std::setw(2)<<g->pdgId()<<" | st = "<<std::setw(2)<<g->status()<<" | eta = "<<std::setw(9)<<g->eta()<<" | phi = "<<std::setw(9)<<g->phi();
+	if(Debug) std::cout<<" | pt = "<<std::setw(9)<<g->pt()<<" GeV/c | et = "<<std::setw(9)<<g->et()<<" GeV | Energy = "<<g->energy()<<" GeV";
+	if(Debug) std::cout<<" | transverse mass = "<<std::setw(9)<<g->mt()<<" GeV/c^2"<<std::endl;
+	z = &(*g);
+      }
+    }
+    if(z != 0) {
+      // Require 3 GenJets with pt > 50 and |eta| < 2.5
+      int goodGenJets = 0;
+      for(unsigned int i=0; i<genJets->size(); ++i) {
+	gj = &((*genJets)[i]);
+	if (gj->pt() > jet_ptcut && fabs(gj->eta()) < jet_etacut) ++goodGenJets;
+      }
+      Fill(NJets, n_n, n1_n, n2_n, goodGenJets);
+      // Require 3 RecoJets / PatJets with pt > 50 and |eta| < 2.5
+      // See discussion above
+      /*
+      if(!Pat) {
+        int goodRecoJets = 0;
+        for(unsigned int i=0; i<recoJets->size(); ++i) {
+          rj = &((*recoJets)[i]);
+          if (rj->pt() > jet_ptcut && fabs(rj->eta()) < jet_etacut) ++goodGenJets;
+        }
+      }
+      else {
+        int goodPatJets = 0;
+        for(unsigned int i=0; i<genJets->size(); ++i) {
+          pj = &((*genJets)[i]);
+          if (pj->pt() > jet_ptcut && fabs(pj->eta()) < jet_etacut) ++goodGenJets;
+        }
+      }
+      */
+      // No Selection
+	Fill(Z_GJ_Eta_BS, n_eta, n1_eta, n2_eta, z->eta());
+        Fill(Z_GJ_Phi_BS, n_phi, n1_phi, n2_phi, z->phi());
+        Fill(Z_GJ_Et_BS, n_et, n1_et, n2_et, z->et());
+        Fill(Z_GJ_Pt_BS, n_et, n1_et, n2_et, z->pt());
+	Fill(Zmass_BS, n_m, n1_m, n2_m, z->mass());
+      // Baseline Selection
+      if(goodGenJets > 2) {
+	++Count3JetEvents;
+	if(Debug) std::cout<<"Zboson + 3 Jets event Found! Amount of Good Jets = "<<goodGenJets<<std::endl;
+	Fill(Z_GJ_Eta_AS, n_eta, n1_eta, n2_eta, z->eta());
+        Fill(Z_GJ_Phi_AS, n_phi, n1_phi, n2_phi, z->phi());
+        Fill(Z_GJ_Et_AS, n_et, n1_et, n2_et, z->et());
+        Fill(Z_GJ_Pt_AS, n_et, n1_et, n2_et, z->pt());
+	Fill(Zmass_AS, n_m, n1_m, n2_m, z->mass());
+      }
+      /*
+      if(goodRecoJets > 2 || goodPatJets > 2) {
+        Fill(Z_RJ_Eta_BS, n_eta, n1_eta, n2_eta, z->eta());
+        Fill(Z_RJ_Phi_BS, n_phi, n1_phi, n2_phi, z->phi());
+        Fill(Z_RJ_Et_BS, n_et, n1_et, n2_et, z->et());
+        Fill(Z_RJ_Pt_BS, n_et, n1_et, n2_et, z->pt());
+      }
+      */
+    }
+  }
+}
+
+void
+GenEventAnalyzer::Fill(TH1F * Histo, int n, double n1, double n2, double value) {
+  if(Debug) std::cout<<"Inside Filling Method"<<std::endl;
+  double binwidth = (n2-n1)/n;
+  double n1_ = n1+binwidth/2;
+  double n2_ = n2-binwidth/2;
+  if(value > n1 && value < n2) Histo->Fill(value);
+  else if (value < n1) Histo->Fill(n1_);
+  else if (value > n2) Histo->Fill(n2_);
+  else {}
+}
+
+
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+GenEventAnalyzer::beginJob()
+{
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+GenEventAnalyzer::endJob() {
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(GenEventAnalyzer);

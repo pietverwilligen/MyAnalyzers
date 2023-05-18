@@ -1,0 +1,20 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<flags EDM_PLUGIN=1>
+
+<use name=root>
+<use name=rootgraphics>
+<use name=DataFormats/JetReco>
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/GeneratorProducts>
+
+<flags CXXFLAGS="-O0 -g3 -fno-inline">
+
+
+<export>
+   <lib name=MyAnalyzersRootFileScout>
+   <use name=FWCore/Framework>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>
