@@ -49,7 +49,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-// OLD :: #include "FWCore/Framework/interface/EDAnalyzer.h"
+// OLD : #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -141,9 +141,8 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   edm::ESHandle <RPCGeometry> rpcGeom;
   edm::ESHandle <CSCGeometry> cscGeom;
   edm::ESHandle <DTGeometry>  dtGeom;
-  // not in 71X release
   edm::ESHandle <GEMGeometry> gemGeom;
-  edm::ESHandle <ME0Geometry> me0Geom;
+  // edm::ESHandle <ME0Geometry> me0Geom;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   double getLumi(int, int, int);
@@ -164,8 +163,7 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   double bunchspacing;
   double comenergy;
   double maxsimtime;
-  double varEDepCuteV;
-  bool phys_debug, tech_debug;
+  bool edepcut30eV, phys_debug, tech_debug, area_debug;
   TFile * outputfile;
 
 
@@ -174,20 +172,27 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   edm::EDGetTokenT<edm::SimTrackContainer>  SIMTrack_Token;
   edm::EDGetTokenT<edm::SimVertexContainer> SIMVertex_Token;
 
-  edm::ESGetToken<CSCGeometry, MuonGeometryRecord> cscGeom_Token;
-  edm::ESGetToken<DTGeometry,  MuonGeometryRecord> dtGeom_Token;
-  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> gemGeom_Token;
-  edm::ESGetToken<RPCGeometry, MuonGeometryRecord> rpcGeom_Token;
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  // std::map< CSCDetId, std::vector<int> > bookCSChits;
+  // std::map< DTWireId, std::vector<int> > bookDThits; 
+  // std::map< RPCDetId, std::vector<int> > bookRPChits;
+  // std::map< CSCDetId, std::vector<int> >::iterator bookCSCit;
+  // std::map< DTWireId, std::vector<int> >::iterator bookDTit;
+  // std::map< RPCDetId, std::vector<int> >::iterator bookRPCit;
+  std::map<int,int> bookCSCNuclei, bookDTNuclei, bookRPCbNuclei, bookRPCfNuclei;
+  std::map<int,int>::iterator itCSCNuc, itDTNuc, itRPCbNuc, itRPCfNuc;
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
 
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
   TDirectoryFile * TDir_Muon_hits_deposits;
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TH2F * RPCb_el_hits, * RPCb_mu_hits, * RPCb_pi_hits, * RPCb_ka_hits, * RPCb_p_hits, * RPCb_n_hits, * RPCb_g_hits, * RPCb_N_hits, * RPCb_OH_hits, * RPCb_All_hits, * RPCb_HIP_hits;
-  TH2F * RPCf_el_hits, * RPCf_mu_hits, * RPCf_pi_hits, * RPCf_ka_hits, * RPCf_p_hits, * RPCf_n_hits, * RPCf_g_hits, * RPCf_N_hits, * RPCf_OH_hits, * RPCf_All_hits, * RPCf_HIP_hits;
-  TH2F * CSC_el_hits,  * CSC_mu_hits,  * CSC_pi_hits,  * CSC_ka_hits,  * CSC_p_hits,  * CSC_n_hits,  * CSC_g_hits,  * CSC_N_hits,  * CSC_OH_hits,  * CSC_All_hits,  * CSC_HIP_hits;
-  TH2F * DT_el_hits,   * DT_mu_hits,   * DT_pi_hits,   * DT_ka_hits,   * DT_p_hits,   * DT_n_hits,   * DT_g_hits,   * DT_N_hits,   * DT_OH_hits,   * DT_All_hits,   * DT_HIP_hits;
-  TH2F * GEM_el_hits,  * GEM_mu_hits,  * GEM_pi_hits,  * GEM_ka_hits,  * GEM_p_hits,  * GEM_n_hits,  * GEM_g_hits,  * GEM_N_hits,  * GEM_OH_hits,  * GEM_All_hits,  * GEM_HIP_hits;
-  TH2F * ME0_el_hits,  * ME0_mu_hits,  * ME0_pi_hits,  * ME0_ka_hits,  * ME0_p_hits,  * ME0_n_hits,  * ME0_g_hits,  * ME0_N_hits,  * ME0_OH_hits,  * ME0_All_hits,  * ME0_HIP_hits;
+  TH2F * RPCb_el_hits, * RPCb_mu_hits, * RPCb_pi_hits, * RPCb_ka_hits, * RPCb_p_hits, * RPCb_n_hits, * RPCb_g_hits, * RPCb_N_hits;
+  TH2F * RPCf_el_hits, * RPCf_mu_hits, * RPCf_pi_hits, * RPCf_ka_hits, * RPCf_p_hits, * RPCf_n_hits, * RPCf_g_hits, * RPCf_N_hits;
+  TH2F * CSC_el_hits,  * CSC_mu_hits,  * CSC_pi_hits,  * CSC_ka_hits,  * CSC_p_hits,  * CSC_n_hits,  * CSC_g_hits,  * CSC_N_hits;
+  TH2F * DT_el_hits,   * DT_mu_hits,   * DT_pi_hits,   * DT_ka_hits,   * DT_p_hits,   * DT_n_hits,   * DT_g_hits,   * DT_N_hits;
+  TH2F * GEM_el_hits,  * GEM_mu_hits,  * GEM_pi_hits,  * GEM_ka_hits,  * GEM_p_hits,  * GEM_n_hits,  * GEM_g_hits,  * GEM_N_hits;
+  TH2F * ME0_el_hits,  * ME0_mu_hits,  * ME0_pi_hits,  * ME0_ka_hits,  * ME0_p_hits,  * ME0_n_hits,  * ME0_g_hits,  * ME0_N_hits;
 
   TH1F * RPCb_el_kins, * RPCb_mu_kins, * RPCb_ha_kins;
   TH1F * RPCf_el_kins, * RPCf_mu_kins, * RPCf_ha_kins;
@@ -196,12 +201,12 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   TH1F * GEM_el_kins,  * GEM_mu_kins,  * GEM_ha_kins;
   TH1F * ME0_el_kins,  * ME0_mu_kins,  * ME0_ha_kins;
 
-  TH2F * RPCb_el_deposits, * RPCb_mu_deposits, * RPCb_pi_deposits, * RPCb_ka_deposits, * RPCb_p_deposits, * RPCb_n_deposits, * RPCb_g_deposits, * RPCb_N_deposits, * RPCb_OH_deposits, * RPCb_All_deposits, * RPCb_HIP_deposits;
-  TH2F * RPCf_el_deposits, * RPCf_mu_deposits, * RPCf_pi_deposits, * RPCf_ka_deposits, * RPCf_p_deposits, * RPCf_n_deposits, * RPCf_g_deposits, * RPCf_N_deposits, * RPCf_OH_deposits, * RPCf_All_deposits, * RPCf_HIP_deposits;
-  TH2F * CSC_el_deposits,  * CSC_mu_deposits,  * CSC_pi_deposits,  * CSC_ka_deposits,  * CSC_p_deposits,  * CSC_n_deposits,  * CSC_g_deposits,  * CSC_N_deposits,  * CSC_OH_deposits,  * CSC_All_deposits,  * CSC_HIP_deposits;
-  TH2F * DT_el_deposits,   * DT_mu_deposits,   * DT_pi_deposits,   * DT_ka_deposits,   * DT_p_deposits,   * DT_n_deposits,   * DT_g_deposits,   * DT_N_deposits,   * DT_OH_deposits,   * DT_All_deposits,   * DT_HIP_deposits;
-  TH2F * GEM_el_deposits,  * GEM_mu_deposits,  * GEM_pi_deposits,  * GEM_ka_deposits,  * GEM_p_deposits,  * GEM_n_deposits,  * GEM_g_deposits,  * GEM_N_deposits,  * GEM_OH_deposits,  * GEM_All_deposits,  * GEM_HIP_deposits;
-  TH2F * ME0_el_deposits,  * ME0_mu_deposits,  * ME0_pi_deposits,  * ME0_ka_deposits,  * ME0_p_deposits,  * ME0_n_deposits,  * ME0_g_deposits,  * ME0_N_deposits,  * ME0_OH_deposits,  * ME0_All_deposits,  * ME0_HIP_deposits;
+  TH2F * RPCb_el_deposits, * RPCb_mu_deposits, * RPCb_pi_deposits, * RPCb_ka_deposits, * RPCb_p_deposits, * RPCb_n_deposits, * RPCb_g_deposits, * RPCb_N_deposits;
+  TH2F * RPCf_el_deposits, * RPCf_mu_deposits, * RPCf_pi_deposits, * RPCf_ka_deposits, * RPCf_p_deposits, * RPCf_n_deposits, * RPCf_g_deposits, * RPCf_N_deposits;
+  TH2F * CSC_el_deposits,  * CSC_mu_deposits,  * CSC_pi_deposits,  * CSC_ka_deposits,  * CSC_p_deposits,  * CSC_n_deposits,  * CSC_g_deposits,  * CSC_N_deposits;
+  TH2F * DT_el_deposits,   * DT_mu_deposits,   * DT_pi_deposits,   * DT_ka_deposits,   * DT_p_deposits,   * DT_n_deposits,   * DT_g_deposits,   * DT_N_deposits;
+  TH2F * GEM_el_deposits,  * GEM_mu_deposits,  * GEM_pi_deposits,  * GEM_ka_deposits,  * GEM_p_deposits,  * GEM_n_deposits,  * GEM_g_deposits,  * GEM_N_deposits;
+  TH2F * ME0_el_deposits,  * ME0_mu_deposits,  * ME0_pi_deposits,  * ME0_ka_deposits,  * ME0_p_deposits,  * ME0_n_deposits,  * ME0_g_deposits,  * ME0_N_deposits;
 
   TH1F * RPCb_el_deps, * RPCb_mu_deps, * RPCb_ha_deps, * RPCb_el_tof, * RPCb_mu_tof, * RPCb_ha_tof;
   TH1F * RPCf_el_deps, * RPCf_mu_deps, * RPCf_ha_deps, * RPCf_el_tof, * RPCf_mu_tof, * RPCf_ha_tof;
@@ -223,41 +228,6 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   // TH1F * RB4_hits_phi, * RE4_hits_phi, * ME4_hits_phi, * MB4_hits_phi;
 
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TDirectoryFile * TDir_Muon_hits_Nuclei;
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TH2F * Muon_Nuclei_A_Z, * RPCb_Nuclei_A_Z, * RPCf_Nuclei_A_Z, * CSC_Nuclei_A_Z, * DT_Nuclei_A_Z, * GEM_Nuclei_A_Z, * ME0_Nuclei_A_Z;
-  TH1F * Muon_Nuclei_A, * RPCb_Nuclei_A, * RPCf_Nuclei_A, * CSC_Nuclei_A, * DT_Nuclei_A, * GEM_Nuclei_A, * ME0_Nuclei_A;
-  TH1F * Muon_Nuclei_Z, * RPCb_Nuclei_Z, * RPCf_Nuclei_Z, * CSC_Nuclei_Z, * DT_Nuclei_Z, * GEM_Nuclei_Z, * ME0_Nuclei_Z;
-  TH1F * Muon_Nuclei_List, * RPCb_Nuclei_List, * RPCf_Nuclei_List, * CSC_Nuclei_List, * DT_Nuclei_List, * GEM_Nuclei_List, * ME0_Nuclei_List;
-
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TDirectoryFile * TDir_Muon_hits_radius;
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TH1F * ME0_el_hits_R,  * ME0_mu_hits_R,  * ME0_pi_hits_R,  * ME0_ka_hits_R,  * ME0_p_hits_R,  * ME0_n_hits_R,  * ME0_g_hits_R,  * ME0_N_hits_R, * ME0_OH_hits_R,  * ME0_All_hits_R,  * ME0_HIP_hits_R;
-  TH1F * G11_el_hits_R,  * G11_mu_hits_R,  * G11_pi_hits_R,  * G11_ka_hits_R,  * G11_p_hits_R,  * G11_n_hits_R,  * G11_g_hits_R,  * G11_N_hits_R, * G11_OH_hits_R,  * G11_All_hits_R,  * G11_HIP_hits_R;
-  TH1F * G21_el_hits_R,  * G21_mu_hits_R,  * G21_pi_hits_R,  * G21_ka_hits_R,  * G21_p_hits_R,  * G21_n_hits_R,  * G21_g_hits_R,  * G21_N_hits_R, * G21_OH_hits_R,  * G21_All_hits_R,  * G21_HIP_hits_R;
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TH1F * G11_L1_el_hits_R,  * G11_L1_mu_hits_R,  * G11_L1_pi_hits_R,  * G11_L1_ka_hits_R,  * G11_L1_p_hits_R,  * G11_L1_n_hits_R,  * G11_L1_g_hits_R,  * G11_L1_N_hits_R, * G11_L1_OH_hits_R,  * G11_L1_All_hits_R,  * G11_L1_HIP_hits_R;
-  TH1F * G11_L2_el_hits_R,  * G11_L2_mu_hits_R,  * G11_L2_pi_hits_R,  * G11_L2_ka_hits_R,  * G11_L2_p_hits_R,  * G11_L2_n_hits_R,  * G11_L2_g_hits_R,  * G11_L2_N_hits_R, * G11_L2_OH_hits_R,  * G11_L2_All_hits_R,  * G11_L2_HIP_hits_R;
-  TH1F * G11_Od_el_hits_R,  * G11_Od_mu_hits_R,  * G11_Od_pi_hits_R,  * G11_Od_ka_hits_R,  * G11_Od_p_hits_R,  * G11_Od_n_hits_R,  * G11_Od_g_hits_R,  * G11_Od_N_hits_R, * G11_Od_OH_hits_R,  * G11_Od_All_hits_R,  * G11_Od_HIP_hits_R;
-  TH1F * G11_Ev_el_hits_R,  * G11_Ev_mu_hits_R,  * G11_Ev_pi_hits_R,  * G11_Ev_ka_hits_R,  * G11_Ev_p_hits_R,  * G11_Ev_n_hits_R,  * G11_Ev_g_hits_R,  * G11_Ev_N_hits_R, * G11_Ev_OH_hits_R,  * G11_Ev_All_hits_R,  * G11_Ev_HIP_hits_R;
-  TH1F * M11_Od_el_hits_R,  * M11_Od_mu_hits_R,  * M11_Od_pi_hits_R,  * M11_Od_ka_hits_R,  * M11_Od_p_hits_R,  * M11_Od_n_hits_R,  * M11_Od_g_hits_R,  * M11_Od_N_hits_R, * M11_Od_OH_hits_R,  * M11_Od_All_hits_R,  * M11_Od_HIP_hits_R;
-  TH1F * M11_Ev_el_hits_R,  * M11_Ev_mu_hits_R,  * M11_Ev_pi_hits_R,  * M11_Ev_ka_hits_R,  * M11_Ev_p_hits_R,  * M11_Ev_n_hits_R,  * M11_Ev_g_hits_R,  * M11_Ev_N_hits_R, * M11_Ev_OH_hits_R,  * M11_Ev_All_hits_R,  * M11_Ev_HIP_hits_R;
-
-  // 2B Further implemented ....
-  TH1F * M11_Od_L1_All_hits_R, * M11_Od_L2_All_hits_R, * M11_Od_L3_All_hits_R, * M11_Od_L4_All_hits_R, * M11_Od_L5_All_hits_R, * M11_Od_L6_All_hits_R; 
-  TH1F * M11_Ev_L1_All_hits_R, * M11_Ev_L2_All_hits_R, * M11_Ev_L3_All_hits_R, * M11_Ev_L4_All_hits_R, * M11_Ev_L5_All_hits_R, * M11_Ev_L6_All_hits_R; 
-
-
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TDirectoryFile * TDir_Muon_hits_etapart;
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  TH1F * ME0_el_hits_E,  * ME0_mu_hits_E,  * ME0_pi_hits_E,  * ME0_ka_hits_E,  * ME0_p_hits_E,  * ME0_n_hits_E,  * ME0_g_hits_E,  * ME0_N_hits_E, * ME0_OH_hits_E,  * ME0_All_hits_E,  * ME0_HIP_hits_E;
-  TH1F * G11_el_hits_E,  * G11_mu_hits_E,  * G11_pi_hits_E,  * G11_ka_hits_E,  * G11_p_hits_E,  * G11_n_hits_E,  * G11_g_hits_E,  * G11_N_hits_E, * G11_OH_hits_E,  * G11_All_hits_E,  * G11_HIP_hits_E;
-  TH1F * G21_el_hits_E,  * G21_mu_hits_E,  * G21_pi_hits_E,  * G21_ka_hits_E,  * G21_p_hits_E,  * G21_n_hits_E,  * G21_g_hits_E,  * G21_N_hits_E, * G21_OH_hits_E,  * G21_All_hits_E,  * G21_HIP_hits_E;
-
-
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
   TCanvas * Canvas_RPCb_hits,           * Canvas_RPCf_hits,           * Canvas_CSC_hits,           * Canvas_DT_hits,           * Canvas_GEM_hits,           * Canvas_ME0_hits;
   TCanvas * Canvas_RPCb_deposits,       * Canvas_RPCf_deposits,       * Canvas_CSC_deposits,       * Canvas_DT_deposits,       * Canvas_GEM_deposits,       * Canvas_ME0_deposits;
   TCanvas * Canvas_RPCb_hits_fancy,     * Canvas_RPCf_hits_fancy,     * Canvas_CSC_hits_fancy,     * Canvas_DT_hits_fancy,     * Canvas_GEM_hits_fancy,     * Canvas_ME0_hits_fancy;
@@ -267,6 +237,22 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   TCanvas * Canvas_RPCb_hits_phi,       * Canvas_RPCf_hits_phi,       * Canvas_CSC_hits_phi,       * Canvas_DT_hits_phi;
   TCanvas * Canvas_CSC_EntryExit_vs_deposits, * Canvas_CSC_EntryExit_vs_kinenergy, * Canvas_CSC_EntryExit_vs_time; 
   TCanvas * Canvas_CSC_PathLength_vs_deposits, * Canvas_CSC_PathLength_vs_kinenergy;
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
+
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  TDirectoryFile * TDir_Muon_hits_summary;
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  TH1F * Summary_DT_el_hits,   * Summary_DT_mu_hits,   * Summary_DT_p_hits,   * Summary_DT_n_hits,   * Summary_DT_pi_hits,   * Summary_DT_ka_hits,   * Summary_DT_g_hits,   * Summary_DT_N_hits; 
+  TH1F * Summary_CSC_el_hits,  * Summary_CSC_mu_hits,  * Summary_CSC_p_hits,  * Summary_CSC_n_hits,  * Summary_CSC_pi_hits,  * Summary_CSC_ka_hits,  * Summary_CSC_g_hits,  * Summary_CSC_N_hits; 
+  TH1F * Summary_RPCb_el_hits, * Summary_RPCb_mu_hits, * Summary_RPCb_p_hits, * Summary_RPCb_n_hits, * Summary_RPCb_pi_hits, * Summary_RPCb_ka_hits, * Summary_RPCb_g_hits, * Summary_RPCb_N_hits; 
+  TH1F * Summary_RPCf_el_hits, * Summary_RPCf_mu_hits, * Summary_RPCf_p_hits, * Summary_RPCf_n_hits, * Summary_RPCf_pi_hits, * Summary_RPCf_ka_hits, * Summary_RPCf_g_hits, * Summary_RPCf_N_hits; 
+  std::vector< TH1F* > Summary_DT, Summary_CSC, Summary_RPCb, Summary_RPCf;
+  TH2F * CrossCheck_DT_el_hits, * CrossCheck_CSC_el_hits,  * CrossCheck_RPCb_el_hits,  *CrossCheck_RPCf_el_hits;
+  TH2F * CrossCheck_DT_mu_hits, * CrossCheck_CSC_mu_hits,  * CrossCheck_RPCb_mu_hits,  *CrossCheck_RPCf_mu_hits;
+  TH2F * CrossCheck_DT_had_hits,* CrossCheck_CSC_had_hits, * CrossCheck_RPCb_had_hits, *CrossCheck_RPCf_had_hits;
+  TH1F * Nuclei_DT, * Nuclei_CSC, * Nuclei_RPCb, * Nuclei_RPCf; // Maybe try with map ...
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
@@ -334,8 +320,6 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   TH1F * RPCf_el_HPL;  TH1F * RPCf_mu_HPL; TH1F * RPCf_ha_HPL;
   TH1F * CSC_el_HPL;   TH1F * CSC_mu_HPL;  TH1F * CSC_ha_HPL;
   TH1F * DT_el_HPL;    TH1F * DT_mu_HPL;   TH1F * DT_ha_HPL;
-  TH1F * MB1_el_HPL, * MB1_mu_HPL, * MB1_ha_HPL, * MB2_el_HPL, * MB2_mu_HPL, * MB2_ha_HPL, * MB3_el_HPL, * MB3_mu_HPL, * MB3_ha_HPL, * MB4_el_HPL, * MB4_mu_HPL, * MB4_ha_HPL;
-  TH1F * ME1_el_HPL, * ME1_mu_HPL, * ME1_ha_HPL, * ME2_el_HPL, * ME2_mu_HPL, * ME2_ha_HPL, * ME3_el_HPL, * ME3_mu_HPL, * ME3_ha_HPL, * ME4_el_HPL, * ME4_mu_HPL, * ME4_ha_HPL;
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
   TCanvas * Canvas_RPCb_Layers, * Canvas_RPCf_Layers, * Canvas_CSC_Layers, * Canvas_DT_Layers; 
   // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
@@ -428,13 +412,9 @@ int m_lin = 1000, m1_lin = 0,  m2_lin = 100000000;
 int n_hits = 20;  double n1_hits = 0.5, n2_hits = 20.5;
 int n_lay  = 12;  double n1_lay  = 0.5, n2_lay  = 12.5;
 
-// logaritmic bins ...
 int n_D   = 900,  n1_D   = -3, n2_D   = 6;
 int n_E   = 900,  n1_E   = -4, n2_E   = 5;
 int n_F   = 90,   n1_F   = -3, n2_F   = 6;
-
-// linear bins
-int n_FL = 2500,  n1_FL   = 0, n2FL = 250000; // 1-250keV in bins of 100 eV
 
 int n_xy_x =  800; double n_xy_x1 = -800;  double n_xy_x2 = +800;
 int n_xy_y =  800; double n_xy_y1 = -800;  double n_xy_y2 = +800;
@@ -459,7 +439,11 @@ std::string endcat[24] = {"RE12C", "RE12B", "RE12A", "RE13C", "RE13B", "RE13A", 
                           "RE32C", "RE32B", "RE32A", "RE33C", "RE33B", "RE33A", "RE42C", "RE42B", "RE42A", "RE43C", "RE43B", "RE43A"};
 std::string proc[15] = {"notDefined", "fCoulombScattering", "fIonisation", "fBremsstrahlung", "fPairProdByCharged", "fAnnihilation", "fAnnihilationToMuMu", "fAnnihilationToHadrons", 
                         "fNuclearStopping", "notDefined", "fMultipleScattering", "fRayleigh", "fPhotoElectricEffect", "fComptonScattering", "fGammaConversion"};
-std::string nuclei[21] = {"H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Other"};
+
+std::string sumDT[12]   = {"W0/MB1", "W0/MB2", "W0/MB3", "W0/MB4", "W1/MB1", "W1/MB2", "W1/MB3", "W1/MB4", "W2/MB1", "W2/MB2", "W2/MB3", "W2/MB4"};
+std::string sumCSC[9]   = {"ME11", "ME12", "ME13", "ME21", "ME22", "ME31", "ME32", "ME41", "ME42"};
+std::string sumRPCb[18] = {"W0/RB1in", "W0/RB1out", "W0/RB2in", "W0/RB2out", "W0/RB3", "W0/RB4", "W1/RB1in", "W1/RB1out", "W1/RB2in", "W1/RB2out", "W1/RB3", "W1/RB4","W2/RB1in", "W2/RB1out", "W2/RB2in", "W2/RB2out", "W2/RB3", "W2/RB4"};
+std::string sumRPCf[8]  = {"RE12","RE13","RE22","RE23","RE32","RE33","RE42","RE43"};
 
 int r_CSC = 75, r1_CSC = 0, r2_CSC = 750; // we should do this with a precision of 5 cm ...
 int n_layers_csc = 6;
@@ -516,10 +500,10 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   bunchspacing    = iConfig.getUntrackedParameter<double>("BunchSpacing");
   comenergy       = iConfig.getUntrackedParameter<double>("COMEnergy");
   maxsimtime      = iConfig.getUntrackedParameter<double>("MaxSimTime");
-  varEDepCuteV    = iConfig.getUntrackedParameter<double>("VarEDepCuteV");
+  edepcut30eV     = iConfig.getUntrackedParameter<bool>("EDepCut30eV");
   phys_debug      = iConfig.getUntrackedParameter<bool>("PhysicsDebug");
   tech_debug      = iConfig.getUntrackedParameter<bool>("TechnicDebug");
-
+  area_debug      = false;
   outputfile      = new TFile(rootFileName.c_str(), "RECREATE" );
 
   // required for 7XY: registration of the data access
@@ -527,287 +511,70 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   SIMTrack_Token  = consumes<edm::SimTrackContainer>(edm::InputTag("g4SimHits"));
   SIMVertex_Token = consumes<edm::SimVertexContainer>(edm::InputTag("g4SimHits")); // or consumes<std::vector<SimVertex>>
 
-  cscGeom_Token = esConsumes<CSCGeometry, MuonGeometryRecord>();
-  dtGeom_Token  = esConsumes<DTGeometry,  MuonGeometryRecord>();
-  gemGeom_Token = esConsumes<GEMGeometry, MuonGeometryRecord>();
-  rpcGeom_Token = esConsumes<RPCGeometry, MuonGeometryRecord>();
-
   if(tech_debug) std::cout<<"[MyNeutronSimHitAnalyzer :: Constructor]"<<std::endl;
   
   TDir_Muon_hits_deposits = new TDirectoryFile("Muon_hits_deposits", "Muon_hits_deposits");
+  TDir_Muon_hits_summary  = new TDirectoryFile("Muon_hits_summary",  "Muon_hits_summary");
   TDir_Muon_XY_RZ_views   = new TDirectoryFile("Muon_XY_RZ_views",   "Muon_XY_RZ_views");
   TDir_Muon_hit_info      = new TDirectoryFile("Muon_hit_info",      "Muon_hit_info");
   TDir_Muon_entry_info    = new TDirectoryFile("Muon_entry_info",    "Muon_entry_info");
   TDir_Muon_rates         = new TDirectoryFile("Muon_rates",         "Muon_rates");
   // TDir_Muon_Barrel_asymm  = new TDirectoryFile("Muon_Barrel_asymm",  "Muon_Barrel_assym");
-  TDir_Muon_hits_radius  = new TDirectoryFile("Muon_hits_radius",  "Muon_hits_radius");
-  TDir_Muon_hits_etapart = new TDirectoryFile("Muon_hits_etapart", "Muon_hits_etapart");
-  TDir_Muon_hits_Nuclei  = new TDirectoryFile("Muon_hits_Nuclei", "Muon_hits_Nuclei");
-
-
-
-  ME0_el_hits_R  = new TH1F("ME0_el_hits_R",  "Simhit Radius :: ME0 :: Electrons",       90, 60, 150);
-  ME0_mu_hits_R  = new TH1F("ME0_mu_hits_R",  "Simhit Radius :: ME0 :: Muons",           90, 60, 150);
-  ME0_pi_hits_R  = new TH1F("ME0_pi_hits_R",  "Simhit Radius :: ME0 :: Pions",           90, 60, 150);
-  ME0_ka_hits_R  = new TH1F("ME0_ka_hits_R",  "Simhit Radius :: ME0 :: Kaons",           90, 60, 150);
-  ME0_p_hits_R   = new TH1F("ME0_p_hits_R",   "Simhit Radius :: ME0 :: Protons",         90, 60, 150);
-  ME0_n_hits_R   = new TH1F("ME0_n_hits_R",   "Simhit Radius :: ME0 :: Neutrons",        90, 60, 150);
-  ME0_g_hits_R   = new TH1F("ME0_g_hits_R",   "Simhit Radius :: ME0 :: Photons",         90, 60, 150);
-  ME0_N_hits_R   = new TH1F("ME0_N_hits_R",   "Simhit Radius :: ME0 :: Nuclei",          90, 60, 150);
-  ME0_OH_hits_R  = new TH1F("ME0_OH_hits_R",  "Simhit Radius :: ME0 :: Other Hadrons",   90, 60, 150);
-  ME0_All_hits_R = new TH1F("ME0_All_hits_R", "Simhit Radius :: ME0 :: All Particles",   90, 60, 150);
-  ME0_HIP_hits_R = new TH1F("ME0_HIP_hits_R", "Simhit Radius :: ME0 :: Highly Ionizing", 90, 60, 150); 
-
-  G11_el_hits_R  = new TH1F("G11_el_hits_R",  "Simhit Radius :: GE11 :: Electrons",       121, 130, 251);
-  G11_mu_hits_R  = new TH1F("G11_mu_hits_R",  "Simhit Radius :: GE11 :: Muons",           121, 130, 251);
-  G11_pi_hits_R  = new TH1F("G11_pi_hits_R",  "Simhit Radius :: GE11 :: Pions",           121, 130, 251);
-  G11_ka_hits_R  = new TH1F("G11_ka_hits_R",  "Simhit Radius :: GE11 :: Kaons",           121, 130, 251);
-  G11_p_hits_R   = new TH1F("G11_p_hits_R",   "Simhit Radius :: GE11 :: Protons",         121, 130, 251);
-  G11_n_hits_R   = new TH1F("G11_n_hits_R",   "Simhit Radius :: GE11 :: Neutrons",        121, 130, 251);
-  G11_g_hits_R   = new TH1F("G11_g_hits_R",   "Simhit Radius :: GE11 :: Photons",         121, 130, 251);
-  G11_N_hits_R   = new TH1F("G11_N_hits_R",   "Simhit Radius :: GE11 :: Nuclei",          121, 130, 251);
-  G11_OH_hits_R  = new TH1F("G11_OH_hits_R",  "Simhit Radius :: GE11 :: Other Hadrons",   121, 130, 251);
-  G11_All_hits_R = new TH1F("G11_All_hits_R", "Simhit Radius :: GE11 :: All Particles",   121, 130, 251);
-  G11_HIP_hits_R = new TH1F("G11_HIP_hits_R", "Simhit Radius :: GE11 :: Highly Ionizing", 121, 130, 251); 
-
-  G21_el_hits_R  = new TH1F("G21_el_hits_R",  "Simhit Radius :: GE21 :: Electrons",       184, 136, 320);
-  G21_mu_hits_R  = new TH1F("G21_mu_hits_R",  "Simhit Radius :: GE21 :: Muons",           184, 136, 320);
-  G21_pi_hits_R  = new TH1F("G21_pi_hits_R",  "Simhit Radius :: GE21 :: Pions",           184, 136, 320);
-  G21_ka_hits_R  = new TH1F("G21_ka_hits_R",  "Simhit Radius :: GE21 :: Kaons",           184, 136, 320);
-  G21_p_hits_R   = new TH1F("G21_p_hits_R",   "Simhit Radius :: GE21 :: Protons",         184, 136, 320);
-  G21_n_hits_R   = new TH1F("G21_n_hits_R",   "Simhit Radius :: GE21 :: Neutrons",        184, 136, 320);
-  G21_g_hits_R   = new TH1F("G21_g_hits_R",   "Simhit Radius :: GE21 :: Photons",         184, 136, 320);
-  G21_N_hits_R   = new TH1F("G21_N_hits_R",   "Simhit Radius :: GE21 :: Nuclei",          184, 136, 320);
-  G21_OH_hits_R  = new TH1F("G21_OH_hits_R",  "Simhit Radius :: GE21 :: Other Hadrons",   184, 136, 320);
-  G21_All_hits_R = new TH1F("G21_All_hits_R", "Simhit Radius :: GE21 :: All Particles",   184, 136, 320);
-  G21_HIP_hits_R = new TH1F("G21_HIP_hits_R", "Simhit Radius :: GE21 :: Highly Ionizing", 184, 136, 320); 
-
-  G11_L1_el_hits_R  = new TH1F("G11_L1_el_hits_R",  "Simhit Radius :: G1E1 L1 :: Electrons",       121, 130, 251);
-  G11_L1_mu_hits_R  = new TH1F("G11_L1_mu_hits_R",  "Simhit Radius :: GE11 L1 :: Muons",           121, 130, 251);
-  G11_L1_pi_hits_R  = new TH1F("G11_L1_pi_hits_R",  "Simhit Radius :: GE11 L1 :: Pions",           121, 130, 251);
-  G11_L1_ka_hits_R  = new TH1F("G11_L1_ka_hits_R",  "Simhit Radius :: GE11 L1 :: Kaons",           121, 130, 251);
-  G11_L1_p_hits_R   = new TH1F("G11_L1_p_hits_R",   "Simhit Radius :: GE11 L1 :: Protons",         121, 130, 251);
-  G11_L1_n_hits_R   = new TH1F("G11_L1_n_hits_R",   "Simhit Radius :: GE11 L1 :: Neutrons",        121, 130, 251);
-  G11_L1_g_hits_R   = new TH1F("G11_L1_g_hits_R",   "Simhit Radius :: GE11 L1 :: Photons",         121, 130, 251);
-  G11_L1_N_hits_R   = new TH1F("G11_L1_N_hits_R",   "Simhit Radius :: GE11 L1 :: Nuclei",          121, 130, 251);
-  G11_L1_OH_hits_R  = new TH1F("G11_L1_OH_hits_R",  "Simhit Radius :: GE11 L1 :: Other Hadrons",   121, 130, 251);
-  G11_L1_All_hits_R = new TH1F("G11_L1_All_hits_R", "Simhit Radius :: GE11 L1 :: All Particles",   121, 130, 251);
-  G11_L1_HIP_hits_R = new TH1F("G11_L1_HIP_hits_R", "Simhit Radius :: GE11 L1 :: Highly Ionizing", 121, 130, 251); 
-
-  G11_L2_el_hits_R  = new TH1F("G11_L2_el_hits_R",  "Simhit Radius :: GE11 L2 :: Electrons",       121, 130, 251);
-  G11_L2_mu_hits_R  = new TH1F("G11_L2_mu_hits_R",  "Simhit Radius :: GE11 L2 :: Muons",           121, 130, 251);
-  G11_L2_pi_hits_R  = new TH1F("G11_L2_pi_hits_R",  "Simhit Radius :: GE11 L2 :: Pions",           121, 130, 251);
-  G11_L2_ka_hits_R  = new TH1F("G11_L2_ka_hits_R",  "Simhit Radius :: GE11 L2 :: Kaons",           121, 130, 251);
-  G11_L2_p_hits_R   = new TH1F("G11_L2_p_hits_R",   "Simhit Radius :: GE11 L2 :: Protons",         121, 130, 251);
-  G11_L2_n_hits_R   = new TH1F("G11_L2_n_hits_R",   "Simhit Radius :: GE11 L2 :: Neutrons",        121, 130, 251);
-  G11_L2_g_hits_R   = new TH1F("G11_L2_g_hits_R",   "Simhit Radius :: GE11 L2 :: Photons",         121, 130, 251);
-  G11_L2_N_hits_R   = new TH1F("G11_L2_N_hits_R",   "Simhit Radius :: GE11 L2 :: Nuclei",          121, 130, 251);
-  G11_L2_OH_hits_R  = new TH1F("G11_L2_OH_hits_R",  "Simhit Radius :: GE11 L2 :: Other Hadrons",   121, 130, 251);
-  G11_L2_All_hits_R = new TH1F("G11_L2_All_hits_R", "Simhit Radius :: GE11 L2 :: All Particles",   121, 130, 251);
-  G11_L2_HIP_hits_R = new TH1F("G11_L2_HIP_hits_R", "Simhit Radius :: GE11 L2 :: Highly Ionizing", 121, 130, 251); 
-
-  G11_Od_el_hits_R  = new TH1F("G11_Od_el_hits_R",  "Simhit Radius :: GE11 Odd :: Electrons",       121, 130, 251);
-  G11_Od_mu_hits_R  = new TH1F("G11_Od_mu_hits_R",  "Simhit Radius :: GE11 Odd :: Muons",           121, 130, 251);
-  G11_Od_pi_hits_R  = new TH1F("G11_Od_pi_hits_R",  "Simhit Radius :: GE11 Odd :: Pions",           121, 130, 251);
-  G11_Od_ka_hits_R  = new TH1F("G11_Od_ka_hits_R",  "Simhit Radius :: GE11 Odd :: Kaons",           121, 130, 251);
-  G11_Od_p_hits_R   = new TH1F("G11_Od_p_hits_R",   "Simhit Radius :: GE11 Odd :: Protons",         121, 130, 251);
-  G11_Od_n_hits_R   = new TH1F("G11_Od_n_hits_R",   "Simhit Radius :: GE11 Odd :: Neutrons",        121, 130, 251);
-  G11_Od_g_hits_R   = new TH1F("G11_Od_g_hits_R",   "Simhit Radius :: GE11 Odd :: Photons",         121, 130, 251);
-  G11_Od_N_hits_R   = new TH1F("G11_Od_N_hits_R",   "Simhit Radius :: GE11 Odd :: Nuclei",          121, 130, 251);
-  G11_Od_OH_hits_R  = new TH1F("G11_Od_OH_hits_R",  "Simhit Radius :: GE11 Odd :: Other Hadrons",   121, 130, 251);
-  G11_Od_All_hits_R = new TH1F("G11_Od_All_hits_R", "Simhit Radius :: GE11 Odd :: All Particles",   121, 130, 251);
-  G11_Od_HIP_hits_R = new TH1F("G11_Od_HIP_hits_R", "Simhit Radius :: GE11 Odd :: Highly Ionizing", 121, 130, 251); 
-
-  G11_Ev_el_hits_R  = new TH1F("G11_Ev_el_hits_R",  "Simhit Radius :: GE11 Even :: Electrons",       121, 130, 251);
-  G11_Ev_mu_hits_R  = new TH1F("G11_Ev_mu_hits_R",  "Simhit Radius :: GE11 Even :: Muons",           121, 130, 251);
-  G11_Ev_pi_hits_R  = new TH1F("G11_Ev_pi_hits_R",  "Simhit Radius :: GE11 Even :: Pions",           121, 130, 251);
-  G11_Ev_ka_hits_R  = new TH1F("G11_Ev_ka_hits_R",  "Simhit Radius :: GE11 Even :: Kaons",           121, 130, 251);
-  G11_Ev_p_hits_R   = new TH1F("G11_Ev_p_hits_R",   "Simhit Radius :: GE11 Even :: Protons",         121, 130, 251);
-  G11_Ev_n_hits_R   = new TH1F("G11_Ev_n_hits_R",   "Simhit Radius :: GE11 Even :: Neutrons",        121, 130, 251);
-  G11_Ev_g_hits_R   = new TH1F("G11_Ev_g_hits_R",   "Simhit Radius :: GE11 Even :: Photons",         121, 130, 251);
-  G11_Ev_N_hits_R   = new TH1F("G11_Ev_N_hits_R",   "Simhit Radius :: GE11 Even :: Nuclei",          121, 130, 251);
-  G11_Ev_OH_hits_R  = new TH1F("G11_Ev_OH_hits_R",  "Simhit Radius :: GE11 Even :: Other Hadrons",   121, 130, 251);
-  G11_Ev_All_hits_R = new TH1F("G11_Ev_All_hits_R", "Simhit Radius :: GE11 Even :: All Particles",   121, 130, 251);
-  G11_Ev_HIP_hits_R = new TH1F("G11_Ev_HIP_hits_R", "Simhit Radius :: GE11 Even :: Highly Ionizing", 121, 130, 251); 
-
-  M11_Od_el_hits_R  = new TH1F("M11_Od_el_hits_R",  "Simhit Radius :: ME11 Odd :: Electrons",       121, 130, 251);
-  M11_Od_mu_hits_R  = new TH1F("M11_Od_mu_hits_R",  "Simhit Radius :: ME11 Odd :: Muons",           121, 130, 251);
-  M11_Od_pi_hits_R  = new TH1F("M11_Od_pi_hits_R",  "Simhit Radius :: ME11 Odd :: Pions",           121, 130, 251);
-  M11_Od_ka_hits_R  = new TH1F("M11_Od_ka_hits_R",  "Simhit Radius :: ME11 Odd :: Kaons",           121, 130, 251);
-  M11_Od_p_hits_R   = new TH1F("M11_Od_p_hits_R",   "Simhit Radius :: ME11 Odd :: Protons",         121, 130, 251);
-  M11_Od_n_hits_R   = new TH1F("M11_Od_n_hits_R",   "Simhit Radius :: ME11 Odd :: Neutrons",        121, 130, 251);
-  M11_Od_g_hits_R   = new TH1F("M11_Od_g_hits_R",   "Simhit Radius :: ME11 Odd :: Photons",         121, 130, 251);
-  M11_Od_N_hits_R   = new TH1F("M11_Od_N_hits_R",   "Simhit Radius :: ME11 Odd :: Nuclei",          121, 130, 251);
-  M11_Od_OH_hits_R  = new TH1F("M11_Od_OH_hits_R",  "Simhit Radius :: ME11 Odd :: Other Hadrons",   121, 130, 251);
-  M11_Od_All_hits_R = new TH1F("M11_Od_All_hits_R", "Simhit Radius :: ME11 Odd :: All Particles",   121, 130, 251);
-  M11_Od_HIP_hits_R = new TH1F("M11_Od_HIP_hits_R", "Simhit Radius :: ME11 Odd :: Highly Ionizing", 121, 130, 251); 
-
-  M11_Ev_el_hits_R  = new TH1F("M11_Ev_el_hits_R",  "Simhit Radius :: ME11 Even :: Electrons",       121, 130, 251);
-  M11_Ev_mu_hits_R  = new TH1F("M11_Ev_mu_hits_R",  "Simhit Radius :: ME11 Even :: Muons",           121, 130, 251);
-  M11_Ev_pi_hits_R  = new TH1F("M11_Ev_pi_hits_R",  "Simhit Radius :: ME11 Even :: Pions",           121, 130, 251);
-  M11_Ev_ka_hits_R  = new TH1F("M11_Ev_ka_hits_R",  "Simhit Radius :: ME11 Even :: Kaons",           121, 130, 251);
-  M11_Ev_p_hits_R   = new TH1F("M11_Ev_p_hits_R",   "Simhit Radius :: ME11 Even :: Protons",         121, 130, 251);
-  M11_Ev_n_hits_R   = new TH1F("M11_Ev_n_hits_R",   "Simhit Radius :: ME11 Even :: Neutrons",        121, 130, 251);
-  M11_Ev_g_hits_R   = new TH1F("M11_Ev_g_hits_R",   "Simhit Radius :: ME11 Even :: Photons",         121, 130, 251);
-  M11_Ev_N_hits_R   = new TH1F("M11_Ev_N_hits_R",   "Simhit Radius :: ME11 Even :: Nuclei",          121, 130, 251);
-  M11_Ev_OH_hits_R  = new TH1F("M11_Ev_OH_hits_R",  "Simhit Radius :: ME11 Even :: Other Hadrons",   121, 130, 251);
-  M11_Ev_All_hits_R = new TH1F("M11_Ev_All_hits_R", "Simhit Radius :: ME11 Even :: All Particles",   121, 130, 251);
-  M11_Ev_HIP_hits_R = new TH1F("M11_Ev_HIP_hits_R", "Simhit Radius :: ME11 Even :: Highly Ionizing", 121, 130, 251); 
-
-
-
-
-
-
-  ME0_el_hits_E  = new TH1F("ME0_el_hits_E",  "Simhit EtaPart :: ME0 :: Electrons",       8, 0.5, 8.5);
-  ME0_mu_hits_E  = new TH1F("ME0_mu_hits_E",  "Simhit EtaPart :: ME0 :: Muons",           8, 0.5, 8.5);
-  ME0_pi_hits_E  = new TH1F("ME0_pi_hits_E",  "Simhit EtaPart :: ME0 :: Pions",           8, 0.5, 8.5);
-  ME0_ka_hits_E  = new TH1F("ME0_ka_hits_E",  "Simhit EtaPart :: ME0 :: Kaons",           8, 0.5, 8.5);
-  ME0_p_hits_E   = new TH1F("ME0_p_hits_E",   "Simhit EtaPart :: ME0 :: Protons",         8, 0.5, 8.5);
-  ME0_n_hits_E   = new TH1F("ME0_n_hits_E",   "Simhit EtaPart :: ME0 :: Neutrons",        8, 0.5, 8.5);
-  ME0_g_hits_E   = new TH1F("ME0_g_hits_E",   "Simhit EtaPart :: ME0 :: Photons",         8, 0.5, 8.5);
-  ME0_N_hits_E   = new TH1F("ME0_N_hits_E",   "Simhit EtaPart :: ME0 :: Nuclei",          8, 0.5, 8.5);
-  ME0_OH_hits_E  = new TH1F("ME0_OH_hits_E",  "Simhit EtaPart :: ME0 :: Other Hadrons",   8, 0.5, 8.5);
-  ME0_All_hits_E = new TH1F("ME0_All_hits_E", "Simhit EtaPart :: ME0 :: All Particles",   8, 0.5, 8.5);
-  ME0_HIP_hits_E = new TH1F("ME0_HIP_hits_E", "Simhit EtaPart :: ME0 :: Highly Ionizing", 8, 0.5, 8.5); 
-
-  G11_el_hits_E  = new TH1F("G11_el_hits_E",  "Simhit EtaPart :: GE11 :: Electrons",       8, 0.5, 8.5);
-  G11_mu_hits_E  = new TH1F("G11_mu_hits_E",  "Simhit EtaPart :: GE11 :: Muons",           8, 0.5, 8.5);
-  G11_pi_hits_E  = new TH1F("G11_pi_hits_E",  "Simhit EtaPart :: GE11 :: Pions",           8, 0.5, 8.5);
-  G11_ka_hits_E  = new TH1F("G11_ka_hits_E",  "Simhit EtaPart :: GE11 :: Kaons",           8, 0.5, 8.5);
-  G11_p_hits_E   = new TH1F("G11_p_hits_E",   "Simhit EtaPart :: GE11 :: Protons",         8, 0.5, 8.5);
-  G11_n_hits_E   = new TH1F("G11_n_hits_E",   "Simhit EtaPart :: GE11 :: Neutrons",        8, 0.5, 8.5);
-  G11_g_hits_E   = new TH1F("G11_g_hits_E",   "Simhit EtaPart :: GE11 :: Photons",         8, 0.5, 8.5);
-  G11_N_hits_E   = new TH1F("G11_N_hits_E",   "Simhit EtaPart :: GE11 :: Nuclei",          8, 0.5, 8.5);
-  G11_OH_hits_E  = new TH1F("G11_OH_hits_E",  "Simhit EtaPart :: GE11 :: Other Hadrons",   8, 0.5, 8.5);
-  G11_All_hits_E = new TH1F("G11_All_hits_E", "Simhit EtaPart :: GE11 :: All Particles",   8, 0.5, 8.5);
-  G11_HIP_hits_E = new TH1F("G11_HIP_hits_E", "Simhit EtaPart :: GE11 :: Highly Ionizing", 8, 0.5, 8.5); 
-
-  G21_el_hits_E  = new TH1F("G21_el_hits_E",  "Simhit EtaPart :: GE21 :: Electrons",       16, 0.5, 16.5);
-  G21_mu_hits_E  = new TH1F("G21_mu_hits_E",  "Simhit EtaPart :: GE21 :: Muons",           16, 0.5, 16.5);
-  G21_pi_hits_E  = new TH1F("G21_pi_hits_E",  "Simhit EtaPart :: GE21 :: Pions",           16, 0.5, 16.5);
-  G21_ka_hits_E  = new TH1F("G21_ka_hits_E",  "Simhit EtaPart :: GE21 :: Kaons",           16, 0.5, 16.5);
-  G21_p_hits_E   = new TH1F("G21_p_hits_E",   "Simhit EtaPart :: GE21 :: Protons",         16, 0.5, 16.5);
-  G21_n_hits_E   = new TH1F("G21_n_hits_E",   "Simhit EtaPart :: GE21 :: Neutrons",        16, 0.5, 16.5);
-  G21_g_hits_E   = new TH1F("G21_g_hits_E",   "Simhit EtaPart :: GE21 :: Photons",         16, 0.5, 16.5);
-  G21_N_hits_E   = new TH1F("G21_N_hits_E",   "Simhit EtaPart :: GE21 :: Nuclei",          16, 0.5, 16.5);
-  G21_OH_hits_E  = new TH1F("G21_OH_hits_E",  "Simhit EtaPart :: GE21 :: Other Hadrons",   16, 0.5, 16.5);
-  G21_All_hits_E = new TH1F("G21_All_hits_E", "Simhit EtaPart :: GE21 :: All Particles",   16, 0.5, 16.5);
-  G21_HIP_hits_E = new TH1F("G21_HIP_hits_E", "Simhit EtaPart :: GE21 :: Highly Ionizing", 16, 0.5, 16.5);
-
-  Muon_Nuclei_A_Z = new TH2F("Muon_Nuclei_A_Z", "Nuclei A vs Z :: All",  100, 0.5, 100.5, 200, 0.5, 200.5); 
-  RPCb_Nuclei_A_Z = new TH2F("RPCb_Nuclei_A_Z", "Nuclei A vs Z :: RPCb", 100, 0.5, 100.5, 200, 0.5, 200.5); 
-  RPCf_Nuclei_A_Z = new TH2F("RPCf_Nuclei_A_Z", "Nuclei A vs Z :: RPCf", 100, 0.5, 100.5, 200, 0.5, 200.5); 
-  CSC_Nuclei_A_Z  = new TH2F("CSC_Nuclei_A_Z",  "Nuclei A vs Z :: CSC",  100, 0.5, 100.5, 200, 0.5, 200.5); 
-  DT_Nuclei_A_Z   = new TH2F("DT_Nuclei_A_Z",   "Nuclei A vs Z :: DT",   100, 0.5, 100.5, 200, 0.5, 200.5); 
-  GEM_Nuclei_A_Z  = new TH2F("GEM_Nuclei_A_Z",  "Nuclei A vs Z :: GEM",  100, 0.5, 100.5, 200, 0.5, 200.5); 
-  ME0_Nuclei_A_Z  = new TH2F("ME0_Nuclei_A_Z",  "Nuclei A vs Z :: ME0",  100, 0.5, 100.5, 200, 0.5, 200.5); 
-
-  Muon_Nuclei_A = new TH1F("Muon_Nuclei_A", "Nuclei A :: All",  200, 0.5, 200.5);
-  RPCb_Nuclei_A = new TH1F("RPCb_Nuclei_A", "Nuclei A :: RPCb", 200, 0.5, 200.5);
-  RPCf_Nuclei_A = new TH1F("RPCf_Nuclei_A", "Nuclei A :: RPCf", 200, 0.5, 200.5);
-  CSC_Nuclei_A  = new TH1F("CSC_Nuclei_A",  "Nuclei A :: CSC",  200, 0.5, 200.5);
-  DT_Nuclei_A   = new TH1F("DT_Nuclei_A",   "Nuclei A :: DT",   200, 0.5, 200.5); 
-  GEM_Nuclei_A  = new TH1F("GEM_Nuclei_A",  "Nuclei A :: GEM",  200, 0.5, 200.5); 
-  ME0_Nuclei_A  = new TH1F("ME0_Nuclei_A",  "Nuclei A :: ME0",  200, 0.5, 200.5); 
-
-  Muon_Nuclei_Z = new TH1F("Muon_Nuclei_Z", "Nuclei Z :: All",  100, 0.5, 100.5);
-  RPCb_Nuclei_Z = new TH1F("RPCb_Nuclei_Z", "Nuclei Z :: RPCb", 100, 0.5, 100.5);
-  RPCf_Nuclei_Z = new TH1F("RPCf_Nuclei_Z", "Nuclei Z :: RPCf", 100, 0.5, 100.5);
-  CSC_Nuclei_Z  = new TH1F("CSC_Nuclei_Z",  "Nuclei Z :: CSC",  100, 0.5, 100.5);
-  DT_Nuclei_Z   = new TH1F("DT_Nuclei_Z",   "Nuclei Z :: DT",   100, 0.5, 100.5); 
-  GEM_Nuclei_Z  = new TH1F("GEM_Nuclei_Z",  "Nuclei Z :: GEM",  100, 0.5, 100.5); 
-  ME0_Nuclei_Z  = new TH1F("ME0_Nuclei_Z",  "Nuclei Z :: ME0",  100, 0.5, 100.5); 
-
-  std::vector<TH1F*> NucListVec; 
-  Muon_Nuclei_List = new TH1F("Muon_Nuclei_List", "Nuclei List :: All",  21, 0.5, 21.5); NucListVec.push_back(Muon_Nuclei_List);
-  RPCb_Nuclei_List = new TH1F("RPCb_Nuclei_List", "Nuclei List :: RPCb", 21, 0.5, 21.5); NucListVec.push_back(RPCb_Nuclei_List);
-  RPCf_Nuclei_List = new TH1F("RPCf_Nuclei_List", "Nuclei List :: RPCf", 21, 0.5, 21.5); NucListVec.push_back(RPCf_Nuclei_List);
-  CSC_Nuclei_List  = new TH1F("CSC_Nuclei_List",  "Nuclei List :: CSC",  21, 0.5, 21.5); NucListVec.push_back(CSC_Nuclei_List);
-  DT_Nuclei_List   = new TH1F("DT_Nuclei_List",   "Nuclei List :: DT",   21, 0.5, 21.5); NucListVec.push_back(DT_Nuclei_List);
-  GEM_Nuclei_List  = new TH1F("GEM_Nuclei_List",  "Nuclei List :: GEM",  21, 0.5, 21.5); NucListVec.push_back(GEM_Nuclei_List);
-  ME0_Nuclei_List  = new TH1F("ME0_Nuclei_List",  "Nuclei List :: ME0",  21, 0.5, 21.5); NucListVec.push_back(ME0_Nuclei_List);
-  
-  for(int i=0; i<7; ++i) {
-    for(int j=0; j<21; ++j) {
-      NucListVec[i]->GetXaxis()->SetBinLabel(j+1,nuclei[j].c_str());
-    }
-  }
-
 
   // Simhit Time vs Ekin
   RPCb_el_hits = new TH2F("RPCb_el_hits", "Simhit time vs E_{kin} :: RPCb :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_mu_hits = new TH2F("RPCb_mu_hits", "Simhit time vs E_{kin} :: RPCb :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_pi_hits = new TH2F("RPCb_pi_hits", "Simhit time vs E_{kin} :: RPCb :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCb_ka_hits = new TH2F("RPCb_ka_hits", "Simhit time vs E_{kin} :: RPCb :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  RPCb_ka_hits = new TH2F("RPCb_ka_hits", "Simhit time vs E_{kin} :: RPCb :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_p_hits  = new TH2F("RPCb_p_hits",  "Simhit time vs E_{kin} :: RPCb :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_n_hits  = new TH2F("RPCb_n_hits",  "Simhit time vs E_{kin} :: RPCb :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_g_hits  = new TH2F("RPCb_g_hits",  "Simhit time vs E_{kin} :: RPCb :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCb_N_hits  = new TH2F("RPCb_N_hits",  "Simhit time vs E_{kin} :: RPCb :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCb_OH_hits = new TH2F("RPCb_OH_hits", "Simhit time vs E_{kin} :: RPCb :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCb_All_hits= new TH2F("RPCb_All_hits","Simhit time vs E_{kin} :: RPCb :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCb_HIP_hits= new TH2F("RPCb_HIP_hits","Simhit time vs E_{kin} :: RPCb :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-
 
   RPCf_el_hits = new TH2F("RPCf_el_hits", "Simhit time vs E_{kin} :: RPCf :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_mu_hits = new TH2F("RPCf_mu_hits", "Simhit time vs E_{kin} :: RPCf :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_pi_hits = new TH2F("RPCf_pi_hits", "Simhit time vs E_{kin} :: RPCf :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCf_ka_hits = new TH2F("RPCf_ka_hits", "Simhit time vs E_{kin} :: RPCf :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  RPCf_ka_hits = new TH2F("RPCf_ka_hits", "Simhit time vs E_{kin} :: RPCf :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_p_hits  = new TH2F("RPCf_p_hits",  "Simhit time vs E_{kin} :: RPCf :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_n_hits  = new TH2F("RPCf_n_hits",  "Simhit time vs E_{kin} :: RPCf :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_g_hits  = new TH2F("RPCf_g_hits",  "Simhit time vs E_{kin} :: RPCf :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   RPCf_N_hits  = new TH2F("RPCf_N_hits",  "Simhit time vs E_{kin} :: RPCf :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCf_OH_hits = new TH2F("RPCf_OH_hits", "Simhit time vs E_{kin} :: RPCf :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCf_All_hits= new TH2F("RPCf_All_hits","Simhit time vs E_{kin} :: RPCf :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  RPCf_HIP_hits= new TH2F("RPCf_HIP_hits","Simhit time vs E_{kin} :: RPCf :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
 
   CSC_el_hits = new TH2F("CSC_el_hits", "Simhit time vs E_{kin} :: CSC :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_mu_hits = new TH2F("CSC_mu_hits", "Simhit time vs E_{kin} :: CSC :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_pi_hits = new TH2F("CSC_pi_hits", "Simhit time vs E_{kin} :: CSC :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  CSC_ka_hits = new TH2F("CSC_ka_hits", "Simhit time vs E_{kin} :: CSC :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  CSC_ka_hits = new TH2F("CSC_ka_hits", "Simhit time vs E_{kin} :: CSC :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_p_hits  = new TH2F("CSC_p_hits",  "Simhit time vs E_{kin} :: CSC :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_n_hits  = new TH2F("CSC_n_hits",  "Simhit time vs E_{kin} :: CSC :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_g_hits  = new TH2F("CSC_g_hits",  "Simhit time vs E_{kin} :: CSC :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   CSC_N_hits  = new TH2F("CSC_N_hits",  "Simhit time vs E_{kin} :: CSC :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  CSC_OH_hits = new TH2F("CSC_OH_hits", "Simhit time vs E_{kin} :: CSC :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  CSC_All_hits= new TH2F("CSC_All_hits","Simhit time vs E_{kin} :: CSC :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  CSC_HIP_hits= new TH2F("CSC_HIP_hits","Simhit time vs E_{kin} :: CSC :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
 
   DT_el_hits = new TH2F("DT_el_hits", "Simhit time vs E_{kin} :: DT :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   DT_mu_hits = new TH2F("DT_mu_hits", "Simhit time vs E_{kin} :: DT :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   DT_pi_hits = new TH2F("DT_pi_hits", "Simhit time vs E_{kin} :: DT :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  DT_ka_hits = new TH2F("DT_ka_hits", "Simhit time vs E_{kin} :: DT :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  DT_p_hits  = new TH2F("DT_p_hits",  "Simhit time vs E_{kin} :: DT :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  DT_ka_hits = new TH2F("DT_ka_hits", "Simhit time vs E_{kin} :: DT :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  DT_p_hits  = new TH2F("DT_p_hits",  "Simhit time vs E_{kin} :: DT :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);\
   DT_n_hits  = new TH2F("DT_n_hits",  "Simhit time vs E_{kin} :: DT :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   DT_g_hits  = new TH2F("DT_g_hits",  "Simhit time vs E_{kin} :: DT :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   DT_N_hits  = new TH2F("DT_N_hits",  "Simhit time vs E_{kin} :: DT :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  DT_OH_hits = new TH2F("DT_OH_hits", "Simhit time vs E_{kin} :: DT :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  DT_All_hits= new TH2F("DT_All_hits","Simhit time vs E_{kin} :: DT :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  DT_HIP_hits= new TH2F("DT_HIP_hits","Simhit time vs E_{kin} :: DT :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
 
   GEM_el_hits = new TH2F("GEM_el_hits", "Simhit time vs E_{kin} :: GEM :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_mu_hits = new TH2F("GEM_mu_hits", "Simhit time vs E_{kin} :: GEM :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_pi_hits = new TH2F("GEM_pi_hits", "Simhit time vs E_{kin} :: GEM :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  GEM_ka_hits = new TH2F("GEM_ka_hits", "Simhit time vs E_{kin} :: GEM :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  GEM_ka_hits = new TH2F("GEM_ka_hits", "Simhit time vs E_{kin} :: GEM :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_p_hits  = new TH2F("GEM_p_hits",  "Simhit time vs E_{kin} :: GEM :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_n_hits  = new TH2F("GEM_n_hits",  "Simhit time vs E_{kin} :: GEM :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_g_hits  = new TH2F("GEM_g_hits",  "Simhit time vs E_{kin} :: GEM :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   GEM_N_hits  = new TH2F("GEM_N_hits",  "Simhit time vs E_{kin} :: GEM :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  GEM_OH_hits = new TH2F("GEM_OH_hits", "Simhit time vs E_{kin} :: GEM :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  GEM_All_hits= new TH2F("GEM_All_hits","Simhit time vs E_{kin} :: GEM :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  GEM_HIP_hits= new TH2F("GEM_HIP_hits","Simhit time vs E_{kin} :: GEM :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
 
   ME0_el_hits = new TH2F("ME0_el_hits", "Simhit time vs E_{kin} :: ME0 :: Electrons", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_mu_hits = new TH2F("ME0_mu_hits", "Simhit time vs E_{kin} :: ME0 :: Muons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_pi_hits = new TH2F("ME0_pi_hits", "Simhit time vs E_{kin} :: ME0 :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  ME0_ka_hits = new TH2F("ME0_ka_hits", "Simhit time vs E_{kin} :: ME0 :: Kaons",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
+  ME0_ka_hits = new TH2F("ME0_ka_hits", "Simhit time vs E_{kin} :: ME0 :: Pions",     n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_p_hits  = new TH2F("ME0_p_hits",  "Simhit time vs E_{kin} :: ME0 :: Protons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_n_hits  = new TH2F("ME0_n_hits",  "Simhit time vs E_{kin} :: ME0 :: Neutrons",  n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_g_hits  = new TH2F("ME0_g_hits",  "Simhit time vs E_{kin} :: ME0 :: Photons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
   ME0_N_hits  = new TH2F("ME0_N_hits",  "Simhit time vs E_{kin} :: ME0 :: Nuclei",    n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  ME0_OH_hits = new TH2F("ME0_OH_hits", "Simhit time vs E_{kin} :: ME0 :: Other Hadrons",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  ME0_All_hits= new TH2F("ME0_All_hits","Simhit time vs E_{kin} :: ME0 :: All particles",   n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
-  ME0_HIP_hits= new TH2F("ME0_HIP_hits","Simhit time vs E_{kin} :: ME0 :: Highly Ionizing", n_E, n1_E, n2_E, n_tof, n1_tof, n2_tof);
 
   RPCb_el_kins = new TH1F("RPCb_el_kins", "E_{deposit} :: RPCb :: Electrons", n_E, n1_E, n2_E);
   RPCb_mu_kins = new TH1F("RPCb_mu_kins", "E_{deposit} :: RPCb :: Muons",     n_E, n1_E, n2_E);
@@ -832,104 +599,57 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   RPCb_el_deposits = new TH2F("RPCb_el_deposits", "Simhit time vs E_{deposit} :: RPCb :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_mu_deposits = new TH2F("RPCb_mu_deposits", "Simhit time vs E_{deposit} :: RPCb :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_pi_deposits = new TH2F("RPCb_pi_deposits", "Simhit time vs E_{deposit} :: RPCb :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCb_ka_deposits = new TH2F("RPCb_ka_deposits", "Simhit time vs E_{deposit} :: RPCb :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  RPCb_ka_deposits = new TH2F("RPCb_ka_deposits", "Simhit time vs E_{deposit} :: RPCb :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_p_deposits  = new TH2F("RPCb_p_deposits",  "Simhit time vs E_{deposit} :: RPCb :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_n_deposits  = new TH2F("RPCb_n_deposits",  "Simhit time vs E_{deposit} :: RPCb :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_g_deposits  = new TH2F("RPCb_g_deposits",  "Simhit time vs E_{deposit} :: RPCb :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCb_N_deposits  = new TH2F("RPCb_N_deposits",  "Simhit time vs E_{deposit} :: RPCb :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCb_OH_deposits = new TH2F("RPCb_OH_deposits", "Simhit time vs E_{deposit} :: RPCb :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCb_All_deposits= new TH2F("RPCb_All_deposits","Simhit time vs E_{deposit} :: RPCb :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCb_HIP_deposits= new TH2F("RPCb_HIP_deposits","Simhit time vs E_{deposit} :: RPCb :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
   RPCf_el_deposits = new TH2F("RPCf_el_deposits", "Simhit time vs E_{deposit} :: RPCf :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_mu_deposits = new TH2F("RPCf_mu_deposits", "Simhit time vs E_{deposit} :: RPCf :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_pi_deposits = new TH2F("RPCf_pi_deposits", "Simhit time vs E_{deposit} :: RPCf :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCf_ka_deposits = new TH2F("RPCf_ka_deposits", "Simhit time vs E_{deposit} :: RPCf :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  RPCf_ka_deposits = new TH2F("RPCf_ka_deposits", "Simhit time vs E_{deposit} :: RPCf :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_p_deposits  = new TH2F("RPCf_p_deposits",  "Simhit time vs E_{deposit} :: RPCf :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_n_deposits  = new TH2F("RPCf_n_deposits",  "Simhit time vs E_{deposit} :: RPCf :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_g_deposits  = new TH2F("RPCf_g_deposits",  "Simhit time vs E_{deposit} :: RPCf :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   RPCf_N_deposits  = new TH2F("RPCf_N_deposits",  "Simhit time vs E_{deposit} :: RPCf :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCf_OH_deposits = new TH2F("RPCf_OH_deposits", "Simhit time vs E_{deposit} :: RPCf :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCf_All_deposits= new TH2F("RPCf_All_deposits","Simhit time vs E_{deposit} :: RPCf :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  RPCf_HIP_deposits= new TH2F("RPCf_HIP_deposits","Simhit time vs E_{deposit} :: RPCf :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
   CSC_el_deposits = new TH2F("CSC_el_deposits", "Simhit time vs E_{deposit} :: CSC :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_mu_deposits = new TH2F("CSC_mu_deposits", "Simhit time vs E_{deposit} :: CSC :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_pi_deposits = new TH2F("CSC_pi_deposits", "Simhit time vs E_{deposit} :: CSC :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  CSC_ka_deposits = new TH2F("CSC_ka_deposits", "Simhit time vs E_{deposit} :: CSC :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  CSC_ka_deposits = new TH2F("CSC_ka_deposits", "Simhit time vs E_{deposit} :: CSC :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_p_deposits  = new TH2F("CSC_p_deposits",  "Simhit time vs E_{deposit} :: CSC :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_n_deposits  = new TH2F("CSC_n_deposits",  "Simhit time vs E_{deposit} :: CSC :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_g_deposits  = new TH2F("CSC_g_deposits",  "Simhit time vs E_{deposit} :: CSC :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   CSC_N_deposits  = new TH2F("CSC_N_deposits",  "Simhit time vs E_{deposit} :: CSC :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  CSC_OH_deposits = new TH2F("CSC_OH_deposits", "Simhit time vs E_{deposit} :: CSC :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  CSC_All_deposits= new TH2F("CSC_All_deposits","Simhit time vs E_{deposit} :: CSC :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  CSC_HIP_deposits= new TH2F("CSC_HIP_deposits","Simhit time vs E_{deposit} :: CSC :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
   DT_el_deposits = new TH2F("DT_el_deposits", "Simhit time vs E_{deposit} :: DT :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_mu_deposits = new TH2F("DT_mu_deposits", "Simhit time vs E_{deposit} :: DT :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_pi_deposits = new TH2F("DT_pi_deposits", "Simhit time vs E_{deposit} :: DT :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  DT_ka_deposits = new TH2F("DT_ka_deposits", "Simhit time vs E_{deposit} :: DT :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  DT_ka_deposits = new TH2F("DT_ka_deposits", "Simhit time vs E_{deposit} :: DT :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_p_deposits  = new TH2F("DT_p_deposits",  "Simhit time vs E_{deposit} :: DT :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_n_deposits  = new TH2F("DT_n_deposits",  "Simhit time vs E_{deposit} :: DT :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_g_deposits  = new TH2F("DT_g_deposits",  "Simhit time vs E_{deposit} :: DT :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   DT_N_deposits  = new TH2F("DT_N_deposits",  "Simhit time vs E_{deposit} :: DT :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  DT_OH_deposits = new TH2F("DT_OH_deposits", "Simhit time vs E_{deposit} :: DT :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  DT_All_deposits= new TH2F("DT_All_deposits","Simhit time vs E_{deposit} :: DT :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  DT_HIP_deposits= new TH2F("DT_HIP_deposits","Simhit time vs E_{deposit} :: DT :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
   GEM_el_deposits = new TH2F("GEM_el_deposits", "Simhit time vs E_{deposit} :: GEM :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_mu_deposits = new TH2F("GEM_mu_deposits", "Simhit time vs E_{deposit} :: GEM :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_pi_deposits = new TH2F("GEM_pi_deposits", "Simhit time vs E_{deposit} :: GEM :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  GEM_ka_deposits = new TH2F("GEM_ka_deposits", "Simhit time vs E_{deposit} :: GEM :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  GEM_ka_deposits = new TH2F("GEM_ka_deposits", "Simhit time vs E_{deposit} :: GEM :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_p_deposits  = new TH2F("GEM_p_deposits",  "Simhit time vs E_{deposit} :: GEM :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_n_deposits  = new TH2F("GEM_n_deposits",  "Simhit time vs E_{deposit} :: GEM :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_g_deposits  = new TH2F("GEM_g_deposits",  "Simhit time vs E_{deposit} :: GEM :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   GEM_N_deposits  = new TH2F("GEM_N_deposits",  "Simhit time vs E_{deposit} :: GEM :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  GEM_OH_deposits = new TH2F("GEM_OH_deposits", "Simhit time vs E_{deposit} :: GEM :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  GEM_All_deposits= new TH2F("GEM_All_deposits","Simhit time vs E_{deposit} :: GEM :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  GEM_HIP_deposits= new TH2F("GEM_HIP_deposits","Simhit time vs E_{deposit} :: GEM :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
   ME0_el_deposits = new TH2F("ME0_el_deposits", "Simhit time vs E_{deposit} :: ME0 :: Electrons", n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_mu_deposits = new TH2F("ME0_mu_deposits", "Simhit time vs E_{deposit} :: ME0 :: Muons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_pi_deposits = new TH2F("ME0_pi_deposits", "Simhit time vs E_{deposit} :: ME0 :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  ME0_ka_deposits = new TH2F("ME0_ka_deposits", "Simhit time vs E_{deposit} :: ME0 :: Kaons",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
+  ME0_ka_deposits = new TH2F("ME0_ka_deposits", "Simhit time vs E_{deposit} :: ME0 :: Pions",     n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_p_deposits  = new TH2F("ME0_p_deposits",  "Simhit time vs E_{deposit} :: ME0 :: Protons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_n_deposits  = new TH2F("ME0_n_deposits",  "Simhit time vs E_{deposit} :: ME0 :: Neutrons",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_g_deposits  = new TH2F("ME0_g_deposits",  "Simhit time vs E_{deposit} :: ME0 :: Photons",   n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
   ME0_N_deposits  = new TH2F("ME0_N_deposits",  "Simhit time vs E_{deposit} :: ME0 :: Nuclei",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  ME0_OH_deposits = new TH2F("ME0_OH_deposits", "Simhit time vs E_{deposit} :: ME0 :: Other Hadrons",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  ME0_All_deposits= new TH2F("ME0_All_deposits","Simhit time vs E_{deposit} :: ME0 :: All Particles",    n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
-  ME0_HIP_deposits= new TH2F("ME0_HIP_deposits","Simhit time vs E_{deposit} :: ME0 :: Highly Ionizing",  n_D, n1_D, n2_D, n_tof, n1_tof, n2_tof);
 
-  // 1D Linear Energy Deposits
-  // Probably not necessary --- is implemented in MyME0SimHitAnalyzer
-  /*
-  GEM_el_lindep = new TH1F("GEM_el_lindep", "E_{deposit} :: GEM :: Electrons", n_FL, n1_FL, n2_FL);
-  GEM_mu_lindep = new TH1F("GEM_mu_lindep", "E_{deposit} :: GEM :: Muons",     n_FL, n1_FL, n2_FL);
-  GEM_pi_lindep = new TH1F("GEM_pi_lindep", "E_{deposit} :: GEM :: Pions",     n_FL, n1_FL, n2_FL);
-  GEM_ka_lindep = new TH1F("GEM_ka_lindep", "E_{deposit} :: GEM :: Kaons",     n_FL, n1_FL, n2_FL);
-  GEM_p_lindep  = new TH1F("GEM_p_lindep",  "E_{deposit} :: GEM :: Protons",   n_FL, n1_FL, n2_FL);
-  GEM_n_lindep  = new TH1F("GEM_n_lindep",  "E_{deposit} :: GEM :: Neutrons",  n_FL, n1_FL, n2_FL);
-  GEM_g_lindep  = new TH1F("GEM_g_lindep",  "E_{deposit} :: GEM :: Photons",   n_FL, n1_FL, n2_FL);
-  GEM_N_lindep  = new TH1F("GEM_N_lindep",  "E_{deposit} :: GEM :: Nuclei",    n_FL, n1_FL, n2_FL,);
-  GEM_OH_lindep = new TH1F("GEM_OH_lindep", "E_{deposit} :: GEM :: Other Hadrons",    n_FL, n1_FL, n2_FL);
-  GEM_All_lindep= new TH1F("GEM_All_lindep","E_{deposit} :: GEM :: All Particles",    n_FL, n1_FL, n2_FL);
-  GEM_HIP_lindep= new TH1F("GEM_HIP_lindep","E_{deposit} :: GEM :: Highly Ionizing",  n_FL, n1_FL, n2_FL);
-
-  ME0_el_lindep = new TH1F("ME0_el_lindep", "E_{deposit} :: ME0 :: Electrons", n_FL, n1_FL, n2_FL);
-  ME0_mu_lindep = new TH1F("ME0_mu_lindep", "E_{deposit} :: ME0 :: Muons",     n_FL, n1_FL, n2_FL);
-  ME0_pi_lindep = new TH1F("ME0_pi_lindep", "E_{deposit} :: ME0 :: Pions",     n_FL, n1_FL, n2_FL);
-  ME0_ka_lindep = new TH1F("ME0_ka_lindep", "E_{deposit} :: ME0 :: Kaons",     n_FL, n1_FL, n2_FL);
-  ME0_p_lindep  = new TH1F("ME0_p_lindep",  "E_{deposit} :: ME0 :: Protons",   n_FL, n1_FL, n2_FL);
-  ME0_n_lindep  = new TH1F("ME0_n_lindep",  "E_{deposit} :: ME0 :: Neutrons",  n_FL, n1_FL, n2_FL);
-  ME0_g_lindep  = new TH1F("ME0_g_lindep",  "E_{deposit} :: ME0 :: Photons",   n_FL, n1_FL, n2_FL);
-  ME0_N_lindep  = new TH1F("ME0_N_lindep",  "E_{deposit} :: ME0 :: Nuclei",    n_FL, n1_FL, n2_FL,);
-  ME0_OH_lindep = new TH1F("ME0_OH_lindep", "E_{deposit} :: ME0 :: Other Hadrons",    n_FL, n1_FL, n2_FL);
-  ME0_All_lindep= new TH1F("ME0_All_lindep","E_{deposit} :: ME0 :: All Particles",    n_FL, n1_FL, n2_FL);
-  ME0_HIP_lindep= new TH1F("ME0_HIP_lindep","E_{deposit} :: ME0 :: Highly Ionizing",  n_FL, n1_FL, n2_FL);
-  */ 
-
-  // Old 1D Logaritmic Energy Deposits
   RPCb_el_deps = new TH1F("RPCb_el_deps", "E_{deposit} :: RPCb :: Electrons", n_F, n1_F, n2_F);
   RPCb_mu_deps = new TH1F("RPCb_mu_deps", "E_{deposit} :: RPCb :: Muons",     n_F, n1_F, n2_F);
   RPCb_ha_deps = new TH1F("RPCb_ha_deps", "E_{deposit} :: RPCb :: Hadrons",   n_F, n1_F, n2_F);
@@ -948,25 +668,76 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   ME0_el_deps  = new TH1F("ME0_el_deps",  "E_{deposit} :: ME0 :: Electrons",  n_F, n1_F, n2_F);
   ME0_mu_deps  = new TH1F("ME0_mu_deps",  "E_{deposit} :: ME0 :: Muons",      n_F, n1_F, n2_F);
   ME0_ha_deps  = new TH1F("ME0_ha_deps",  "E_{deposit} :: ME0 :: Hadrons",    n_F, n1_F, n2_F);
+  // Reduce Bins with factor 10 ... n_tof (1100) --> m_tof (110) bins
+  RPCb_el_tof = new TH1F("RPCb_el_tof", "Time Of Flight :: RPCb :: Electrons", m_tof, n1_tof, n2_tof);
+  RPCb_mu_tof = new TH1F("RPCb_mu_tof", "Time Of Flight :: RPCb :: Muons",     m_tof, n1_tof, n2_tof);
+  RPCb_ha_tof = new TH1F("RPCb_ha_tof", "Time Of Flight :: RPCb :: Hadrons",   m_tof, n1_tof, n2_tof);
+  RPCf_el_tof = new TH1F("RPCf_el_tof", "Time Of Flight :: RPCf :: Electrons", m_tof, n1_tof, n2_tof);
+  RPCf_mu_tof = new TH1F("RPCf_mu_tof", "Time Of Flight :: RPCf :: Muons",     m_tof, n1_tof, n2_tof);
+  RPCf_ha_tof = new TH1F("RPCf_ha_tof", "Time Of Flight :: RPCf :: Hadrons",   m_tof, n1_tof, n2_tof);
+  CSC_el_tof  = new TH1F("CSC_el_tof",  "Time Of Flight :: CSC :: Electrons",  m_tof, n1_tof, n2_tof);
+  CSC_mu_tof  = new TH1F("CSC_mu_tof",  "Time Of Flight :: CSC :: Muons",      m_tof, n1_tof, n2_tof);
+  CSC_ha_tof  = new TH1F("CSC_ha_tof",  "Time Of Flight :: CSC :: Hadrons",    m_tof, n1_tof, n2_tof);
+  DT_el_tof   = new TH1F("DT_el_tof",   "Time Of Flight :: DT :: Electrons",   m_tof, n1_tof, n2_tof);
+  DT_mu_tof   = new TH1F("DT_mu_tof",   "Time Of Flight :: DT :: Muons",       m_tof, n1_tof, n2_tof);
+  DT_ha_tof   = new TH1F("DT_ha_tof",   "Time Of Flight :: DT :: Hadrons",     m_tof, n1_tof, n2_tof);
+  GEM_el_tof  = new TH1F("GEM_el_tof",  "Time Of Flight :: GEM :: Electrons",  m_tof, n1_tof, n2_tof);
+  GEM_mu_tof  = new TH1F("GEM_mu_tof",  "Time Of Flight :: GEM :: Muons",      m_tof, n1_tof, n2_tof);
+  GEM_ha_tof  = new TH1F("GEM_ha_tof",  "Time Of Flight :: GEM :: Hadrons",    m_tof, n1_tof, n2_tof);
+  ME0_el_tof  = new TH1F("ME0_el_tof",  "Time Of Flight :: ME0 :: Electrons",  m_tof, n1_tof, n2_tof);
+  ME0_mu_tof  = new TH1F("ME0_mu_tof",  "Time Of Flight :: ME0 :: Muons",      m_tof, n1_tof, n2_tof);
+  ME0_ha_tof  = new TH1F("ME0_ha_tof",  "Time Of Flight :: ME0 :: Hadrons",    m_tof, n1_tof, n2_tof);
 
-  RPCb_el_tof = new TH1F("RPCb_el_tof", "Time Of Flight :: RPCb :: Electrons", n_tof, n1_tof, n2_tof);
-  RPCb_mu_tof = new TH1F("RPCb_mu_tof", "Time Of Flight :: RPCb :: Muons",     n_tof, n1_tof, n2_tof);
-  RPCb_ha_tof = new TH1F("RPCb_ha_tof", "Time Of Flight :: RPCb :: Hadrons",   n_tof, n1_tof, n2_tof);
-  RPCf_el_tof = new TH1F("RPCf_el_tof", "Time Of Flight :: RPCf :: Electrons", n_tof, n1_tof, n2_tof);
-  RPCf_mu_tof = new TH1F("RPCf_mu_tof", "Time Of Flight :: RPCf :: Muons",     n_tof, n1_tof, n2_tof);
-  RPCf_ha_tof = new TH1F("RPCf_ha_tof", "Time Of Flight :: RPCf :: Hadrons",   n_tof, n1_tof, n2_tof);
-  CSC_el_tof  = new TH1F("CSC_el_tof",  "Time Of Flight :: CSC :: Electrons",  n_tof, n1_tof, n2_tof);
-  CSC_mu_tof  = new TH1F("CSC_mu_tof",  "Time Of Flight :: CSC :: Muons",      n_tof, n1_tof, n2_tof);
-  CSC_ha_tof  = new TH1F("CSC_ha_tof",  "Time Of Flight :: CSC :: Hadrons",    n_tof, n1_tof, n2_tof);
-  DT_el_tof   = new TH1F("DT_el_tof",   "Time Of Flight :: DT :: Electrons",   n_tof, n1_tof, n2_tof);
-  DT_mu_tof   = new TH1F("DT_mu_tof",   "Time Of Flight :: DT :: Muons",       n_tof, n1_tof, n2_tof);
-  DT_ha_tof   = new TH1F("DT_ha_tof",   "Time Of Flight :: DT :: Hadrons",     n_tof, n1_tof, n2_tof);
-  GEM_el_tof  = new TH1F("GEM_el_tof",  "Time Of Flight :: GEM :: Electrons",  n_tof, n1_tof, n2_tof);
-  GEM_mu_tof  = new TH1F("GEM_mu_tof",  "Time Of Flight :: GEM :: Muons",      n_tof, n1_tof, n2_tof);
-  GEM_ha_tof  = new TH1F("GEM_ha_tof",  "Time Of Flight :: GEM :: Hadrons",    n_tof, n1_tof, n2_tof);
-  ME0_el_tof  = new TH1F("ME0_el_tof",  "Time Of Flight :: ME0 :: Electrons",  n_tof, n1_tof, n2_tof);
-  ME0_mu_tof  = new TH1F("ME0_mu_tof",  "Time Of Flight :: ME0 :: Muons",      n_tof, n1_tof, n2_tof);
-  ME0_ha_tof  = new TH1F("ME0_ha_tof",  "Time Of Flight :: ME0 :: Hadrons",    n_tof, n1_tof, n2_tof);
+  Summary_DT_el_hits   = new TH1F("Summary_DT_el_hits",   "DT Electron Hits Summary", 12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_el_hits);
+  Summary_DT_mu_hits   = new TH1F("Summary_DT_mu_hits",   "DT Muon Hits Summary",     12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_mu_hits);
+  Summary_DT_p_hits    = new TH1F("Summary_DT_p_hits",    "DT Proton Hits Summary",   12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_p_hits);
+  Summary_DT_n_hits    = new TH1F("Summary_DT_n_hits",    "DT Neutron Hits Summary",  12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_n_hits);
+  Summary_DT_pi_hits   = new TH1F("Summary_DT_pi_hits",   "DT Pion Hits Summary",     12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_pi_hits);
+  Summary_DT_ka_hits   = new TH1F("Summary_DT_ka_hits",   "DT Kaon Hits Summary",     12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_ka_hits);
+  Summary_DT_g_hits    = new TH1F("Summary_DT_g_hits",    "DT Photon Hits Summary",   12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_g_hits);
+  Summary_DT_N_hits    = new TH1F("Summary_DT_N_hits",    "DT Nuclei Hits Summary",   12, 0.5, 12.5); Summary_DT.push_back(Summary_DT_N_hits);
+  for(int i=0; i<8; ++i) { for(int j=0; j<12; ++j) { Summary_DT[i]->GetXaxis()->SetBinLabel(j+1,sumDT[j].c_str()); } }
+  Summary_CSC_el_hits  = new TH1F("Summary_CSC_el_hits",   "CSC Electron Hits Summary", 9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_el_hits);
+  Summary_CSC_mu_hits  = new TH1F("Summary_CSC_mu_hits",   "CSC Muon Hits Summary",     9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_mu_hits);
+  Summary_CSC_p_hits   = new TH1F("Summary_CSC_p_hits",    "CSC Proton Hits Summary",   9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_p_hits);
+  Summary_CSC_n_hits   = new TH1F("Summary_CSC_n_hits",    "CSC Neutron Hits Summary",  9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_n_hits);
+  Summary_CSC_pi_hits  = new TH1F("Summary_CSC_pi_hits",   "CSC Pion Hits Summary",     9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_pi_hits);
+  Summary_CSC_ka_hits  = new TH1F("Summary_CSC_ka_hits",   "CSC Kaon Hits Summary",     9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_ka_hits);
+  Summary_CSC_g_hits   = new TH1F("Summary_CSC_g_hits",    "CSC Photon Hits Summary",   9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_g_hits);
+  Summary_CSC_N_hits   = new TH1F("Summary_CSC_N_hits",    "CSC Nuclei Hits Summary",   9, 0.5, 9.5); Summary_CSC.push_back(Summary_CSC_N_hits);
+  for(int i=0; i<8; ++i) { for(int j=0; j<9; ++j) { Summary_CSC[i]->GetXaxis()->SetBinLabel(j+1,sumCSC[j].c_str()); } }
+  Summary_RPCb_el_hits = new TH1F("Summary_RPCb_el_hits",   "RPCb Electron Hits Summary", 18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_el_hits);
+  Summary_RPCb_mu_hits = new TH1F("Summary_RPCb_mu_hits",   "RPCb Muon Hits Summary",     18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_mu_hits);
+  Summary_RPCb_p_hits  = new TH1F("Summary_RPCb_p_hits",    "RPCb Proton Hits Summary",   18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_p_hits);
+  Summary_RPCb_n_hits  = new TH1F("Summary_RPCb_n_hits",    "RPCb Neutron Hits Summary",  18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_n_hits);
+  Summary_RPCb_pi_hits = new TH1F("Summary_RPCb_pi_hits",   "RPCb Pion Hits Summary",     18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_pi_hits);
+  Summary_RPCb_ka_hits = new TH1F("Summary_RPCb_ka_hits",   "RPCb Kaon Hits Summary",     18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_ka_hits);
+  Summary_RPCb_g_hits  = new TH1F("Summary_RPCb_g_hits",    "RPCb Photon Hits Summary",   18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_g_hits);
+  Summary_RPCb_N_hits  = new TH1F("Summary_RPCb_N_hits",    "RPCb Nuclei Hits Summary",   18, 0.5, 18.5); Summary_RPCb.push_back(Summary_RPCb_N_hits);
+  for(int i=0; i<8; ++i) { for(int j=0; j<18; ++j) { Summary_RPCb[i]->GetXaxis()->SetBinLabel(j+1,sumRPCb[j].c_str()); } }
+  Summary_RPCf_el_hits = new TH1F("Summary_RPCf_el_hits",   "RPCf Electron Hits Summary", 8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_el_hits);
+  Summary_RPCf_mu_hits = new TH1F("Summary_RPCf_mu_hits",   "RPCf Muon Hits Summary",     8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_mu_hits);
+  Summary_RPCf_p_hits  = new TH1F("Summary_RPCf_p_hits",    "RPCf Proton Hits Summary",   8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_p_hits);
+  Summary_RPCf_n_hits  = new TH1F("Summary_RPCf_n_hits",    "RPCf Neutron Hits Summary",  8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_n_hits);
+  Summary_RPCf_pi_hits = new TH1F("Summary_RPCf_pi_hits",   "RPCf Pion Hits Summary",     8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_pi_hits);
+  Summary_RPCf_ka_hits = new TH1F("Summary_RPCf_ka_hits",   "RPCf Kaon Hits Summary",     8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_ka_hits);
+  Summary_RPCf_g_hits  = new TH1F("Summary_RPCf_g_hits",    "RPCf Photon Hits Summary",   8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_g_hits);
+  Summary_RPCf_N_hits  = new TH1F("Summary_RPCf_N_hits",    "RPCf Nuclei Hits Summary",   8, 0.5, 8.5); Summary_RPCf.push_back(Summary_RPCf_N_hits);
+  for(int i=0; i<8; ++i) { for(int j=0; j<8; ++j) { Summary_RPCf[i]->GetXaxis()->SetBinLabel(j+1,sumRPCf[j].c_str()); } }
+  CrossCheck_DT_el_hits    = new TH2F("CrossCheck_DT_el_hits",    "DT Electron Hits Cross Check",   5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_DT_mu_hits    = new TH2F("CrossCheck_DT_mu_hits",    "DT Muon Hits Cross Check",       5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_DT_had_hits   = new TH2F("CrossCheck_DT_had_hits",   "DT Hadron Hits Cross Check",     5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_CSC_el_hits   = new TH2F("CrossCheck_CSC_el_hits",   "CSC Electron Hits Cross Check",  9, -4.5, 4.5, 3, 0.5, 3.5); 
+  CrossCheck_CSC_mu_hits   = new TH2F("CrossCheck_CSC_mu_hits",   "CSC Muon Hits Cross Check",      9, -4.5, 4.5, 3, 0.5, 3.5); 
+  CrossCheck_CSC_had_hits  = new TH2F("CrossCheck_CSC_had_hits",  "CSC Hadron Hits Cross Check",    9, -4.5, 4.5, 3, 0.5, 3.5); 
+  CrossCheck_RPCb_el_hits  = new TH2F("CrossCheck_RPCb_el_hits",  "RPCb Electron Hits Cross Check", 5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_RPCb_mu_hits  = new TH2F("CrossCheck_RPCb_mu_hits",  "RPCb Muon Hits Cross Check",     5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_RPCb_had_hits = new TH2F("CrossCheck_RPCb_had_hits", "RPCb Hadron Hits Cross Check",   5, -2.5, 2.5, 4, 0.5, 4.5); 
+  CrossCheck_RPCf_el_hits  = new TH2F("CrossCheck_RPCf_el_hits",  "RPCf Electron Hits Cross Check", 9, -4.5, 4.5, 3, 0.5, 3.5); 
+  CrossCheck_RPCf_mu_hits  = new TH2F("CrossCheck_RPCf_mu_hits",  "RPCf Muon Hits Cross Check",     9, -4.5, 4.5, 3, 0.5, 3.5); 
+  CrossCheck_RPCf_had_hits = new TH2F("CrossCheck_RPCf_had_hits", "RPCf Hadron Hits Cross Check",   9, -4.5, 4.5, 3, 0.5, 3.5); 
+
+
 
   RPCb_XY = new TH2F("RPCb_XY", "Simhits in XY :: RPCb", n_xy_x, n_xy_x1, n_xy_x2, n_xy_y, n_xy_y1, n_xy_y2);
   RPCb_RZ = new TH2F("RPCb_RZ", "Simhits in RZ :: RPCb", n_zr_z, n_zr_z1, n_zr_z2, n_zr_r, n_zr_r1, n_zr_r2);
@@ -1333,31 +1104,6 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   CSC_ha_HPL    = new TH1F("CSC_ha_HPL",  "Layers hit by Hadrons  :: CSC",  n_lay, n1_lay, n2_lay);
   DT_ha_HPL     = new TH1F("DT_ha_HPL",   "Layers hit by Hadrons  :: DT",   n_lay, n1_lay, n2_lay);
 
-  MB1_el_HPL = new TH1F("MB1_el_HPL",   "Layers hit by Electrons  :: DT MB1",   n_lay, n1_lay, n2_lay);
-  MB2_el_HPL = new TH1F("MB2_el_HPL",   "Layers hit by Electrons  :: DT MB2",   n_lay, n1_lay, n2_lay);
-  MB3_el_HPL = new TH1F("MB3_el_HPL",   "Layers hit by Electrons  :: DT MB3",   n_lay, n1_lay, n2_lay);
-  MB4_el_HPL = new TH1F("MB4_el_HPL",   "Layers hit by Electrons  :: DT MB4",   n_lay, n1_lay, n2_lay);
-  MB1_mu_HPL = new TH1F("MB1_mu_HPL",   "Layers hit by Muons  :: DT MB1",   n_lay, n1_lay, n2_lay);
-  MB2_mu_HPL = new TH1F("MB2_mu_HPL",   "Layers hit by Muons  :: DT MB2",   n_lay, n1_lay, n2_lay);
-  MB3_mu_HPL = new TH1F("MB3_mu_HPL",   "Layers hit by Muons  :: DT MB3",   n_lay, n1_lay, n2_lay);
-  MB4_mu_HPL = new TH1F("MB4_mu_HPL",   "Layers hit by Muons  :: DT MB4",   n_lay, n1_lay, n2_lay);
-  MB1_ha_HPL = new TH1F("MB1_ha_HPL",   "Layers hit by Hadrons  :: DT MB1",   n_lay, n1_lay, n2_lay);
-  MB2_ha_HPL = new TH1F("MB2_ha_HPL",   "Layers hit by Hadrons  :: DT MB2",   n_lay, n1_lay, n2_lay);
-  MB3_ha_HPL = new TH1F("MB3_ha_HPL",   "Layers hit by Hadrons  :: DT MB3",   n_lay, n1_lay, n2_lay);
-  MB4_ha_HPL = new TH1F("MB4_ha_HPL",   "Layers hit by Hadrons  :: DT MB4",   n_lay, n1_lay, n2_lay);
-
-  ME1_el_HPL = new TH1F("ME1_el_HPL",   "Layers hit by Electrons  :: CSC ME1",   n_lay, n1_lay, n2_lay);
-  ME2_el_HPL = new TH1F("ME2_el_HPL",   "Layers hit by Electrons  :: CSC ME2",   n_lay, n1_lay, n2_lay);
-  ME3_el_HPL = new TH1F("ME3_el_HPL",   "Layers hit by Electrons  :: CSC ME3",   n_lay, n1_lay, n2_lay);
-  ME4_el_HPL = new TH1F("ME4_el_HPL",   "Layers hit by Electrons  :: CSC ME4",   n_lay, n1_lay, n2_lay);
-  ME1_mu_HPL = new TH1F("ME1_mu_HPL",   "Layers hit by Muons  :: CSC ME1",   n_lay, n1_lay, n2_lay);
-  ME2_mu_HPL = new TH1F("ME2_mu_HPL",   "Layers hit by Muons  :: CSC ME2",   n_lay, n1_lay, n2_lay);
-  ME3_mu_HPL = new TH1F("ME3_mu_HPL",   "Layers hit by Muons  :: CSC ME3",   n_lay, n1_lay, n2_lay);
-  ME4_mu_HPL = new TH1F("ME4_mu_HPL",   "Layers hit by Muons  :: CSC ME4",   n_lay, n1_lay, n2_lay);
-  ME1_ha_HPL = new TH1F("ME1_ha_HPL",   "Layers hit by Hadrons  :: CSC ME1",   n_lay, n1_lay, n2_lay);
-  ME2_ha_HPL = new TH1F("ME2_ha_HPL",   "Layers hit by Hadrons  :: CSC ME2",   n_lay, n1_lay, n2_lay);
-  ME3_ha_HPL = new TH1F("ME3_ha_HPL",   "Layers hit by Hadrons  :: CSC ME3",   n_lay, n1_lay, n2_lay);
-  ME4_ha_HPL = new TH1F("ME4_ha_HPL",   "Layers hit by Hadrons  :: CSC ME4",   n_lay, n1_lay, n2_lay);
 
   CSC_ME1_area  = new TH1F("CSC_ME1_area",  "Area of CSC ME1 as function of R",  r_CSC, r1_CSC, r2_CSC);
   CSC_ME2_area  = new TH1F("CSC_ME2_area",  "Area of CSC ME2 as function of R",  r_CSC, r1_CSC, r2_CSC);
@@ -1424,6 +1170,8 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
 
   // Center of Mass Energy Label
   std::stringstream comlabelss; comlabelss<<"CMS Simulation #sqrt{s} = "<<comenergy<<" TeV"; std::string comlabel = comlabelss.str();
+  std::stringstream leftlabelss;  leftlabelss<<"CMS Simulation Preliminary";      std::string leftlabel  = leftlabelss.str();
+  std::stringstream rightlabelss; rightlabelss<<"#sqrt{s} = "<<comenergy<<" TeV"; std::string rightlabel = rightlabelss.str();
 
   // Legends
   double l1_x1, l1_y1, l1_x2, l1_y2;
@@ -1806,9 +1554,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   RPCf_n_hits ->Write(); 
   RPCf_g_hits ->Write(); 
   RPCf_N_hits ->Write(); 
-  RPCf_OH_hits ->Write(); 
-  RPCf_All_hits->Write(); 
-  RPCf_HIP_hits->Write(); 
 
   RPCb_el_hits->Write(); 
   RPCb_mu_hits->Write(); 
@@ -1818,9 +1563,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   RPCb_n_hits ->Write(); 
   RPCb_g_hits ->Write(); 
   RPCb_N_hits ->Write(); 
-  RPCb_OH_hits ->Write(); 
-  RPCb_All_hits->Write(); 
-  RPCb_HIP_hits->Write(); 
 
   CSC_el_hits->Write(); 
   CSC_mu_hits->Write(); 
@@ -1830,9 +1572,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   CSC_n_hits ->Write(); 
   CSC_g_hits ->Write(); 
   CSC_N_hits ->Write(); 
-  CSC_OH_hits ->Write(); 
-  CSC_All_hits->Write(); 
-  CSC_HIP_hits->Write(); 
 
   DT_el_hits->Write(); 
   DT_mu_hits->Write(); 
@@ -1842,9 +1581,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   DT_n_hits ->Write(); 
   DT_g_hits ->Write(); 
   DT_N_hits ->Write(); 
-  DT_OH_hits ->Write(); 
-  DT_All_hits->Write(); 
-  DT_HIP_hits->Write(); 
 
   GEM_el_hits->Write(); 
   GEM_mu_hits->Write(); 
@@ -1854,9 +1590,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   GEM_n_hits ->Write(); 
   GEM_g_hits ->Write(); 
   GEM_N_hits ->Write(); 
-  GEM_OH_hits ->Write(); 
-  GEM_All_hits->Write(); 
-  GEM_HIP_hits->Write(); 
 
   ME0_el_hits->Write(); 
   ME0_mu_hits->Write(); 
@@ -1866,9 +1599,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   ME0_n_hits ->Write(); 
   ME0_g_hits ->Write(); 
   ME0_N_hits ->Write(); 
-  ME0_OH_hits ->Write(); 
-  ME0_All_hits->Write(); 
-  ME0_HIP_hits->Write(); 
   // --------------------------- 
   outputfile->cd();
 
@@ -2056,9 +1786,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   RPCf_n_deposits ->Write(); 
   RPCf_g_deposits ->Write(); 
   RPCf_N_deposits ->Write(); 
-  RPCf_OH_deposits ->Write(); 
-  RPCf_All_deposits->Write(); 
-  RPCf_HIP_deposits->Write(); 
 
   RPCb_el_deposits->Write(); 
   RPCb_mu_deposits->Write(); 
@@ -2068,9 +1795,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   RPCb_n_deposits ->Write(); 
   RPCb_g_deposits ->Write(); 
   RPCb_N_deposits ->Write(); 
-  RPCb_OH_deposits ->Write(); 
-  RPCb_All_deposits->Write(); 
-  RPCb_HIP_deposits->Write(); 
 
   CSC_el_deposits->Write(); 
   CSC_mu_deposits->Write(); 
@@ -2080,9 +1804,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   CSC_n_deposits ->Write(); 
   CSC_g_deposits ->Write(); 
   CSC_N_deposits ->Write(); 
-  CSC_OH_deposits ->Write(); 
-  CSC_All_deposits->Write(); 
-  CSC_HIP_deposits->Write(); 
 
   DT_el_deposits->Write(); 
   DT_mu_deposits->Write(); 
@@ -2092,9 +1813,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   DT_n_deposits ->Write(); 
   DT_g_deposits ->Write(); 
   DT_N_deposits ->Write(); 
-  DT_OH_deposits ->Write(); 
-  DT_All_deposits->Write(); 
-  DT_HIP_deposits->Write(); 
 
   GEM_el_deposits->Write(); 
   GEM_mu_deposits->Write(); 
@@ -2104,9 +1822,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   GEM_n_deposits ->Write(); 
   GEM_g_deposits ->Write(); 
   GEM_N_deposits ->Write(); 
-  GEM_OH_deposits ->Write(); 
-  GEM_All_deposits->Write(); 
-  GEM_HIP_deposits->Write(); 
 
   ME0_el_deposits->Write(); 
   ME0_mu_deposits->Write(); 
@@ -2116,9 +1831,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   ME0_n_deposits ->Write(); 
   ME0_g_deposits ->Write(); 
   ME0_N_deposits ->Write(); 
-  ME0_OH_deposits ->Write(); 
-  ME0_All_deposits->Write(); 
-  ME0_HIP_deposits->Write(); 
   // --------------------------- 
   outputfile->cd();
 
@@ -2474,9 +2186,18 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   Canvas_CSC_hits_phi->SetTicks(1,1);
   Canvas_CSC_hits_phi->Write();
   Canvas_CSC_hits_phi->Print(pdfFileName.c_str());
+  outputfile->cd();
 
-
-
+  TDir_Muon_hits_summary->cd();
+ Summary_DT_el_hits->Write();  Summary_DT_mu_hits->Write();  Summary_DT_p_hits->Write();  Summary_DT_n_hits->Write();  Summary_DT_pi_hits->Write();  Summary_DT_ka_hits->Write();  Summary_DT_g_hits->Write();  Summary_DT_N_hits->Write();
+ Summary_CSC_el_hits->Write(); Summary_CSC_mu_hits->Write(); Summary_CSC_p_hits->Write(); Summary_CSC_n_hits->Write(); Summary_CSC_pi_hits->Write(); Summary_CSC_ka_hits->Write(); Summary_CSC_g_hits->Write(); Summary_CSC_N_hits->Write();
+ Summary_RPCb_el_hits->Write();Summary_RPCb_mu_hits->Write();Summary_RPCb_p_hits->Write();Summary_RPCb_n_hits->Write();Summary_RPCb_pi_hits->Write();Summary_RPCb_ka_hits->Write();Summary_RPCb_g_hits->Write();Summary_RPCb_N_hits->Write();
+ Summary_RPCf_el_hits->Write();Summary_RPCf_mu_hits->Write();Summary_RPCf_p_hits->Write();Summary_RPCf_n_hits->Write();Summary_RPCf_pi_hits->Write();Summary_RPCf_ka_hits->Write();Summary_RPCf_g_hits->Write();Summary_RPCf_N_hits->Write();
+ CrossCheck_DT_el_hits->Write();   CrossCheck_DT_mu_hits->Write();   CrossCheck_DT_had_hits->Write(); 
+ CrossCheck_CSC_el_hits->Write();  CrossCheck_CSC_mu_hits->Write();  CrossCheck_CSC_had_hits->Write(); 
+ CrossCheck_RPCb_el_hits->Write(); CrossCheck_RPCb_mu_hits->Write(); CrossCheck_RPCb_had_hits->Write(); 
+ CrossCheck_RPCf_el_hits->Write(); CrossCheck_RPCf_mu_hits->Write(); CrossCheck_RPCf_had_hits->Write(); 
+  outputfile->cd();
 
   // -----    Muon XZ plots    ----- //
   Canvas_Muon_RZ = new TCanvas("Canvas_Muon_RZ", "RZ-view of SimHits :: Muon", 600, 600);
@@ -2813,49 +2534,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   Muon_50ns_mu_RZ->Write();
   Muon_50ns_ha_RZ->Write();
   // --------------------------- 
-
-  TDir_Muon_hits_radius->cd();
-  // ---------------------------
-  ME0_el_hits_R->Write(); ME0_mu_hits_R->Write(); ME0_pi_hits_R->Write(); ME0_ka_hits_R->Write(); ME0_p_hits_R->Write();  
-  ME0_n_hits_R->Write();  ME0_g_hits_R->Write();  ME0_N_hits_R->Write();  ME0_OH_hits_R->Write(); ME0_All_hits_R->Write(); ME0_HIP_hits_R->Write();
-  G11_el_hits_R->Write(); G11_mu_hits_R->Write(); G11_pi_hits_R->Write(); G11_ka_hits_R->Write(); G11_p_hits_R->Write(); 
-  G11_n_hits_R->Write();  G11_g_hits_R->Write();  G11_N_hits_R->Write();  G11_OH_hits_R->Write(); G11_All_hits_R->Write(); G11_HIP_hits_R->Write();
-  G21_el_hits_R->Write(); G21_mu_hits_R->Write(); G21_pi_hits_R->Write(); G21_ka_hits_R->Write(); G21_p_hits_R->Write(); 
-  G21_n_hits_R->Write();  G21_g_hits_R->Write();  G21_N_hits_R->Write();  G21_OH_hits_R->Write(); G21_All_hits_R->Write(); G21_HIP_hits_R->Write();
-
-  G11_L1_el_hits_R->Write(); G11_L1_mu_hits_R->Write(); G11_L1_pi_hits_R->Write(); G11_L1_ka_hits_R->Write(); G11_L1_p_hits_R->Write(); 
-  G11_L1_n_hits_R->Write(); G11_L1_g_hits_R->Write(); G11_L1_N_hits_R->Write(); G11_L1_OH_hits_R->Write(); G11_L1_All_hits_R->Write(); G11_L1_HIP_hits_R->Write();
-  G11_L2_el_hits_R->Write(); G11_L2_mu_hits_R->Write(); G11_L2_pi_hits_R->Write(); G11_L2_ka_hits_R->Write(); G11_L2_p_hits_R->Write(); 
-  G11_L2_n_hits_R->Write(); G11_L2_g_hits_R->Write(); G11_L2_N_hits_R->Write(); G11_L2_OH_hits_R->Write(); G11_L2_All_hits_R->Write(); G11_L2_HIP_hits_R->Write();
-  G11_Od_el_hits_R->Write(); G11_Od_mu_hits_R->Write(); G11_Od_pi_hits_R->Write(); G11_Od_ka_hits_R->Write(); G11_Od_p_hits_R->Write(); 
-  G11_Od_n_hits_R->Write(); G11_Od_g_hits_R->Write(); G11_Od_N_hits_R->Write(); G11_Od_OH_hits_R->Write(); G11_Od_All_hits_R->Write(); G11_Od_HIP_hits_R->Write();
-  G11_Ev_el_hits_R->Write(); G11_Ev_mu_hits_R->Write(); G11_Ev_pi_hits_R->Write(); G11_Ev_ka_hits_R->Write(); G11_Ev_p_hits_R->Write(); 
-  G11_Ev_n_hits_R->Write(); G11_Ev_g_hits_R->Write(); G11_Ev_N_hits_R->Write(); G11_Ev_OH_hits_R->Write(); G11_Ev_All_hits_R->Write(); G11_Ev_HIP_hits_R->Write();
-  M11_Od_el_hits_R->Write(); M11_Od_mu_hits_R->Write(); M11_Od_pi_hits_R->Write(); M11_Od_ka_hits_R->Write(); M11_Od_p_hits_R->Write(); 
-  M11_Od_n_hits_R->Write(); M11_Od_g_hits_R->Write(); M11_Od_N_hits_R->Write(); M11_Od_OH_hits_R->Write(); M11_Od_All_hits_R->Write(); M11_Od_HIP_hits_R->Write();
-  M11_Ev_el_hits_R->Write(); M11_Ev_mu_hits_R->Write(); M11_Ev_pi_hits_R->Write(); M11_Ev_ka_hits_R->Write(); M11_Ev_p_hits_R->Write(); 
-  M11_Ev_n_hits_R->Write(); M11_Ev_g_hits_R->Write(); M11_Ev_N_hits_R->Write(); M11_Ev_OH_hits_R->Write(); M11_Ev_All_hits_R->Write(); M11_Ev_HIP_hits_R->Write();
-
-
-
-  // ---------------------------
-  TDir_Muon_hits_etapart->cd();
-  // ---------------------------
-  ME0_el_hits_E->Write(); ME0_mu_hits_E->Write(); ME0_pi_hits_E->Write(); ME0_ka_hits_E->Write(); ME0_p_hits_E->Write(); 
-  ME0_n_hits_E->Write();  ME0_g_hits_E->Write();  ME0_N_hits_E->Write();  ME0_OH_hits_E->Write(); ME0_All_hits_E->Write(); ME0_HIP_hits_E->Write();
-  G11_el_hits_E->Write(); G11_mu_hits_E->Write(); G11_pi_hits_E->Write(); G11_ka_hits_E->Write(); G11_p_hits_E->Write(); 
-  G11_n_hits_E->Write();  G11_g_hits_E->Write();  G11_N_hits_E->Write();  G11_OH_hits_E->Write(); G11_All_hits_E->Write(); G11_HIP_hits_E->Write();
-  G21_el_hits_E->Write(); G21_mu_hits_E->Write(); G21_pi_hits_E->Write(); G21_ka_hits_E->Write(); G21_p_hits_E->Write();   
-  G21_n_hits_E->Write();  G21_g_hits_E->Write();  G21_N_hits_E->Write();  G21_OH_hits_E->Write(); G21_All_hits_E->Write(); G21_HIP_hits_E->Write();
-
-
-  TDir_Muon_hits_Nuclei->cd();
-  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-  Muon_Nuclei_A_Z->Write(); RPCb_Nuclei_A_Z->Write(); RPCf_Nuclei_A_Z->Write(); CSC_Nuclei_A_Z->Write(); DT_Nuclei_A_Z->Write(); GEM_Nuclei_A_Z->Write(); ME0_Nuclei_A_Z->Write();
-  Muon_Nuclei_A->Write(); RPCb_Nuclei_A->Write(); RPCf_Nuclei_A->Write(); CSC_Nuclei_A->Write(); DT_Nuclei_A->Write(); GEM_Nuclei_A->Write(); ME0_Nuclei_A->Write();
-  Muon_Nuclei_Z->Write(); RPCb_Nuclei_Z->Write(); RPCf_Nuclei_Z->Write(); CSC_Nuclei_Z->Write(); DT_Nuclei_Z->Write(); GEM_Nuclei_Z->Write(); ME0_Nuclei_Z->Write();
-  Muon_Nuclei_List->Write(); RPCb_Nuclei_List->Write(); RPCf_Nuclei_List->Write(); CSC_Nuclei_List->Write(); DT_Nuclei_List->Write(); GEM_Nuclei_List->Write(); ME0_Nuclei_List->Write();
-
   outputfile->cd();
 
   /*
@@ -3514,8 +3192,6 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   ME41_hits_phi->Write();
   ME42_hits_phi->Write();
 
-  // ??? Probably I sacced twice ???
-  /*
   RPCb_el_deps->Write();
   RPCb_mu_deps->Write();
   RPCb_ha_deps->Write();
@@ -3534,7 +3210,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   ME0_el_deps->Write();
   ME0_mu_deps->Write();
   ME0_ha_deps->Write();
-  */
+
   RPCb_el_tof->Write();
   RPCb_mu_tof->Write();
   RPCb_ha_tof->Write();
@@ -3556,7 +3232,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // --------------------------- 
   outputfile->cd();
 
-  
+  /*
   TDir_Muon_hit_info->cd();
   // ------------------- 
   RPCb_HPC->Write();
@@ -3579,34 +3255,9 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   RPCf_ha_HPL->Write();
   CSC_ha_HPL->Write();
   DT_ha_HPL->Write();
-
-  MB1_el_HPL->Write();
-  MB2_el_HPL->Write();
-  MB3_el_HPL->Write();
-  MB4_el_HPL->Write();
-  MB1_mu_HPL->Write();
-  MB2_mu_HPL->Write();
-  MB3_mu_HPL->Write();
-  MB4_mu_HPL->Write();
-  MB1_ha_HPL->Write();
-  MB2_ha_HPL->Write();
-  MB3_ha_HPL->Write();
-  MB4_ha_HPL->Write();
-  ME1_el_HPL->Write();
-  ME2_el_HPL->Write();
-  ME3_el_HPL->Write();
-  ME4_el_HPL->Write();
-  ME1_mu_HPL->Write();
-  ME2_mu_HPL->Write();
-  ME3_mu_HPL->Write();
-  ME4_mu_HPL->Write();
-  ME1_ha_HPL->Write();
-  ME2_ha_HPL->Write();
-  ME3_ha_HPL->Write();
-  ME4_ha_HPL->Write();
   // ------------------- 
   outputfile->cd();
-  
+  */
   
   Canvas_RPCb_Layers = new TCanvas("Canvas_RPCb_Layers", "Number of Layers hit :: RPCb", 600, 600);
   Canvas_RPCf_Layers = new TCanvas("Canvas_RPCf_Layers", "Number of Layers hit :: RPCf", 600, 600);
@@ -3614,8 +3265,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   Canvas_DT_Layers   = new TCanvas("Canvas_DT_Layers",   "Number of Layers hit :: DT",   600, 600);
 
   Canvas_RPCb_Layers->cd();
-  // RPCb_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in RPCb system"); // original intention
-  RPCb_el_HPL->GetXaxis()->SetTitle("Hit Distribution in Layers in RPCb system");
+  RPCb_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in RPCb system");
   RPCb_el_HPL->GetYaxis()->SetTitle("Events");
   RPCb_el_HPL->SetTitle("Layers :: RPCb");
   RPCb_el_HPL->SetLineStyle(1);  RPCb_el_HPL->SetLineColor(kBlack);   RPCb_el_HPL->SetLineWidth(1);  RPCb_el_HPL->Draw("H");
@@ -3624,12 +3274,11 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2->Draw();
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPCb_Layers->SetTicks(1,1);
-  Canvas_RPCb_Layers->Write();
+  //Canvas_RPCb_Layers->Write();
   Canvas_RPCb_Layers->Print(pdfFileName.c_str());
 
   Canvas_RPCf_Layers->cd();
-  // RPCf_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in RPCf system"); // original intention
-  RPCf_el_HPL->GetXaxis()->SetTitle("Hit Distribution in Layers in RPCf system");
+  RPCf_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in RPCf system");
   RPCf_el_HPL->GetYaxis()->SetTitle("Events");
   RPCf_el_HPL->SetTitle("Layers :: RPCf");
   RPCf_el_HPL->SetLineStyle(1);  RPCf_el_HPL->SetLineColor(kBlack);   RPCf_el_HPL->SetLineWidth(1);  RPCf_el_HPL->Draw("H");
@@ -3638,13 +3287,12 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2->Draw();
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPCf_Layers->SetTicks(1,1);
-  Canvas_RPCf_Layers->Write();
+  // Canvas_RPCf_Layers->Write();
   Canvas_RPCf_Layers->Print(pdfFileName.c_str());
   
 
   Canvas_CSC_Layers->cd();
-  // CSC_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in CSC system"); // original intention
-  CSC_el_HPL->GetXaxis()->SetTitle("Hit Distribution in Layers in CSC system");
+  CSC_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in CSC system");
   CSC_el_HPL->GetYaxis()->SetTitle("Events");
   CSC_el_HPL->SetTitle("Layers :: CSC");
   CSC_el_HPL->SetLineStyle(1);  CSC_el_HPL->SetLineColor(kBlack);   CSC_el_HPL->SetLineWidth(1);  CSC_el_HPL->Draw("H");
@@ -3657,8 +3305,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   Canvas_CSC_Layers->Print(pdfFileName.c_str());
 
   Canvas_DT_Layers->cd();
-  // DT_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in DT system"); // original intention
-  DT_el_HPL->GetXaxis()->SetTitle("Hit Distribution in Layers DT system");
+  DT_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in DT system");
   DT_el_HPL->GetYaxis()->SetTitle("Events");
   DT_el_HPL->SetTitle("Layers :: DT");
   DT_el_HPL->SetLineStyle(1);  DT_el_HPL->SetLineColor(kBlack);   DT_el_HPL->SetLineWidth(1);  DT_el_HPL->Draw("H");
@@ -4140,6 +3787,26 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   pdfFileName = pdfFileNameBase + ".pdf]";
   Dummy->Print(pdfFileName.c_str());
 
+  // Print Out bookkeeping hits
+  // for(bookCSCit=bookCSChits.begin(); bookCSCit!=bookCSChits.end(); ++bookCSCit) {
+  //   std::cout<<"CSC DetId "<<bookCSCit->first<<" [p n e mu g pi ka nucl] = ["<<bookCSCit->second[0]<<" "<<bookCSCit->second[1]<<" "<<bookCSCit->second[2]
+  //	     <<" "<<bookCSCit->second[3]<<" "<<bookCSCit->second[4]<<" "<<bookCSCit->second[5]<<" "<<bookCSCit->second[6]<<" "<<bookCSCit->second[7]<<std::endl;
+  // } 
+
+  // Print Out bookkeeping of Nuclei hits
+  for(itCSCNuc=bookCSCNuclei.begin(); itCSCNuc!=bookCSCNuclei.end(); ++itCSCNuc) {
+    std::cout<<"CSC  | Nucleus "<<itCSCNuc->first<<" with "<<itCSCNuc->second<<" counts"<<std::endl;
+  }
+  for(itDTNuc=bookDTNuclei.begin(); itDTNuc!=bookDTNuclei.end(); ++itDTNuc) {
+    std::cout<<"DT   | Nucleus "<<itDTNuc->first<<" with "<<itDTNuc->second<<" counts"<<std::endl;
+  }
+  for(itRPCbNuc=bookRPCbNuclei.begin(); itRPCbNuc!=bookRPCbNuclei.end(); ++itRPCbNuc) {
+    std::cout<<"RPCb | Nucleus "<<itRPCbNuc->first<<" with "<<itRPCbNuc->second<<" counts"<<std::endl;
+  }
+  for(itRPCfNuc=bookRPCfNuclei.begin(); itRPCfNuc!=bookRPCfNuclei.end(); ++itRPCfNuc) {
+    std::cout<<"RPCf | Nucleus "<<itRPCfNuc->first<<" with "<<itRPCfNuc->second<<" counts"<<std::endl;
+  }
+
 }
 
 
@@ -4153,11 +3820,6 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 {
 
   if(tech_debug) std::cout<<"[MyNeutronSimHitAnalyzer :: Analyze]"<<std::endl;
-
-  const edm::ESTransientHandle<CSCGeometry> cscGeom = iSetup.getTransientHandle(cscGeom_Token);
-  const edm::ESTransientHandle<DTGeometry>  dtGeom  = iSetup.getTransientHandle(dtGeom_Token);
-  const edm::ESTransientHandle<GEMGeometry> gemGeom = iSetup.getTransientHandle(gemGeom_Token);
-  const edm::ESTransientHandle<RPCGeometry> rpcGeom = iSetup.getTransientHandle(rpcGeom_Token);
 
   // ===============================
   //      General Collections
@@ -4233,28 +3895,13 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     double log_time    = log10((*iHit).timeOfFlight());
     double log_energy  = log10((*iHit).momentumAtEntry().perp()*1000); // MeV
     double log_deposit = log10((*iHit).energyLoss()*1000000);          // keV
-    double e_deposit   = (*iHit).energyLoss()*1000000; // keV
 
-    // Highly Ionizing Particles
-    bool HIP = false;
-    if(e_deposit < varEDepCuteV*1E-3) continue;  // VarEDepCut is in eV
-    if(e_deposit > 30.) HIP = true;              // HIP definition is in keV
+    if(simdetid.det()!=DetId::Muon) continue;
+    if(edepcut30eV && (*iHit).energyLoss()*1000000 < 0.030) { std::cout<<"Muon SimHit with pid = "<<pid<<" and Edep = "<<(*iHit).energyLoss()*1000000<<" keV - omitted because < 30.0 eV"<<std::endl; continue;}
 
-
-    // Extract Nuclei (A,Z) :: Nuclear codes are given as 10-digit numbers: ±10LZZZAAAI. 
-    int I=0, A=0, Z=0;
-    if(abs(pid) > 999999999) {
-      I = (int) ( abs(pid) %10);
-      A = (int) ( ((abs(pid)-I) %10000) /10) ;
-      Z = (int) ( ((abs(pid)-A-I) %10000000) / 10000) ;
-      if(tech_debug) std::cout<<" SimHit with PDG ID = "<<pid<<" Extracted Isomer level I = "<<I<<" Atomic Number A = "<<A<<" Charge Number Z = "<<Z<<std::endl;
-      if(Z<21) Muon_Nuclei_List->Fill(Z);
-      else Muon_Nuclei_List->Fill(21);
-    }
-
-    if(tech_debug) std::cout<<"RPC Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::RPC){ // Only RPCs
 
+      if(tech_debug) std::cout<<"Simhit is a RPC SimHit"<<std::endl;
       // RPC Geometry
       // ============
       RPCDetId rollId(theDetUnitId);
@@ -4301,24 +3948,36 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       // count hits
       // ----------
-      int region = abs(rollId.region());
-      int station = abs(rollId.station())-1;
-      int ring = (region==0)? abs(rollId.ring()) : abs(rollId.ring())-1;
-      ++RPC_hits_array[region][station][ring];
-
+      int region = rollId.region();    // -1, 0, +1
+      int station = rollId.station();  // 1,2,3,4
+      int ring = rollId.ring();       // Barrel: -2 to +2 | Endcap: 1-3 (4 for ME1/1a)
+      int regionIt = abs(rollId.region());
+      int stationIt = abs(rollId.station())-1;
+      int ringIt = (regionIt==0)? abs(rollId.ring()) : abs(rollId.ring())-1;
+      ++RPC_hits_array[regionIt][stationIt][ringIt];
+      int layer = abs(rollId.layer());
 
       // RPCb
       // ----
       if(rollId.region() == 0) {
-	if(abs(pid)==11)      { RPCb_Electrons_SHPT->Fill(process);        RPCb_el_deps->Fill(log_deposit);  RPCb_el_kins->Fill(log_energy);  RPCb_el_tof->Fill(log_time);}
-	else if(abs(pid)==13) { RPCb_Muons_SHPT->Fill(process);            RPCb_mu_deps->Fill(log_deposit);  RPCb_mu_kins->Fill(log_energy);  RPCb_mu_tof->Fill(log_time);}
-	else                  { RPCb_Hadrons_SHPT->Fill(process);          RPCb_ha_deps->Fill(log_deposit);  RPCb_ha_kins->Fill(log_energy);  RPCb_ha_tof->Fill(log_time);}
+	if(abs(pid)==11)      { RPCb_Electrons_SHPT->Fill(process);        RPCb_el_deps->Fill(log_deposit);  RPCb_el_kins->Fill(log_energy);  RPCb_el_tof->Fill(log_time); CrossCheck_RPCb_el_hits->Fill(ring,station); }
+	else if(abs(pid)==13) { RPCb_Muons_SHPT->Fill(process);            RPCb_mu_deps->Fill(log_deposit);  RPCb_mu_kins->Fill(log_energy);  RPCb_mu_tof->Fill(log_time); CrossCheck_RPCb_mu_hits->Fill(ring,station); }
+	else                  { RPCb_Hadrons_SHPT->Fill(process);          RPCb_ha_deps->Fill(log_deposit);  RPCb_ha_kins->Fill(log_energy);  RPCb_ha_tof->Fill(log_time); CrossCheck_RPCb_had_hits->Fill(ring,station); }
 	RPCb_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());             
 	RPCb_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R));  
 	Muon_Barrel_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	Muon_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R));  
 	RPCb_EntryExit_All_Glob_dr->Fill(RPCGlobalEntryExitDR);
 	RPCb_EntryExit_All_Loc_dz->Fill(RPCLocalEntryExitDZ);
+
+	// summary bin
+	// int pseudostat = station*layer; if(station==2 && layer==1) pseudostat = 3; if(station>2) pseudostat = 4 + (station-2); // RB3 --> 5 RB4 -->6
+	// int binsumRPCb = 6*ring + pseudostat;
+	int binsumRPCb = 0;
+	if(station==1)      { if(layer==1)   binsumRPCb = 1; else binsumRPCb = 2;}
+	else if(station==2) { if(layer==1)   binsumRPCb = 3; else binsumRPCb = 4;}
+	else                { if(station==3) binsumRPCb = 5; else binsumRPCb = 6;}
+	binsumRPCb = 6*abs(ring) + binsumRPCb;
 
 	if((*iHit).timeOfFlight()<250) {
 	  if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R)); Muon_Barrel_000ns_el_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());}
@@ -4349,48 +4008,37 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  Muon_250ns_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R)); 
 	}
 
-	// All Hits and HIP Hits
-	RPCb_All_hits->Fill(log_energy,log_time); RPCb_All_deposits->Fill(log_deposit,log_time);
-	if(HIP) {
-	  RPCb_HIP_hits->Fill(log_energy,log_time); RPCb_HIP_deposits->Fill(log_deposit,log_time);
-	}
-	// Catalog Nuclei
-	if(abs(pid) > 999999999) {
-	  if(Z<21) RPCb_Nuclei_List->Fill(Z);
-	  else RPCb_Nuclei_List->Fill(21);
-	}
-
 	// std::cout<<"RPCb :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and deposit deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	// std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
-	if(abs(pid)==2212)      {RPCb_p_hits->Fill(log_energy,log_time); RPCb_p_deposits->Fill(log_deposit,log_time);}
-	else if(abs(pid)==2112) {RPCb_n_hits->Fill(log_energy,log_time); RPCb_n_deposits->Fill(log_deposit,log_time);}
+	if(abs(pid)==2212)      {RPCb_p_hits->Fill(log_energy,log_time); RPCb_p_deposits->Fill(log_deposit,log_time); Summary_RPCb_p_hits->Fill(binsumRPCb);}
+	else if(abs(pid)==2112) {RPCb_n_hits->Fill(log_energy,log_time); RPCb_n_deposits->Fill(log_deposit,log_time); Summary_RPCb_p_hits->Fill(binsumRPCb);}
 	else { 
 	  switch (abs(pid)%1000) {
-	    // leptopdfns
-	  case 11:  RPCb_el_hits->Fill(log_energy,log_time); RPCb_el_deposits->Fill(log_deposit,log_time); break;
-	  case 13:  RPCb_mu_hits->Fill(log_energy,log_time); RPCb_mu_deposits->Fill(log_deposit,log_time); break;
+	    // leptons
+	  case 11:  RPCb_el_hits->Fill(log_energy,log_time); RPCb_el_deposits->Fill(log_deposit,log_time); Summary_RPCb_el_hits->Fill(binsumRPCb); break;
+	  case 13:  RPCb_mu_hits->Fill(log_energy,log_time); RPCb_mu_deposits->Fill(log_deposit,log_time); Summary_RPCb_mu_hits->Fill(binsumRPCb); break;
 	    // Pions
-	  case 111: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); break;
-	  case 211: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); break;
-	  case 130: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); break;
+	  case 111: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); Summary_RPCb_pi_hits->Fill(binsumRPCb); break;
+	  case 211: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); Summary_RPCb_pi_hits->Fill(binsumRPCb); break;
+	  case 130: RPCb_pi_hits->Fill(log_energy,log_time); RPCb_pi_deposits->Fill(log_deposit,log_time); Summary_RPCb_pi_hits->Fill(binsumRPCb); break;
 	    // Kaons
-	  case 310: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 311: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 321: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 313: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 323: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 315: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 325: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 317: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 327: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 319: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 329: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); break;
+	  case 310: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 311: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 321: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 313: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 323: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 315: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 325: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 317: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 327: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 319: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
+	  case 329: RPCb_ka_hits->Fill(log_energy,log_time); RPCb_ka_deposits->Fill(log_deposit,log_time); Summary_RPCb_ka_hits->Fill(binsumRPCb); break;
 	    // Protons
 	    // case 2212: RPCb_p_hits->Fill(log_energy,log_time); RPCb_p_deposits->Fill(log_deposit,log_time); break;
 	    // Neutrons
 	    // case 2112: RPCb_n_hits->Fill(log_energy,log_time); RPCb_n_deposits->Fill(log_deposit,log_time); break;
 	    // Photons
-	  case 22:   RPCb_g_hits->Fill(log_energy,log_time); RPCb_g_deposits->Fill(log_deposit,log_time); break;
+	  case 22:   RPCb_g_hits->Fill(log_energy,log_time); RPCb_g_deposits->Fill(log_deposit,log_time); Summary_RPCb_g_hits->Fill(binsumRPCb); break;
 	    // Nucleons
 	    // Examples:
 	    // 1000060120 => A = 012, Z = 006 => Carbon
@@ -4398,18 +4046,12 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	    // 1000170360 => A = 036, Z = 017 => Chlorine
 	    // 1000010020 => A = 002, Z = 001 => Deuterium
 	    // 1000010030 => A = 003, Z = 001 => Tritium
-            // 0999999999
 	  default:   {
-	    if(abs(pid) > 999999999) { // Nucleons (10-digit numbers) 
-	      RPCb_N_hits->Fill(log_energy,log_time); RPCb_N_deposits->Fill(log_deposit,log_time);
-	      std::cout<<"RPCb :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and deposit deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-	    }
-	    else { // non-Nucleon ... catalogue as "Other Hadron" 
-	      RPCb_OH_hits->Fill(log_energy,log_time); RPCb_OH_deposits->Fill(log_deposit,log_time);
-	      std::cout<<"RPCf :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<<" [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-	    }
+	    RPCb_N_hits->Fill(log_energy,log_time); RPCb_N_deposits->Fill(log_deposit,log_time); Summary_RPCb_N_hits->Fill(binsumRPCb);
+	    std::cout<<"RPCb :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and deposit deposit "<<(*iHit).energyLoss()<< " [GeV]";
+	    std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
+	    if(bookRPCbNuclei.find(pid) == bookRPCbNuclei.end()) { bookRPCbNuclei[pid] = 1; }
+	    else bookRPCbNuclei[pid]++;
 	    break;
 	  }
 	  }
@@ -4423,16 +4065,24 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	if(rollId.station() == 3) { RB3_hits_phi->Fill(RPCGlobalPoint.phi()); }
 	if(rollId.station() == 4) { RB4_hits_phi->Fill(RPCGlobalPoint.phi()); /*RB4_hits_tof->Fill(log_time);*/}
       }
+
       if(rollId.region() != 0) {
-	if(abs(pid)==11)      { RPCf_Electrons_SHPT->Fill(process);        RPCf_el_deps->Fill(log_deposit);  RPCf_el_kins->Fill(log_energy);  RPCf_el_tof->Fill(log_time);}
-	else if(abs(pid)==13) { RPCf_Muons_SHPT->Fill(process);            RPCf_mu_deps->Fill(log_deposit);  RPCf_mu_kins->Fill(log_energy);  RPCf_mu_tof->Fill(log_time);}
-	else                  { RPCf_Hadrons_SHPT->Fill(process);          RPCf_ha_deps->Fill(log_deposit);  RPCf_ha_kins->Fill(log_energy);  RPCf_ha_tof->Fill(log_time);}
+
+	if(abs(pid)==11)      { RPCf_Electrons_SHPT->Fill(process);        RPCf_el_deps->Fill(log_deposit);  RPCf_el_kins->Fill(log_energy);  RPCf_el_tof->Fill(log_time); CrossCheck_RPCf_el_hits->Fill(region*station,ring); }
+	else if(abs(pid)==13) { RPCf_Muons_SHPT->Fill(process);            RPCf_mu_deps->Fill(log_deposit);  RPCf_mu_kins->Fill(log_energy);  RPCf_mu_tof->Fill(log_time); CrossCheck_RPCf_mu_hits->Fill(region*station,ring); }
+	else                  { RPCf_Hadrons_SHPT->Fill(process);          RPCf_ha_deps->Fill(log_deposit);  RPCf_ha_kins->Fill(log_energy);  RPCf_ha_tof->Fill(log_time); CrossCheck_RPCf_had_hits->Fill(region*station,ring); }
 	RPCf_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());             
 	RPCf_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R));  
 	Muon_Endcap_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	Muon_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R));  
 	RPCf_EntryExit_All_Glob_dz->Fill(RPCGlobalEntryExitDZ);
 	RPCf_EntryExit_All_Loc_dz->Fill(RPCLocalEntryExitDZ);
+
+	int binsumRPCf = 0;
+	if(station==1)      { if(ring==2) binsumRPCf=1; else binsumRPCf=2;}
+	else if(station==2) { if(ring==2) binsumRPCf=3; else binsumRPCf=4;}
+	else if(station==3) { if(ring==2) binsumRPCf=5; else binsumRPCf=6;}
+	else                { if(ring==2) binsumRPCf=7; else binsumRPCf=8;}
 
 	if((*iHit).timeOfFlight()<250) {
 	  if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R)); Muon_Endcap_000ns_el_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());}
@@ -4462,61 +4112,44 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  Muon_Endcap_250ns_XY->Fill(RPCGlobalPoint.x(), RPCGlobalPoint.y());
 	  Muon_250ns_RZ->Fill(fabs(RPCGlobalPoint.z()), fabs(RPC_GlobalPoint_R)); 
 	}
-
-	// All Hits and HIP Hits
-	RPCf_All_hits->Fill(log_energy,log_time); RPCf_All_deposits->Fill(log_deposit,log_time);
-	if(HIP) {
-	  RPCf_HIP_hits->Fill(log_energy,log_time); RPCf_HIP_deposits->Fill(log_deposit,log_time);
-	}
-	// Catalog Nuclei
-	if(abs(pid) > 999999999) {
-	  if(Z<21) RPCf_Nuclei_List->Fill(Z);
-	  else RPCf_Nuclei_List->Fill(21);
-	}
-
 	// std::cout<<"RPCf :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<<" [GeV]";
 	// std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
-	if(abs(pid)==2212)      {RPCf_p_hits->Fill(log_energy,log_time); RPCf_p_deposits->Fill(log_deposit,log_time);}
-	else if(abs(pid)==2112) {RPCf_n_hits->Fill(log_energy,log_time); RPCf_n_deposits->Fill(log_deposit,log_time);}
+	if(abs(pid)==2212)      {RPCf_p_hits->Fill(log_energy,log_time); RPCf_p_deposits->Fill(log_deposit,log_time); Summary_RPCf_p_hits->Fill(binsumRPCf);}
+	else if(abs(pid)==2112) {RPCf_n_hits->Fill(log_energy,log_time); RPCf_n_deposits->Fill(log_deposit,log_time); Summary_RPCf_n_hits->Fill(binsumRPCf);}
 	else { 
 	  switch (abs(pid)%1000) {
 	    // leptons
-	  case 11:  RPCf_el_hits->Fill(log_energy,log_time); RPCf_el_deposits->Fill(log_deposit,log_time); break;
-	  case 13:  RPCf_mu_hits->Fill(log_energy,log_time); RPCf_mu_deposits->Fill(log_deposit,log_time); break;
+	  case 11:  RPCf_el_hits->Fill(log_energy,log_time); RPCf_el_deposits->Fill(log_deposit,log_time); Summary_RPCf_el_hits->Fill(binsumRPCf); break;
+	  case 13:  RPCf_mu_hits->Fill(log_energy,log_time); RPCf_mu_deposits->Fill(log_deposit,log_time); Summary_RPCf_mu_hits->Fill(binsumRPCf); break;
 	    // Pions
-	  case 111: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); break;
-	  case 211: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); break;
-	  case 130: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); break;
+	  case 111: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); Summary_RPCf_pi_hits->Fill(binsumRPCf); break;
+	  case 211: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); Summary_RPCf_pi_hits->Fill(binsumRPCf); break;
+	  case 130: RPCf_pi_hits->Fill(log_energy,log_time); RPCf_pi_deposits->Fill(log_deposit,log_time); Summary_RPCf_pi_hits->Fill(binsumRPCf); break;
 	    // Kaons
-	  case 310: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 311: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 321: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 313: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 323: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 315: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 325: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 317: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 327: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 319: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
-	  case 329: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); break;
+	  case 310: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 311: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 321: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 313: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 323: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 315: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 325: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 317: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 327: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 319: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
+	  case 329: RPCf_ka_hits->Fill(log_energy,log_time); RPCf_ka_deposits->Fill(log_deposit,log_time); Summary_RPCf_ka_hits->Fill(binsumRPCf); break;
 	    // Protons
 	    // case 2212: RPCf_p_hits->Fill(log_energy,log_time); RPCf_p_deposits->Fill(log_deposit,log_time); break;
 	    // Neutrons
 	    // case 2112: RPCf_n_hits->Fill(log_energy,log_time); RPCf_n_deposits->Fill(log_deposit,log_time); break;
 	    // Photons
-	  case 22:   RPCf_g_hits->Fill(log_energy,log_time); RPCf_g_deposits->Fill(log_deposit,log_time); break;
+	  case 22:   RPCf_g_hits->Fill(log_energy,log_time); RPCf_g_deposits->Fill(log_deposit,log_time); Summary_RPCf_g_hits->Fill(binsumRPCf); break;
 	    // Nucleons
 	  default:   {
-	    if(abs(pid) > 999999999) { // Nucleons (10-digit numbers) 
-	      RPCf_N_hits->Fill(log_energy,log_time); RPCf_N_deposits->Fill(log_deposit,log_time);
-	      std::cout<<"RPCf :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and deposit deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-	    }
-	    else { // non-Nucleon ... catalogue as "Other Hadron" 
-	      RPCf_OH_hits->Fill(log_energy,log_time); RPCf_OH_deposits->Fill(log_deposit,log_time);
-	      std::cout<<"RPCf :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<<" [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-	    }
+	    RPCf_N_hits->Fill(log_energy,log_time); RPCf_N_deposits->Fill(log_deposit,log_time); Summary_RPCb_N_hits->Fill(binsumRPCf);
+	    std::cout<<"RPCf :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<<" [GeV]";
+	    std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
+	    if(bookRPCfNuclei.find(pid) == bookRPCfNuclei.end()) {bookRPCfNuclei[pid] = 1;}
+	    else bookRPCfNuclei[pid]++;
 	    break;
 	  }
 	  }
@@ -4536,9 +4169,26 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       }
     }
 
-    if(tech_debug) std::cout<<"CSC Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::CSC){ // Only CSCs
+      if(tech_debug) std::cout<<"SimHit is a CSC SimHit"<<std::endl;
       CSCDetId rollId(theDetUnitId);
+
+      // book CSC hits ... verify if chamber is already in bookkeeping system
+      // CSCDetId chamberId = rollId.chamberId();
+      // bookCSCit = bookCSChits.find(chamberId);
+      // if (bookCSCit == bookCSChits.end()) { // chamber not found
+      // std::vector<int> counts = {0,0,0,0,0,0,0,0}; // p,n,e,mu,g,pi,ka,nucl
+      // bookCSChits[chamberId] = counts;
+      // }      
+      int region  = rollId.endcap();   if(region==2) region=-1; // CSC endcap: 1,2 for +1,-1
+      int station = rollId.station();
+      int ring    = rollId.ring();     if(ring==4) ring=1;      // CSC ME1a
+      int binsumCSC = 0;
+      if(station==1)      {if(ring==1) binsumCSC=1; else if(ring==2) binsumCSC=2; else binsumCSC=3; }
+      else if(station==2) {if(ring==1) binsumCSC=4; else binsumCSC=5; }
+      else if(station==3) {if(ring==1) binsumCSC=6; else binsumCSC=7; }
+      else                {if(ring==1) binsumCSC=8; else binsumCSC=9; }
+
       GlobalPoint CSCGlobalPoint = cscGeom->idToDet(rollId)->toGlobal((*iHit).localPosition());
       GlobalPoint CSCGlobalEntry = cscGeom->idToDet(rollId)->toGlobal((*iHit).entryPoint());
       GlobalPoint CSCGlobalExit  = cscGeom->idToDet(rollId)->toGlobal((*iHit).exitPoint());
@@ -4547,19 +4197,11 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       double CSCGlobalEntryExitDR = fabs(sqrt(pow(CSCGlobalEntry.x(),2)+pow(CSCGlobalEntry.y(),2)) - sqrt(pow(CSCGlobalExit.x(),2)+pow(CSCGlobalExit.y(),2)));
       LocalVector GapVector = ((*iHit).exitPoint() - (*iHit).entryPoint());
       double GapLength= GapVector.mag();
-      int layer = rollId.layer();
-
-      bool isME11 = false, isME11odd = false, isME11even = false;
-      if(rollId.station() == 1 && (rollId.ring() == 1 || rollId.ring() == 4) ) {
-	isME11 = true;
-	if(rollId.chamber()%2==1) isME11odd = true; else isME11even = true;
-      }
-
 
       if (phys_debug) {
        std::cout<<"CSC SimHit in "<<std::setw(24)<<rollId<<" | time t = "<<std::setw(12)<<(*iHit).timeOfFlight()<<" | z = "<<std::setw(12)<<CSCGlobalPoint.z();
        std::cout<<" | r = "<<std::setw(12)<<CSCGlobalPoint.mag()<<" | phi = "<<std::setw(12)<<CSCGlobalPoint.phi()<<" | eta = "<<std::setw(12)<<CSCGlobalPoint.eta();
-       std::cout<<" | global position = "<<CSCGlobalPoint<<std::endl;
+       std::cout<<" | global position = "<<CSCGlobalPoint<<" | pid = "<<abs(pid)<<" | process type = "<<process<<std::endl;
       }
       /*
       if(fabs(CSCGlobalEntry.z()-CSCGlobalExit.z()) < 4) {
@@ -4581,6 +4223,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	// CSC_EntryExit_Electrons_Glob_dR->Fill(CSCGlobalEntryExitDR);
 	// CSC_EntryExit_Electrons_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ);
 	CSC_EntryExit_Electrons_Glob_dGap->Fill(GapLength); 
+	CrossCheck_CSC_el_hits->Fill(region*station,ring);
       }
       else if(abs(pid)==13) { 
 	CSC_Muons_SHPT->Fill(process);            CSC_mu_deps->Fill(log_deposit); CSC_mu_kins->Fill(log_energy);  CSC_mu_tof->Fill(log_time);
@@ -4588,7 +4231,8 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	CSC_EntryExit_Muons_Loc_dz->Fill(CSCLocalEntryExitDZ);
 	// CSC_EntryExit_Muons_Glob_dR->Fill(CSCGlobalEntryExitDR);
 	// CSC_EntryExit_Muons_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ);
-	CSC_EntryExit_Muons_Glob_dGap->Fill(GapLength); 
+	CSC_EntryExit_Muons_Glob_dGap->Fill(GapLength);
+	CrossCheck_CSC_mu_hits->Fill(region*station,ring);
       }
       else                  { 
 	CSC_Hadrons_SHPT->Fill(process);          CSC_ha_deps->Fill(log_deposit); CSC_ha_kins->Fill(log_energy);  CSC_ha_tof->Fill(log_time);
@@ -4597,7 +4241,9 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	// CSC_EntryExit_Hadrons_Glob_dR->Fill(CSCGlobalEntryExitDR);
 	// CSC_EntryExit_Hadrons_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ);
 	CSC_EntryExit_Hadrons_Glob_dGap->Fill(GapLength); 
+	CrossCheck_CSC_had_hits->Fill(region*station,ring);
       }
+
       CSC_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());             
       CSC_RZ->Fill(fabs(CSCGlobalPoint.z()), fabs(CSC_GlobalPoint_R));  
       Muon_Endcap_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
@@ -4635,11 +4281,13 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  // CSC hit rate plots
 	  if(rollId.station() == 1) { CSC_ME1_50ns_hits->Fill(fabs(CSC_GlobalPoint_R)); }
 	}
+
 	CSC_000ns_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
 	CSC_000ns_RZ->Fill(fabs(CSCGlobalPoint.z()), fabs(CSC_GlobalPoint_R));
 	Muon_Endcap_000ns_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());
 	Muon_000ns_RZ->Fill(fabs(CSCGlobalPoint.z()), fabs(CSC_GlobalPoint_R)); 
       }
+
       if((*iHit).timeOfFlight()>250) {
 	if(abs(pid)==11)      { Muon_250ns_el_RZ->Fill(fabs(CSCGlobalPoint.z()), fabs(CSC_GlobalPoint_R)); Muon_Endcap_000ns_el_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y()); CSC_Electrons_250ns_SHPT->Fill(process);}
 	else if(abs(pid)==13) { Muon_250ns_mu_RZ->Fill(fabs(CSCGlobalPoint.z()), fabs(CSC_GlobalPoint_R)); Muon_Endcap_250ns_mu_XY->Fill(CSCGlobalPoint.x(), CSCGlobalPoint.y());}
@@ -4654,8 +4302,8 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       
       // int pid           = (*iHit).particleType();
       // int process       = (*iHit).processType();
-      if(phys_debug) std::cout<<"SimHit from particle = "<<pid<<" created in process = "<<process<<" aka "<<proc[process]<<std::endl;
-      // There is a problem from here on ... 
+      if(phys_debug && process<15) std::cout<<"SimHit from particle = "<<pid<<" created in process = "<<process<<" aka "<<proc[process]<<std::endl; // Example of bad programming making you loose a lot of time !!!
+      if(phys_debug && process>14) std::cout<<"SimHit from particle = "<<pid<<" created in process = "<<process<<" aka unknown process"<<std::endl;
       /*
       // get track
       int trackIdG = (*iHit).trackId();                     // GEANT TRACK ID
@@ -4690,81 +4338,74 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       std::cout<<"TrackId = "<<trackIdG<<" VertexId = "<<vertexId<<" OriginId = "<<motherId<<" GenParicleId = "<<motherGenId<<std::endl;
       */
 
-      // All Hits and HIP Hits
-      CSC_All_hits->Fill(log_energy,log_time); CSC_All_deposits->Fill(log_deposit,log_time);
-      if(isME11) { if(isME11odd) {M11_Od_All_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_All_hits_R->Fill(CSC_GlobalPoint_R);} }
-      if(HIP) {
-	CSC_HIP_hits->Fill(log_energy,log_time); CSC_HIP_deposits->Fill(log_deposit,log_time);
-	if(isME11) { if(isME11odd) {M11_Od_HIP_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_HIP_hits_R->Fill(CSC_GlobalPoint_R);} }
-      }
-      // Catalog Nuclei
-      if(abs(pid) > 999999999) {
-	if(Z<21) CSC_Nuclei_List->Fill(Z);
-	else CSC_Nuclei_List->Fill(21);
-      }
-
       // std::cout<<"CSC :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
       // std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
       if(abs(pid)==2212)      {
+	Summary_CSC_p_hits->Fill(binsumCSC);
 	CSC_p_hits->Fill(log_energy,log_time); CSC_p_deposits->Fill(log_deposit,log_time); CSC_EntryExit_p_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); 
-        if(isME11) { if(isME11odd) {M11_Od_p_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_p_hits_R->Fill(CSC_GlobalPoint_R);} }
 	CSC_EntryExit_p_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_p_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR);
 	CSC_EntryExit_p_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_p_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); 
 	CSC_EntryExit_p_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);  CSC_EntryExit_p_GapLength_Deposit->Fill(log_deposit,GapLength);
 	if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_p_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_p_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
-
+	// (bookCSChits.find(chamberId)->second)[0]++;
       }
       else if(abs(pid)==2112) {
+	Summary_CSC_n_hits->Fill(binsumCSC);
 	CSC_n_hits->Fill(log_energy,log_time); CSC_n_deposits->Fill(log_deposit,log_time); CSC_EntryExit_n_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); 
-	if(isME11) { if(isME11odd) {M11_Od_n_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_n_hits_R->Fill(CSC_GlobalPoint_R);} }
 	CSC_EntryExit_n_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_n_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR);
 	CSC_EntryExit_n_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_n_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); 
 	CSC_EntryExit_n_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);  CSC_EntryExit_n_GapLength_Deposit->Fill(log_deposit,GapLength);
 	if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_n_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_n_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	// (bookCSChits.find(chamberId)->second)[1]++;
       }
       else {
 	switch (abs(pid)%1000) {
 	  // leptons
 	case 11:  
+	  Summary_CSC_el_hits->Fill(binsumCSC);
 	  CSC_el_hits->Fill(log_energy,log_time); CSC_el_deposits->Fill(log_deposit,log_time); CSC_EntryExit_el_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_el_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	  if(isME11) { if(isME11odd) {M11_Od_el_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_el_hits_R->Fill(CSC_GlobalPoint_R);} }
 	  CSC_EntryExit_el_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_el_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_el_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_el_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_el_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);  CSC_EntryExit_el_GapLength_Deposit->Fill(log_deposit,GapLength);
 	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_el_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_el_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  // (bookCSChits.find(chamberId)->second)[2]++;
 	  break;
 	case 13:  
+	  Summary_CSC_mu_hits->Fill(binsumCSC);
 	  CSC_mu_hits->Fill(log_energy,log_time); CSC_mu_deposits->Fill(log_deposit,log_time); CSC_EntryExit_mu_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_mu_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	  if(isME11) { if(isME11odd) {M11_Od_mu_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_mu_hits_R->Fill(CSC_GlobalPoint_R);} }
 	  CSC_EntryExit_mu_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_mu_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_mu_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_mu_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
 	  CSC_EntryExit_mu_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_mu_GapLength_Deposit->Fill(log_deposit,GapLength);
 	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_mu_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_mu_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  // (bookCSChits.find(chamberId)->second)[3]++;
 	  break;
 	  // Photons
-	case 22:   CSC_g_hits->Fill(log_energy,log_time); CSC_g_deposits->Fill(log_deposit,log_time); CSC_EntryExit_g_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_g_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	  if(isME11) { if(isME11odd) {M11_Od_g_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_g_hits_R->Fill(CSC_GlobalPoint_R);} }
+	case 22:
+	  Summary_CSC_g_hits->Fill(binsumCSC);
+	  CSC_g_hits->Fill(log_energy,log_time); CSC_g_deposits->Fill(log_deposit,log_time); CSC_EntryExit_g_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_g_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
 	  CSC_EntryExit_g_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_g_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_g_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_g_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
 	  CSC_EntryExit_g_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_g_GapLength_Deposit->Fill(log_deposit,GapLength);
 	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_g_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_g_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  // (bookCSChits.find(chamberId)->second)[4]++;
 	  break;
 	  // Pions
 	case 111:
 	case 211:
         case 130:
+	  Summary_CSC_pi_hits->Fill(binsumCSC);
 	  CSC_pi_hits->Fill(log_energy,log_time); CSC_pi_deposits->Fill(log_deposit,log_time); CSC_EntryExit_pi_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_pi_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	  if(isME11) { if(isME11odd) {M11_Od_pi_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_pi_hits_R->Fill(CSC_GlobalPoint_R);} }
 	  CSC_EntryExit_pi_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_pi_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_pi_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_pi_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
 	  CSC_EntryExit_pi_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_pi_GapLength_Deposit->Fill(log_deposit,GapLength);
 	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_pi_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_pi_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  // (bookCSChits.find(chamberId)->second)[5]++;
 	  break;
 	  // Kaons
 	case 310: 
@@ -4778,13 +4419,14 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	case 325:
 	case 327:
 	case 329:
+	  Summary_CSC_ka_hits->Fill(binsumCSC);
 	  CSC_ka_hits->Fill(log_energy,log_time); CSC_ka_deposits->Fill(log_deposit,log_time); CSC_EntryExit_ka_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_ka_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	  if(isME11) { if(isME11odd) {M11_Od_ka_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_ka_hits_R->Fill(CSC_GlobalPoint_R);} }
 	  CSC_EntryExit_ka_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_ka_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
 	  CSC_EntryExit_ka_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR);  CSC_EntryExit_ka_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
 	  CSC_EntryExit_ka_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_ka_GapLength_Deposit->Fill(log_deposit,GapLength);
 	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_ka_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
 	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_ka_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  // (bookCSChits.find(chamberId)->second)[6]++;
 	  break;
 	  // Protons
 	  // case 2212: CSC_p_hits->Fill(log_energy,log_time); CSC_p_deposits->Fill(log_deposit,log_time); break;
@@ -4793,25 +4435,19 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
 	  // Nucleons
 	default:   {
-	    if(abs(pid) > 999999999) { // Nucleons (10-digit numbers) 
-	      CSC_N_hits->Fill(log_energy,log_time); CSC_N_deposits->Fill(log_deposit,log_time); 
-	      if(isME11) { if(isME11odd) {M11_Od_N_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_N_hits_R->Fill(CSC_GlobalPoint_R);} }
-	      CSC_EntryExit_N_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_N_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
-	      CSC_EntryExit_N_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_N_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
-	      CSC_EntryExit_N_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_N_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
-	      CSC_EntryExit_N_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_N_GapLength_Deposit->Fill(log_deposit,GapLength);
-	      if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_N_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
-	      if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) 
-		CSC_EntryExit_N_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
-	      std::cout<<"CSC :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-	    }
-	    else { // non-Nucleon ... catalogue as "Other Hadron" 
-	      CSC_OH_hits->Fill(log_energy,log_time); CSC_OH_deposits->Fill(log_deposit,log_time); 
-	      if(isME11) { if(isME11odd) {M11_Od_OH_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_OH_hits_R->Fill(CSC_GlobalPoint_R);} }
-	      std::cout<<"CSC :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-	    }
+	  Summary_CSC_N_hits->Fill(binsumCSC);
+	  CSC_N_hits->Fill(log_energy,log_time); CSC_N_deposits->Fill(log_deposit,log_time); CSC_EntryExit_N_Deposit_dz->Fill(log_deposit,CSCGlobalEntryExitDZ); CSC_EntryExit_N_Time_dz->Fill(CSCGlobalEntryExitDZ,log_time);
+	  CSC_EntryExit_N_KinEn_dz->Fill(log_energy,CSCGlobalEntryExitDZ); CSC_EntryExit_N_Deposit_dR->Fill(log_deposit,CSCGlobalEntryExitDR); 
+	  CSC_EntryExit_N_KinEn_dR->Fill(log_energy,CSCGlobalEntryExitDR); CSC_EntryExit_N_dz_dR->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR);
+	  CSC_EntryExit_N_dz_dR_detail->Fill(CSCGlobalEntryExitDZ,CSCGlobalEntryExitDR); CSC_EntryExit_N_GapLength_Deposit->Fill(log_deposit,GapLength);
+	  if(CSCGlobalEntryExitDZ < 0.05) {CSC_EntryExit_N_Deposit_pidR2->Fill(log_deposit,3.141592*pow(CSCGlobalEntryExitDR*1.0/2,2)); }
+	  if((CSCGlobalEntryExitDZ > 0.65 && CSCGlobalEntryExitDZ < 0.75) || (CSCGlobalEntryExitDZ > 0.95 && CSCGlobalEntryExitDZ < 1.05)) CSC_EntryExit_N_Deposit_dRdz->Fill(log_deposit,pow(pow(CSCGlobalEntryExitDR,2)+pow(CSCGlobalEntryExitDZ,2),0.5));
+	  std::cout<<"CSC :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
+	  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
+	  // (bookCSChits.find(chamberId)->second)[7]++;
+	  // do some map with bookings for nucleon types
+	  if(bookCSCNuclei.find(pid) == bookCSCNuclei.end()) {bookCSCNuclei[pid] = 1;}
+	  else bookCSCNuclei[pid]++;
 	  break;
 	}
 	}
@@ -4846,39 +4482,22 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // int trackIdC = geantToIndex.find(trackIdG)->second;   // CMSSW VECTOR ID
       // const SimTrack& track = theSimTracks[trackIdC]; 
       // ------------------------------------------------------------------
-      if(abs(pid)==11) {
-	CSC_el_HPL->Fill(layer);
-	if(rollId.station() == 1) ME1_el_HPL->Fill(layer);      
-	if(rollId.station() == 2) ME2_el_HPL->Fill(layer);      
-	if(rollId.station() == 3) ME3_el_HPL->Fill(layer);      
-	if(rollId.station() == 4) ME4_el_HPL->Fill(layer);      
-      }
-      else if(abs(pid)==13) {
-	CSC_mu_HPL->Fill(layer);
-	if(rollId.station() == 1) ME1_mu_HPL->Fill(layer);      
-	if(rollId.station() == 2) ME2_mu_HPL->Fill(layer);      
-	if(rollId.station() == 3) ME3_mu_HPL->Fill(layer);      
-	if(rollId.station() == 4) ME4_mu_HPL->Fill(layer);      
-      }
-      else {
-	CSC_ha_HPL->Fill(layer);
-	if(rollId.station() == 1) ME1_ha_HPL->Fill(layer);      
-	if(rollId.station() == 2) ME2_ha_HPL->Fill(layer);      
-	if(rollId.station() == 3) ME3_ha_HPL->Fill(layer);      
-	if(rollId.station() == 4) ME4_ha_HPL->Fill(layer);      
-      } 
     }
 
-    if(tech_debug) std::cout<<"DT Hits"<<std::endl;
     if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::DT){
+      if(tech_debug) std::cout<<"Simhit is a DT SimHit"<<std::endl;
       DTWireId wireId(theDetUnitId);
+      int station = wireId.station(); // MB1-4
+      int wheel = wireId.wheel();     // W-2 to W+2
+      int ring = abs(wireId.wheel()); // W0, W1, W2
+      int binsumDT = 4*ring+station;
+
       GlobalPoint DTGlobalPoint = dtGeom->idToDet(wireId)->toGlobal((*iHit).localPosition());
       GlobalPoint DTGlobalEntry = dtGeom->idToDet(wireId)->toGlobal((*iHit).entryPoint());
       GlobalPoint DTGlobalExit  = dtGeom->idToDet(wireId)->toGlobal((*iHit).exitPoint());
       // double DTGlobalEntryExitDZ = fabs(DTGlobalEntry.z()-DTGlobalExit.z());
       double DTGlobalEntryExitDR = fabs(sqrt(pow(DTGlobalEntry.x(),2)+pow(DTGlobalEntry.y(),2))-sqrt(pow(DTGlobalExit.x(),2)+pow(DTGlobalExit.y(),2)));
       double DTLocalEntryExitDZ  = fabs((*iHit).entryPoint().z()-(*iHit).exitPoint().z());
-      int layer = (wireId.superlayer()-1)*4+wireId.layer();
 
       // dtGeometry->idToDet(id)->surface().toGlobal(LocalPoint(point->displacement.x(), point->displacement.y(), point->displacement.z()));
       if (phys_debug) {
@@ -4887,9 +4506,9 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
        std::cout<<" | global position = "<<DTGlobalPoint<<std::endl;
       }
       double DT_GlobalPoint_R = sqrt(pow(DTGlobalPoint.x(),2)+pow(DTGlobalPoint.y(),2));
-      if(abs(pid)==11)      { DT_Electrons_SHPT->Fill(process);        DT_el_deps->Fill(log_deposit);  DT_el_kins->Fill(log_energy);  DT_el_tof->Fill(log_time);}
-      else if(abs(pid)==13) { DT_Muons_SHPT->Fill(process);            DT_mu_deps->Fill(log_deposit);  DT_mu_kins->Fill(log_energy);  DT_mu_tof->Fill(log_time);}
-      else                  { DT_Hadrons_SHPT->Fill(process);          DT_ha_deps->Fill(log_deposit);  DT_ha_kins->Fill(log_energy);  DT_ha_tof->Fill(log_time);}
+      if(abs(pid)==11)      { DT_Electrons_SHPT->Fill(process);        DT_el_deps->Fill(log_deposit);  DT_el_kins->Fill(log_energy);  DT_el_tof->Fill(log_time); CrossCheck_DT_el_hits->Fill(wheel,station); }
+      else if(abs(pid)==13) { DT_Muons_SHPT->Fill(process);            DT_mu_deps->Fill(log_deposit);  DT_mu_kins->Fill(log_energy);  DT_mu_tof->Fill(log_time); CrossCheck_DT_mu_hits->Fill(wheel,station); }
+      else                  { DT_Hadrons_SHPT->Fill(process);          DT_ha_deps->Fill(log_deposit);  DT_ha_kins->Fill(log_energy);  DT_ha_tof->Fill(log_time); CrossCheck_DT_had_hits->Fill(wheel,station); }
       DT_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());             
       DT_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R));  
       Muon_Barrel_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
@@ -4898,11 +4517,11 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       DT_EntryExit_All_Loc_dz->Fill(DTLocalEntryExitDZ);
       
       if((*iHit).timeOfFlight()<250) {
-	if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); DT_Electrons_000ns_SHPT->Fill(process);}
-	else if(abs(pid)==13) { Muon_000ns_mu_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_mu_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); }
-	else                  { Muon_000ns_ha_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_ha_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); }
+	if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
+	else if(abs(pid)==13) { Muon_000ns_mu_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_mu_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
+	else                  { Muon_000ns_ha_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_ha_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
 	if((*iHit).timeOfFlight()<50) {
-	  if(abs(pid)==11)      { Muon_00ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_00ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
+	  if(abs(pid)==11)      { Muon_00ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_00ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); DT_Electrons_000ns_SHPT->Fill(process);}
 	  else if(abs(pid)==13) { Muon_00ns_mu_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_00ns_mu_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
 	  else                  { Muon_00ns_ha_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_00ns_ha_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
 	}
@@ -4918,8 +4537,8 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       }
       if((*iHit).timeOfFlight()>250) {
 	if(abs(pid)==11)      { Muon_250ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_250ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); DT_Electrons_250ns_SHPT->Fill(process);}
-	else if(abs(pid)==13) { Muon_250ns_mu_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_250ns_mu_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); }
-	else                  { Muon_250ns_ha_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_250ns_ha_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); }
+	else if(abs(pid)==13) { Muon_250ns_mu_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_250ns_mu_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
+	else                  { Muon_250ns_ha_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_250ns_ha_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());}
 	DT_250ns_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
 	DT_250ns_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R));
 	Muon_Barrel_250ns_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y());
@@ -4930,60 +4549,44 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // int trackid         = (*iHit).trackId();
       // std::cout<<"TrackId = "<<trackid<<std::endl;
 
-      // All Hits and HIP Hits
-      DT_All_hits->Fill(log_energy,log_time); DT_All_deposits->Fill(log_deposit,log_time);
-      if(HIP) {
-	DT_HIP_hits->Fill(log_energy,log_time); DT_HIP_deposits->Fill(log_deposit,log_time);
-      }
-      // Catalog Nuclei
-      if(abs(pid) > 999999999) {
-	if(Z<21) DT_Nuclei_List->Fill(Z);
-	else DT_Nuclei_List->Fill(21);
-      }
-      
       // std::cout<<"DT :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
       // std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
-      if(abs(pid)==2212)      {DT_p_hits->Fill(log_energy,log_time); DT_p_deposits->Fill(log_deposit,log_time);}
-      else if(abs(pid)==2112) {DT_n_hits->Fill(log_energy,log_time); DT_n_deposits->Fill(log_deposit,log_time);}
+      if(abs(pid)==2212)      {DT_p_hits->Fill(log_energy,log_time); DT_p_deposits->Fill(log_deposit,log_time); Summary_DT_p_hits->Fill(binsumDT);}
+      else if(abs(pid)==2112) {DT_n_hits->Fill(log_energy,log_time); DT_n_deposits->Fill(log_deposit,log_time); Summary_DT_n_hits->Fill(binsumDT);}
       else {
 	switch (abs(pid)%1000) {
 	  // leptons
-	case 11:  DT_el_hits->Fill(log_energy,log_time); DT_el_deposits->Fill(log_deposit,log_time); break;
-	case 13:  DT_mu_hits->Fill(log_energy,log_time); DT_mu_deposits->Fill(log_deposit,log_time); break;
+	case 11:  DT_el_hits->Fill(log_energy,log_time); DT_el_deposits->Fill(log_deposit,log_time); Summary_DT_el_hits->Fill(binsumDT); break;
+	case 13:  DT_mu_hits->Fill(log_energy,log_time); DT_mu_deposits->Fill(log_deposit,log_time); Summary_DT_mu_hits->Fill(binsumDT); break;
 	  // Pions
-	case 111: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); break;
-	case 211: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); break;
-	case 130: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); break;
+	case 111: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); Summary_DT_pi_hits->Fill(binsumDT); break;
+	case 211: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); Summary_DT_pi_hits->Fill(binsumDT); break;
+	case 130: DT_pi_hits->Fill(log_energy,log_time); DT_pi_deposits->Fill(log_deposit,log_time); Summary_DT_pi_hits->Fill(binsumDT); break;
 	  // Kaons
-	case 310: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 311: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 321: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 313: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 323: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 315: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 325: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 317: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 327: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 319: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
-	case 329: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); break;
+	case 310: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 311: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 321: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 313: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 323: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 315: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 325: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 317: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 327: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 319: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
+	case 329: DT_ka_hits->Fill(log_energy,log_time); DT_ka_deposits->Fill(log_deposit,log_time); Summary_DT_ka_hits->Fill(binsumDT); break;
 	  // Protons
 	  // case 2212: DT_p_hits->Fill(log_energy,log_time); DT_p_deposits->Fill(log_deposit,log_time); break;
 	  // Neutrons
 	  // case 2112: DT_n_hits->Fill(log_energy,log_time); DT_n_deposits->Fill(log_deposit,log_time); break;
 	  // Photons
-	case 22:   DT_g_hits->Fill(log_energy,log_time); DT_g_deposits->Fill(log_deposit,log_time); break;
+	case 22:   DT_g_hits->Fill(log_energy,log_time); DT_g_deposits->Fill(log_deposit,log_time); Summary_DT_g_hits->Fill(binsumDT); break;
 	  // Nucleons
 	default:   {
-	  if(abs(pid) > 999999999) { // Nucleons (10-digit numbers) 
-	    DT_OH_hits->Fill(log_energy,log_time); DT_OH_deposits->Fill(log_deposit,log_time); 
-	    std::cout<<"DT :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	    std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-	  }
-	  else { // non-Nucleon ... catalogue as "Other Hadron" 
-	    DT_OH_hits->Fill(log_energy,log_time); DT_OH_deposits->Fill(log_deposit,log_time); 
-	    std::cout<<"DT :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-	    std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;  
-	  }
+	  DT_N_hits->Fill(log_energy,log_time); DT_N_deposits->Fill(log_deposit,log_time); Summary_DT_N_hits->Fill(binsumDT);
+	  std::cout<<"DT :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
+	  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
+	  if(bookDTNuclei.find(pid) == bookDTNuclei.end()) {bookDTNuclei[pid] = 1;}
+	  else bookDTNuclei[pid]++;
 	  break;
 	}
 	}
@@ -4996,45 +4599,22 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       if(wireId.station() == 2) { MB2_hits_phi->Fill(DTGlobalPoint.phi()); }
       if(wireId.station() == 3) { MB3_hits_phi->Fill(DTGlobalPoint.phi()); }
       if(wireId.station() == 4) { MB4_hits_phi->Fill(DTGlobalPoint.phi()); /*MB4_hits_tof->Fill(log_time);*/ }
-
-      if(abs(pid)==11) {
-	DT_el_HPL->Fill(layer);
-	if(wireId.station() == 1) MB1_el_HPL->Fill(layer);      
-	if(wireId.station() == 2) MB2_el_HPL->Fill(layer);      
-	if(wireId.station() == 3) MB3_el_HPL->Fill(layer);      
-	if(wireId.station() == 4) MB4_el_HPL->Fill(layer);      
-      }
-      else if(abs(pid)==13) {
-	DT_mu_HPL->Fill(layer);
-	if(wireId.station() == 1) MB1_mu_HPL->Fill(layer);      
-	if(wireId.station() == 2) MB2_mu_HPL->Fill(layer);      
-	if(wireId.station() == 3) MB3_mu_HPL->Fill(layer);      
-	if(wireId.station() == 4) MB4_mu_HPL->Fill(layer);      
-      }
-      else {
-	DT_ha_HPL->Fill(layer);
-	if(wireId.station() == 1) MB1_ha_HPL->Fill(layer);      
-	if(wireId.station() == 2) MB2_ha_HPL->Fill(layer);      
-	if(wireId.station() == 3) MB3_ha_HPL->Fill(layer);      
-	if(wireId.station() == 4) MB4_ha_HPL->Fill(layer);      
-      } 
     }
     // not in 71X
     // /*
-    // if(tech_debug) std::cout<<"GEM Hits"<<std::endl;
-    if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::GEM){ // Only GEMs
 
+    if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::GEM) { // Only GEMs (but now also ME0)
 
       GEMDetId rollId(theDetUnitId);
-      const int station = rollId.station();
-      const int etapart = rollId.roll();
+      int station = rollId.station(); 
 
-      if(station!=0)
-        {
+      if(station!=0) 
+	{
 	  if(tech_debug) std::cout<<"SimHit is a GEM SimHit"<<std::endl;
 
 	  // GEM Geometry
 	  // ============
+	  
 	  const GEMEtaPartition* rollasociated = gemGeom->etaPartition(rollId);
 	  const BoundPlane & GEMSurface = rollasociated->surface(); 
 	  GlobalPoint GEMGlobalPoint = GEMSurface.toGlobal((*iHit).localPosition());
@@ -5043,14 +4623,6 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  double GEMGlobalEntryExitDZ = fabs(GEMGlobalEntry.z()-GEMGlobalExit.z());
 	  double GEMLocalEntryExitDZ  = fabs((*iHit).entryPoint().z()-(*iHit).exitPoint().z());
 	  
-	  bool isGE11L1 = false, isGE11L2 = false, isGE11odd = false, isGE11even = false;
-	  if(rollId.station() == 1) {
-	    if(rollId.layer() == 1) isGE11L1 = true;
-	    if(rollId.layer() == 2) isGE11L2 = true;
-	    if(rollId.chamber()%2 == 1) isGE11odd = true;
-	    if(rollId.chamber()%2 == 0) isGE11even = true;
-	  }
-
 	  if(phys_debug) {
 	    std::cout<<"GEM SimHit in "<<std::setw(12)<<(int)rollId<<std::setw(24)<<rollId;
 	    std::cout<<" | time t = "<<std::setw(12)<<(*iHit).timeOfFlight()<<" | z = "<<std::setw(12)<<GEMGlobalPoint.z();
@@ -5100,187 +4672,67 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  
 	  // std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	  // std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
-	  if(station==1) {
-
-	    // All Hits and HIP Hits
-	    GEM_All_hits->Fill(log_energy,log_time); GEM_All_deposits->Fill(log_deposit,log_time);
-	    G11_All_hits_R->Fill(GEM_GlobalPoint_R); G11_All_hits_E->Fill(etapart);
-	    if(isGE11odd) {G11_Od_All_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_All_hits_R->Fill(GEM_GlobalPoint_R);}
-	    if(isGE11L1)  {G11_L1_All_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_All_hits_R->Fill(GEM_GlobalPoint_R);}
-	    if(HIP) {
-	      GEM_HIP_hits->Fill(log_energy,log_time); GEM_HIP_deposits->Fill(log_deposit,log_time);
-	      G11_HIP_hits_R->Fill(GEM_GlobalPoint_R); G11_HIP_hits_E->Fill(etapart);
-	      if(isGE11odd) {G11_Od_HIP_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_HIP_hits_R->Fill(GEM_GlobalPoint_R);}
-	      if(isGE11L1)  {G11_L1_HIP_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_HIP_hits_R->Fill(GEM_GlobalPoint_R);}
+	  if(abs(pid)==2212)      {GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time);}
+	  else if(abs(pid)==2112) {GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time);}
+	  else {
+	    switch (abs(pid)%1000) {
+	      // leptons
+	    case 11:  GEM_el_hits->Fill(log_energy,log_time); GEM_el_deposits->Fill(log_deposit,log_time); break;
+	    case 13:  GEM_mu_hits->Fill(log_energy,log_time); GEM_mu_deposits->Fill(log_deposit,log_time); break;
+	      // Pions
+	    case 111: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); break;
+	    case 211: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); break;
+	    case 130: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); break;
+	      // Kaons
+	    case 310: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 311: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 321: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 313: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 323: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 315: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 325: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 317: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 327: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 319: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 329: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); break;
+	      // Protons
+	      // case 2212: GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time); break;
+	      // Neutrons
+	      // case 2112: GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time); break;
+	      // Photons
+	    case 22:   GEM_g_hits->Fill(log_energy,log_time); GEM_g_deposits->Fill(log_deposit,log_time); break;
+	      // Nucleons
+	    default:   {
+	      GEM_N_hits->Fill(log_energy,log_time); GEM_N_deposits->Fill(log_deposit,log_time); 
+	      std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
+	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
+	      break;
 	    }
-	    // Catalog Nuclei
-	    if(abs(pid) > 999999999) {
-	      if(Z<21) GEM_Nuclei_List->Fill(Z);
-	      else GEM_Nuclei_List->Fill(21);
 	    }
-
-	    if(abs(pid)==2212)      {
-	      GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time); G11_p_hits_R->Fill(GEM_GlobalPoint_R); G11_p_hits_E->Fill(etapart);
-	      if(isGE11odd) {G11_Od_p_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_p_hits_R->Fill(GEM_GlobalPoint_R);}
-	      if(isGE11L1)  {G11_L1_p_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_p_hits_R->Fill(GEM_GlobalPoint_R);}
-	    }
-	    else if(abs(pid)==2112) {
-	      GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time); G11_n_hits_R->Fill(GEM_GlobalPoint_R); G11_n_hits_E->Fill(etapart);
-	      if(isGE11odd) {G11_Od_n_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_n_hits_R->Fill(GEM_GlobalPoint_R);}
-	      if(isGE11L1)  {G11_L1_n_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_n_hits_R->Fill(GEM_GlobalPoint_R);}
-	    }
-	    else {
-	      switch (abs(pid)%1000) {
-		// leptons
-	      case 11:  GEM_el_hits->Fill(log_energy,log_time); GEM_el_deposits->Fill(log_deposit,log_time); G11_el_hits_R->Fill(GEM_GlobalPoint_R); G11_el_hits_E->Fill(etapart);
- 		if(isGE11odd) {G11_Od_el_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_el_hits_R->Fill(GEM_GlobalPoint_R);} 
-		if(isGE11L1)  {G11_L1_el_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_el_hits_R->Fill(GEM_GlobalPoint_R);}
-		break;
-	      case 13:  GEM_mu_hits->Fill(log_energy,log_time); GEM_mu_deposits->Fill(log_deposit,log_time); G11_mu_hits_R->Fill(GEM_GlobalPoint_R); G11_mu_hits_E->Fill(etapart);
- 		if(isGE11odd) {G11_Od_mu_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_mu_hits_R->Fill(GEM_GlobalPoint_R);} 
-		if(isGE11L1)  {G11_L1_mu_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_mu_hits_R->Fill(GEM_GlobalPoint_R);}
-		break;
-		// Pions
-	      case 111: 
-	      case 211: 
-	      case 130: 
-		GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); G11_pi_hits_R->Fill(GEM_GlobalPoint_R); G11_pi_hits_E->Fill(etapart); 
- 		if(isGE11odd) {G11_Od_pi_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_pi_hits_R->Fill(GEM_GlobalPoint_R);} 
-		if(isGE11L1)  {G11_L1_pi_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_pi_hits_R->Fill(GEM_GlobalPoint_R);}
-		break;
-		// Kaons
-	      case 310:
-	      case 311:
-	      case 321:
-	      case 313:
-	      case 323:
-	      case 315:
-	      case 325:
-	      case 317:
-	      case 327:
-	      case 319:
-	      case 329: 
-		GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G11_ka_hits_R->Fill(GEM_GlobalPoint_R); G11_ka_hits_E->Fill(etapart);
- 		if(isGE11odd) {G11_Od_ka_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_ka_hits_R->Fill(GEM_GlobalPoint_R);} 
-		if(isGE11L1)  {G11_L1_ka_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_ka_hits_R->Fill(GEM_GlobalPoint_R);}
-		break;
-		// Protons
-		// case 2212: GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time); break;
-		// Neutrons
-		// case 2112: GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time); break;
-		// Photons
-	      case 22:   
-		GEM_g_hits->Fill(log_energy,log_time); GEM_g_deposits->Fill(log_deposit,log_time); G11_g_hits_R->Fill(GEM_GlobalPoint_R); G11_g_hits_E->Fill(etapart); 
- 		if(isGE11odd) {G11_Od_g_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_g_hits_R->Fill(GEM_GlobalPoint_R);} 
-		if(isGE11L1)  {G11_L1_g_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_g_hits_R->Fill(GEM_GlobalPoint_R);}
-		break;
-		// Nucleons
-	      default:   {
-		if(abs(pid) > 999999999) { // Nucleons (10-digit numbers)
-		  GEM_N_hits->Fill(log_energy,log_time); GEM_N_deposits->Fill(log_deposit,log_time); G11_N_hits_R->Fill(GEM_GlobalPoint_R); G11_N_hits_E->Fill(etapart);
-		  if(isGE11odd) {G11_Od_N_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_N_hits_R->Fill(GEM_GlobalPoint_R);} 
-		  if(isGE11L1)  {G11_L1_N_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_N_hits_R->Fill(GEM_GlobalPoint_R);}
-		  std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-		}
-		else { // non-Nucleon ... catalogue as "Other Hadron"
-		  GEM_OH_hits->Fill(log_energy,log_time); GEM_OH_deposits->Fill(log_deposit,log_time); G11_OH_hits_R->Fill(GEM_GlobalPoint_R); G11_OH_hits_E->Fill(etapart);
-		  if(isGE11odd) {G11_Od_OH_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11even) {G11_Ev_OH_hits_R->Fill(GEM_GlobalPoint_R);} 
-		  if(isGE11L1)  {G11_L1_OH_hits_R->Fill(GEM_GlobalPoint_R);} if(isGE11L2)   {G11_L2_OH_hits_R->Fill(GEM_GlobalPoint_R);}
-		  std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-		}
-		break;
-	      }
-	      } // end switch
-	    }
-	  } // end if station==1
-	  if(station==2) {
-
-	    // All Hits and HIP Hits
-	    GEM_All_hits->Fill(log_energy,log_time); GEM_All_deposits->Fill(log_deposit,log_time);
-	    G21_All_hits_R->Fill(GEM_GlobalPoint_R); G21_All_hits_E->Fill(etapart);
-	    if(HIP) {
-	      GEM_HIP_hits->Fill(log_energy,log_time); GEM_HIP_deposits->Fill(log_deposit,log_time);
-	      G21_HIP_hits_R->Fill(GEM_GlobalPoint_R); G21_HIP_hits_E->Fill(etapart);
-	    }
-
-	    if(abs(pid)==2212)      {GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time); G21_p_hits_R->Fill(GEM_GlobalPoint_R); G21_p_hits_E->Fill(etapart);}
-	    else if(abs(pid)==2112) {GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time); G21_n_hits_R->Fill(GEM_GlobalPoint_R); G21_n_hits_E->Fill(etapart);}
-	    else {
-	      switch (abs(pid)%1000) {
-		// leptons
-	      case 11:  GEM_el_hits->Fill(log_energy,log_time); GEM_el_deposits->Fill(log_deposit,log_time); G21_el_hits_R->Fill(GEM_GlobalPoint_R); G21_el_hits_E->Fill(etapart); break;
-	      case 13:  GEM_mu_hits->Fill(log_energy,log_time); GEM_mu_deposits->Fill(log_deposit,log_time); G21_mu_hits_R->Fill(GEM_GlobalPoint_R); G21_mu_hits_E->Fill(etapart);break;
-		// Pions
-	      case 111: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); G21_pi_hits_R->Fill(GEM_GlobalPoint_R); G21_pi_hits_E->Fill(etapart); break;
-	      case 211: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); G21_pi_hits_R->Fill(GEM_GlobalPoint_R); G21_pi_hits_E->Fill(etapart); break;
-	      case 130: GEM_pi_hits->Fill(log_energy,log_time); GEM_pi_deposits->Fill(log_deposit,log_time); G21_pi_hits_R->Fill(GEM_GlobalPoint_R); G21_pi_hits_E->Fill(etapart); break;
-		// Kaons
-	      case 310: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 311: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 321: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 313: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 323: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 315: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 325: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 317: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 327: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 319: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-	      case 329: GEM_ka_hits->Fill(log_energy,log_time); GEM_ka_deposits->Fill(log_deposit,log_time); G21_ka_hits_R->Fill(GEM_GlobalPoint_R); G21_ka_hits_E->Fill(etapart); break;
-		// Protons
-		// case 2212: GEM_p_hits->Fill(log_energy,log_time); GEM_p_deposits->Fill(log_deposit,log_time); break;
-		// Neutrons
-		// case 2112: GEM_n_hits->Fill(log_energy,log_time); GEM_n_deposits->Fill(log_deposit,log_time); break;
-		// Photons
-	      case 22:   GEM_g_hits->Fill(log_energy,log_time); GEM_g_deposits->Fill(log_deposit,log_time); G21_g_hits_R->Fill(GEM_GlobalPoint_R); G21_g_hits_E->Fill(etapart); break;
-		// Nucleons
-	      default:   {
-		if(abs(pid) > 999999999) { // Nucleons (10-digit numbers)
-		  GEM_N_hits->Fill(log_energy,log_time); GEM_N_deposits->Fill(log_deposit,log_time); G21_N_hits_R->Fill(GEM_GlobalPoint_R); G21_N_hits_E->Fill(etapart); 
-		  std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-		}
-		else { // non-Nucleon ... catalogue as "Other Hadron"
-		  GEM_OH_hits->Fill(log_energy,log_time); GEM_OH_deposits->Fill(log_deposit,log_time); G21_OH_hits_R->Fill(GEM_GlobalPoint_R); G21_OH_hits_E->Fill(etapart); 
-		  std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-		}
-		break;
-	      }
-	      } // end switch
-	    }
-	  } // end if station==2
-
+	  }
 	  GEM_hits_tof->Fill(log_time);
 	  GEM_hits_eta->Fill(fabs(GEMGlobalPoint.eta()));
 	  GEM_hits_phi->Fill(GEMGlobalPoint.phi());
-	  GEM_hits_lin->Fill(time);     
+	  GEM_hits_lin->Fill(time);
+     
 	} // end station != 0
-
-    // */
-    // not in 71X 
-    // /*
-    // if(tech_debug) std::cout<<"ME0 Hits"<<std::endl;
-    // if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::ME0){ // Only ME0
-
-      if(station==0)
-        {
-          if(tech_debug) std::cout<<"SimHit is a ME0 SimHit"<<std::endl;
-
+      // if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::ME0){ // Only ME0
+      if(station==0) 
+	{
+	  if(tech_debug) std::cout<<"SimHit is a ME0 SimHit"<<std::endl;
 	  // ME0 Geometry
 	  // ============
 	  // ME0DetId rollId(theDetUnitId);
 	  // const ME0EtaPartition* rollasociated = me0Geom->etaPartition(rollId);
+	  GEMDetId rollId(theDetUnitId);
 	  const GEMEtaPartition* rollasociated = gemGeom->etaPartition(rollId);
-	  const int etapart = rollId.roll();
 	  const BoundPlane & ME0Surface = rollasociated->surface(); 
 	  GlobalPoint ME0GlobalPoint = ME0Surface.toGlobal((*iHit).localPosition());
 	  GlobalPoint ME0GlobalEntry = ME0Surface.toGlobal((*iHit).entryPoint());
 	  GlobalPoint ME0GlobalExit  = ME0Surface.toGlobal((*iHit).exitPoint());
 	  double ME0GlobalEntryExitDZ = fabs(ME0GlobalEntry.z()-ME0GlobalExit.z());
 	  double ME0LocalEntryExitDZ  = fabs((*iHit).entryPoint().z()-(*iHit).exitPoint().z());
-
+	
 	  if(phys_debug) {
 	    std::cout<<"ME0 SimHit in "<<std::setw(12)<<(int)rollId<<std::setw(24)<<rollId;
 	    std::cout<<" | time t = "<<std::setw(12)<<(*iHit).timeOfFlight()<<" | z = "<<std::setw(12)<<ME0GlobalPoint.z();
@@ -5296,7 +4748,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	  Muon_RZ->Fill(fabs(ME0GlobalPoint.z()), fabs(ME0_GlobalPoint_R));  
 	  ME0_EntryExit_All_Glob_dz->Fill(ME0GlobalEntryExitDZ);
 	  ME0_EntryExit_All_Loc_dz->Fill(ME0LocalEntryExitDZ);
-	  
+	
 	  if((*iHit).timeOfFlight()<250) {
 	    if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(ME0GlobalPoint.z()), fabs(ME0_GlobalPoint_R));}
 	    else if(abs(pid)==13) { Muon_000ns_mu_RZ->Fill(fabs(ME0GlobalPoint.z()), fabs(ME0_GlobalPoint_R));}
@@ -5326,78 +4778,56 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	    Muon_250ns_RZ->Fill(fabs(ME0GlobalPoint.z()), fabs(ME0_GlobalPoint_R)); 
 	  }
 	  
-	  // All Hits and HIP Hits
-	  ME0_All_hits->Fill(log_energy,log_time); ME0_All_deposits->Fill(log_deposit,log_time);
-	  ME0_All_hits_R->Fill(ME0_GlobalPoint_R); ME0_All_hits_E->Fill(etapart);
-	  if(HIP) {
-	    ME0_HIP_hits->Fill(log_energy,log_time); ME0_HIP_deposits->Fill(log_deposit,log_time);
-	    ME0_HIP_hits_R->Fill(ME0_GlobalPoint_R); ME0_HIP_hits_E->Fill(etapart);
-	  }
-	  // Catalog Nuclei
-	  if(abs(pid) > 999999999) {
-	    if(Z<21) ME0_Nuclei_List->Fill(Z);
-	    else ME0_Nuclei_List->Fill(21);
-	  }
-
 	  if(phys_debug) std::cout<<"SimHit from particle = "<<pid<<" created in process = "<<process<<" aka "<<proc[process]<<std::endl;
 	  
 	  // std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	  // std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [MeV]"<<std::endl;
-	  if(abs(pid)==2212)      {ME0_p_hits->Fill(log_energy,log_time); ME0_p_deposits->Fill(log_deposit,log_time); ME0_p_hits_R->Fill(ME0_GlobalPoint_R); ME0_p_hits_E->Fill(etapart);}
-	  else if(abs(pid)==2112) {ME0_n_hits->Fill(log_energy,log_time); ME0_n_deposits->Fill(log_deposit,log_time); ME0_n_hits_R->Fill(ME0_GlobalPoint_R); ME0_n_hits_E->Fill(etapart);}
+	  if(abs(pid)==2212)      {ME0_p_hits->Fill(log_energy,log_time); ME0_p_deposits->Fill(log_deposit,log_time);}
+	  else if(abs(pid)==2112) {ME0_n_hits->Fill(log_energy,log_time); ME0_n_deposits->Fill(log_deposit,log_time);}
 	  else {
 	    switch (abs(pid)%1000) {
 	      // leptons
-	    case 11:  ME0_el_hits->Fill(log_energy,log_time); ME0_el_deposits->Fill(log_deposit,log_time); ME0_el_hits_R->Fill(ME0_GlobalPoint_R); ME0_el_hits_E->Fill(etapart); break;
-	    case 13:  ME0_mu_hits->Fill(log_energy,log_time); ME0_mu_deposits->Fill(log_deposit,log_time); ME0_mu_hits_R->Fill(ME0_GlobalPoint_R); ME0_mu_hits_E->Fill(etapart); break;
+	    case 11:  ME0_el_hits->Fill(log_energy,log_time); ME0_el_deposits->Fill(log_deposit,log_time); break;
+	    case 13:  ME0_mu_hits->Fill(log_energy,log_time); ME0_mu_deposits->Fill(log_deposit,log_time); break;
 	      // Pions
-	    case 111: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); ME0_pi_hits_R->Fill(ME0_GlobalPoint_R); ME0_pi_hits_E->Fill(etapart); break;
-	    case 211: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); ME0_pi_hits_R->Fill(ME0_GlobalPoint_R); ME0_pi_hits_E->Fill(etapart); break;
-	    case 130: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); ME0_pi_hits_R->Fill(ME0_GlobalPoint_R); ME0_pi_hits_E->Fill(etapart); break;
+	    case 111: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); break;
+	    case 211: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); break;
+	    case 130: ME0_pi_hits->Fill(log_energy,log_time); ME0_pi_deposits->Fill(log_deposit,log_time); break;
 	      // Kaons
-	    case 310: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 311: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 321: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 313: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 323: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 315: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 325: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 317: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 327: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 319: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
-	    case 329: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); ME0_ka_hits_R->Fill(ME0_GlobalPoint_R); ME0_ka_hits_E->Fill(etapart); break;
+	    case 310: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 311: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 321: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 313: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 323: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 315: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 325: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 317: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 327: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 319: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
+	    case 329: ME0_ka_hits->Fill(log_energy,log_time); ME0_ka_deposits->Fill(log_deposit,log_time); break;
 	      // Protons
 	      // case 2212: ME0_p_hits->Fill(log_energy,log_time); ME0_p_deposits->Fill(log_deposit,log_time); break;
 	      // Neutrons
 	      // case 2112: ME0_n_hits->Fill(log_energy,log_time); ME0_n_deposits->Fill(log_deposit,log_time); break;
 	      // Photons
-	    case 22:   ME0_g_hits->Fill(log_energy,log_time); ME0_g_deposits->Fill(log_deposit,log_time); ME0_g_hits_R->Fill(ME0_GlobalPoint_R); ME0_g_hits_E->Fill(etapart); break;
+	    case 22:   ME0_g_hits->Fill(log_energy,log_time); ME0_g_deposits->Fill(log_deposit,log_time); break;
 	      // Nucleons
 	    default:   {
-		if(abs(pid) > 999999999) { // Nucleons (10-digit numbers)
-		  ME0_N_hits->Fill(log_energy,log_time); ME0_N_deposits->Fill(log_deposit,log_time); ME0_N_hits_R->Fill(ME0_GlobalPoint_R); ME0_N_hits_E->Fill(etapart);
-		  std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
-		}
-		else { // non-Nucleon ... catalogue as "Other Hadron"
-		  ME0_OH_hits->Fill(log_energy,log_time); ME0_OH_deposits->Fill(log_deposit,log_time); ME0_OH_hits_R->Fill(ME0_GlobalPoint_R); ME0_OH_hits_E->Fill(etapart);
-		  std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
-		  std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as OTHER HADRON"<<std::endl;
-		}
+	      ME0_N_hits->Fill(log_energy,log_time); ME0_N_deposits->Fill(log_deposit,log_time); 
+	      std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
+	      std::cout<<" 10 log (tof) = "<<log_time<<" [ns] and 10 log (E) = "<<log_deposit<<" [keV] catalogued as NUCLEI"<<std::endl;
 	      break;
 	    }
-	    }
-	  }
+	    } // end switch
+	  } // end else pid
 	  ME0_hits_tof->Fill(log_time);
 	  ME0_hits_eta->Fill(fabs(ME0GlobalPoint.eta()));
 	  ME0_hits_phi->Fill(ME0GlobalPoint.phi());
 	  ME0_hits_lin->Fill(time);     
-	} // end if station==0
-    } // end GEMHits
-      // */
-    if(tech_debug) std::cout<<"END LOOP"<<std::endl;
-  } // end SimHit loop
-  if(tech_debug) std::cout<<"End loop over SimHit collections"<<std::endl;
+	} // end station == 0
+    // */
+    } // end GEM Hits
+  } // end SimHits
 }
 
 double
@@ -5456,8 +4886,6 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
 {
 
   if(tech_debug) std::cout<<"[MyNeutronSimHitAnalyzer :: BeginRun]"<<std::endl;
-
-  const edm::ESTransientHandle<RPCGeometry> rpcGeom = iSetup.getTransientHandle(rpcGeom_Token);
 
   // iSetup.get<MuonGeometryRecord>().get(rpcGeom);
   // iSetup.get<MuonGeometryRecord>().get(cscGeom);
@@ -5571,8 +4999,10 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       double top = x_me11 + j_me11*dx_me11;
       double bottom = x_me11 + (j_me11+1)*dx_me11;
       double area = 2*36*0.5*(top + bottom)*dy; area_me11 += area;
-      // std::cout<<"CSC ME1/1 Area :: i = "<<i<<" j = "<<j_me11<<" R_min = "<<r1_CSC+i*10<<" cm and R_max = "<<r1_CSC+(i+1)*10<<" cm ";
-      // std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      if(area_debug) {
+	std::cout<<"CSC ME1/1 Area :: i = "<<i<<" j = "<<j_me11<<" R_min = "<<r1_CSC+i*10<<" cm and R_max = "<<r1_CSC+(i+1)*10<<" cm ";
+	std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      }
       CSC_ME1_area->SetBinContent(i+1, area);
       ++j_me11;
     }
@@ -5652,16 +5082,19 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       ++j_meX2;
     }
   }
-  // std::cout<<"--- AREA of CSC system ---"<<std::endl;
-  // std::cout<<"ME1/1 :: "<<area_me11/36/2<<" cm^2 / chamber ==> "<<area_me11<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME1/2 :: "<<area_me12/36/2<<" cm^2 / chamber ==> "<<area_me12<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME1/3 :: "<<area_me13/36/2<<" cm^2 / chamber ==> "<<area_me13<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME2/1 :: "<<area_me21/36/2<<" cm^2 / chamber ==> "<<area_me21<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME2/2 :: "<<area_me22/36/2<<" cm^2 / chamber ==> "<<area_me22<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME3/1 :: "<<area_me31/36/2<<" cm^2 / chamber ==> "<<area_me31<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME3/2 :: "<<area_me32/36/2<<" cm^2 / chamber ==> "<<area_me32<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME4/1 :: "<<area_me41/36/2<<" cm^2 / chamber ==> "<<area_me41<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME4/2 :: "<<area_me42/36/2<<" cm^2 / chamber ==> "<<area_me42<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+
+  if(area_debug) {
+    std::cout<<"--- AREA of CSC system ---"<<std::endl;
+    std::cout<<"ME1/1 :: "<<area_me11/36/2<<" cm^2 / chamber ==> "<<area_me11<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME1/2 :: "<<area_me12/36/2<<" cm^2 / chamber ==> "<<area_me12<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME1/3 :: "<<area_me13/36/2<<" cm^2 / chamber ==> "<<area_me13<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME2/1 :: "<<area_me21/36/2<<" cm^2 / chamber ==> "<<area_me21<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME2/2 :: "<<area_me22/36/2<<" cm^2 / chamber ==> "<<area_me22<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME3/1 :: "<<area_me31/36/2<<" cm^2 / chamber ==> "<<area_me31<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME3/2 :: "<<area_me32/36/2<<" cm^2 / chamber ==> "<<area_me32<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME4/1 :: "<<area_me41/36/2<<" cm^2 / chamber ==> "<<area_me41<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME4/2 :: "<<area_me42/36/2<<" cm^2 / chamber ==> "<<area_me42<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+  }
 
   // CSC AREA SECOND TRY
   // -------------------
@@ -5704,8 +5137,10 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       double top = x_me11 + (r_ME1_geom[i]  -r_ME1_geom[1])*dx_me11;
       double bottom = top + (r_ME1_geom[i+1]-r_ME1_geom[i])*dx_me11;
       double area = 2*36*0.5*(top + bottom)*(r_ME1_geom[i+1]-r_ME1_geom[i]); area_me11 += area;
-      // std::cout<<"CSC ME1/1 Area :: i = "<<i<<" R_min = "<<r_ME1_geom[i]<<" cm and R_max = "<<r_ME1_geom[i+1]<<" cm ==> dR = "<<(r_ME1_geom[i+1]-r_ME1_geom[i])<<" cm";
-      // std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      if(area_debug) {
+	std::cout<<"CSC ME1/1 Area :: i = "<<i<<" R_min = "<<r_ME1_geom[i]<<" cm and R_max = "<<r_ME1_geom[i+1]<<" cm ==> dR = "<<(r_ME1_geom[i+1]-r_ME1_geom[i])<<" cm";
+	std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      }
       CSC_Geom_ME1_area->SetBinContent(i+1, area);
     }
     if(i==16) {
@@ -5719,8 +5154,10 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       double top = x_me12 + (r_ME1_geom[i]  -r_ME1_geom[17])*dx_me12;
       double bottom = top + (r_ME1_geom[i+1]-r_ME1_geom[i])*dx_me12;
       double area = 2*36*0.5*(top + bottom)*(r_ME1_geom[i+1]-r_ME1_geom[i]); area_me12 += area;
-      // std::cout<<"CSC ME1/2 Area :: i = "<<i<<" R_min = "<<r_ME1_geom[i]<<" cm and R_max = "<<r_ME1_geom[i+1]<<" cm ==> dR = "<<(r_ME1_geom[i+1]-r_ME1_geom[i])<<" cm";
-      // std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      if(area_debug) {
+	std::cout<<"CSC ME1/2 Area :: i = "<<i<<" R_min = "<<r_ME1_geom[i]<<" cm and R_max = "<<r_ME1_geom[i+1]<<" cm ==> dR = "<<(r_ME1_geom[i+1]-r_ME1_geom[i])<<" cm";
+      std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      }
       CSC_Geom_ME1_area->SetBinContent(i+1, area);
     }
     if(i==34) {
@@ -5738,7 +5175,7 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
     }
   }
 
-  // std::cout<<"----------------------------------------------------------------------"<<std::endl;
+  std::cout<<"----------------------------------------------------------------------"<<std::endl;
   for(int i=0; i<53; ++i) {
     if(i==0) {
       CSC_Geom_ME2_area->SetBinContent(i+1, 0); // Fill Bin 1
@@ -5759,8 +5196,10 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       double top = x_me21 + (r_MEX_geom[i]  -r_MEX_geom[1])*dx_me21;
       double bottom = top + (r_MEX_geom[i+1]-r_MEX_geom[i])*dx_me21;
       double area = 2*18*0.5*(top + bottom)*(r_MEX_geom[i+1]-r_MEX_geom[i]); area_me21 += area;
-      // std::cout<<"CSC ME2/1 Area :: i = "<<i<<" R_min = "<<r_MEX_geom[i]<<" cm and R_max = "<<r_MEX_geom[i+1]<<" cm ==> dR = "<<(r_MEX_geom[i+1]-r_MEX_geom[i])<<" cm";
-      // std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      if(area_debug) {
+	std::cout<<"CSC ME2/1 Area :: i = "<<i<<" R_min = "<<r_MEX_geom[i]<<" cm and R_max = "<<r_MEX_geom[i+1]<<" cm ==> dR = "<<(r_MEX_geom[i+1]-r_MEX_geom[i])<<" cm";
+      std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      }
       CSC_Geom_ME2_area->SetBinContent(i+1, area);
     }
     double dx_me31 = (125.71-61.40)/169.7; double x_me31 = 61.40;
@@ -5793,24 +5232,29 @@ MyNeutronSimHitAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& i
       double top = x_meX2 + (r_MEX_geom[i]  -r_MEX_geom[21])*dx_meX2;
       double bottom = top + (r_MEX_geom[i+1]-r_MEX_geom[i])*dx_meX2;
       double area = 2*36*0.5*(top + bottom)*(r_MEX_geom[i+1]-r_MEX_geom[i]); area_me22 += area; area_me32 += area; area_me42 += area;
-      // std::cout<<"CSC MEX/2 Area :: i = "<<i<<" R_min = "<<r_MEX_geom[i]<<" cm and R_max = "<<r_MEX_geom[i+1]<<" cm ==> dR = "<<(r_MEX_geom[i+1]-r_MEX_geom[i])<<" cm";
-      // std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      if(area_debug) {
+	std::cout<<"CSC MEX/2 Area :: i = "<<i<<" R_min = "<<r_MEX_geom[i]<<" cm and R_max = "<<r_MEX_geom[i+1]<<" cm ==> dR = "<<(r_MEX_geom[i+1]-r_MEX_geom[i])<<" cm";
+	std::cout<<" || x1 = "<<top<<"cm | x2 = "<<bottom<<" cm | Area of little trapezoid = "<<area<<" cm^2"<<std::endl;
+      }
       CSC_Geom_ME2_area->SetBinContent(i+1, area);
       CSC_Geom_ME3_area->SetBinContent(i+1, area);
       CSC_Geom_ME4_area->SetBinContent(i+1, area);
     }
   }
-  // std::cout<<"----------------------------------------------------------------------"<<std::endl;
-  // std::cout<<"--- AREA of CSC system ---"<<std::endl;
-  // std::cout<<"ME1/1 :: "<<area_me11/36/2<<" cm^2 / chamber ==> "<<area_me11<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME1/2 :: "<<area_me12/36/2<<" cm^2 / chamber ==> "<<area_me12<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME1/3 :: "<<area_me13/36/2<<" cm^2 / chamber ==> "<<area_me13<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME2/1 :: "<<area_me21/36/2<<" cm^2 / chamber ==> "<<area_me21<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME2/2 :: "<<area_me22/36/2<<" cm^2 / chamber ==> "<<area_me22<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME3/1 :: "<<area_me31/36/2<<" cm^2 / chamber ==> "<<area_me31<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME3/2 :: "<<area_me32/36/2<<" cm^2 / chamber ==> "<<area_me32<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
-  // std::cout<<"ME4/1 :: "<<area_me41/36/2<<" cm^2 / chamber ==> "<<area_me41<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
-  // std::cout<<"ME4/2 :: "<<area_me42/36/2<<" cm^2 / chamber ==> "<<area_me42<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+
+  if(area_debug) {
+    std::cout<<"----------------------------------------------------------------------"<<std::endl;
+    std::cout<<"--- AREA of CSC system ---"<<std::endl;
+    std::cout<<"ME1/1 :: "<<area_me11/36/2<<" cm^2 / chamber ==> "<<area_me11<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME1/2 :: "<<area_me12/36/2<<" cm^2 / chamber ==> "<<area_me12<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME1/3 :: "<<area_me13/36/2<<" cm^2 / chamber ==> "<<area_me13<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME2/1 :: "<<area_me21/36/2<<" cm^2 / chamber ==> "<<area_me21<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME2/2 :: "<<area_me22/36/2<<" cm^2 / chamber ==> "<<area_me22<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME3/1 :: "<<area_me31/36/2<<" cm^2 / chamber ==> "<<area_me31<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME3/2 :: "<<area_me32/36/2<<" cm^2 / chamber ==> "<<area_me32<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+    std::cout<<"ME4/1 :: "<<area_me41/36/2<<" cm^2 / chamber ==> "<<area_me41<<" cm^2 in total [2 endcaps x 18 chambers]"<<std::endl;
+    std::cout<<"ME4/2 :: "<<area_me42/36/2<<" cm^2 / chamber ==> "<<area_me42<<" cm^2 in total [2 endcaps x 36 chambers]"<<std::endl;
+  }
 
   // RPC
   // <Trd1 name="REB1" dz="26.75*cm " dy1="1*mm " dy2="1*mm " dx1="35.721*cm " dx2="40.40*cm "/>

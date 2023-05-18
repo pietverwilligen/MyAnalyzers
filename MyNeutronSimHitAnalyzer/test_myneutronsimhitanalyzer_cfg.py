@@ -39,8 +39,7 @@ process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
 # option B
 # ---------------------------------------------------------------------------------------
 # process.load("MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
-# process.load("Test_MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
-process.load("MinBias_Phase1_14TeV_TuneCP5_100k_Neutron_XS_2023DB_1E4s")
+process.load("Test_MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
 # ---------------------------------------------------------------------------------------
 # option C
 # ---------------------------------------------------------------------------------------
@@ -60,23 +59,19 @@ process.demo = cms.EDAnalyzer('MyNeutronSimHitAnalyzer',
                               # PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Run2_Neutron_XS_1E4s_Test"),
                               # RootFileName = cms.untracked.string("MyNeutronSimHistograms_Run2_Neutron_XS_1E4s_Test.root"),
                               # ---------
-                              # PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s"),
-                              # RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s.root"),
-                              # ---------
-                              PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s"),
-                              RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s.root"),
+                              PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s"),
+                              RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s.root"),
                               # ---------
                               BunchSpacing = cms.untracked.double(25.0),
-                              COMEnergy    = cms.untracked.double(14.0),
+                              COMEnergy    = cms.untracked.double(13.0),
                               MaxSimTime   = cms.untracked.double(10000000000000.0),    # 10000s = 10^13 ns [in ns]
                               # MaxSimTime   = cms.untracked.double(1000000000000.0),   # 1000s  = 10^12 ns [in ns]
                               # MaxSimTime   = cms.untracked.double(100000000000.0),    # 100s   = 10^11 ns [in ns]
                               # MaxSimTime   = cms.untracked.double(10000000000.0),     # 10s    = 10^10 ns [in ns]
                               # MaxSimTime   = cms.untracked.double(100000000.0),       # 100ms  = 10^8  ns [in ns]
-                              EDepCut30eV  = cms.untracked.double(30.0), # 2B implemented
-                              VarEDepCuteV = cms.untracked.double(120.0),
-                              PhysicsDebug = cms.untracked.bool(False),
-                              TechnicDebug = cms.untracked.bool(False),
+                              EDepCut30eV  = cms.untracked.bool(True),
+                              PhysicsDebug = cms.untracked.bool(True),
+                              TechnicDebug = cms.untracked.bool(True),
                               )
 
 
