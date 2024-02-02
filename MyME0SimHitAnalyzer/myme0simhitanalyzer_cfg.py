@@ -23,9 +23,9 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 # process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 # process.load('Geometry.CommonDetUnit.globalTrackingGeometry_cfi')
 # process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
-process.load("Geometry.RPCGeometry.rpcGeometry_cfi")
-process.load("Geometry.CSCGeometry.cscGeometry_cfi")
-process.load("Geometry.DTGeometry.dtGeometry_cfi")
+# process.load("Geometry.RPCGeometry.rpcGeometry_cfi")
+# process.load("Geometry.CSCGeometry.cscGeometry_cfi")
+# process.load("Geometry.DTGeometry.dtGeometry_cfi")
 # process.load("Geometry.GEMGeometry.gemGeometry_cfi")
 process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
 
@@ -50,29 +50,25 @@ process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
 # ---------------------------------------------------------------------------------------
 # CMSSW 13X
 # ---------------------------------------------------------------------------------------
-process.load("MinBias_Phase1_14TeV_TuneCP5_100k_Neutron_XS_2023DB_1E4s")
+# process.load("MinBias_Phase1_14TeV_TuneCP5_100k_Neutron_XS_2023DB_1E4s")
+process.load("MinBias_Phase1_14TeV_TuneCP5_1M_Neutron_XS_2023DB_1E4s")
 # process.load("MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
 # ---------------------------------------------------------------------------------------
 
 process.demo = cms.EDAnalyzer('MyME0SimHitAnalyzer',
                               # ---------
-                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_Neutron_11X"),
-                              # RootFileName = cms.untracked.string("MyME0Histograms_Neutron_11X.root"),
                               # ---------
-                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_Neutron_1M_pt1"),
-                              # RootFileName = cms.untracked.string("MyME0Histograms_Neutron_1M_pt1.root"),
-                              # ---------
-                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_2021_14TeV_Neutron_100k_v1"),
-                              # RootFileName = cms.untracked.string("MyME0Histograms_2021_14TeV_Neutron_100k_v1.root"),
-                              # ---------
-                              PdfFileNameBase = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_100k_v1"),
-                              RootFileName = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_100k_v1.root"),
+                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M_v1"),
+                              # RootFileName = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M_v1.root"),
+                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M__150eV_v2"),
+                              # RootFileName = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M_150eV_v2.root"),
+                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M__300eV_v2"),
+                              # RootFileName = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M_300eV_v2.root"),
+                              PdfFileNameBase = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M__450eV_v2"),
+                              RootFileName = cms.untracked.string("MyME0Histograms_2023DB_TuneCP5_14TeV_Neutron_XS_1M_450eV_v2.root"),
                               # ---------
                               # PdfFileNameBase = cms.untracked.string("MyME0Histograms_2026D99_TuneCP5_14TeV_Neutron_XS_100k_v1"),
                               # RootFileName = cms.untracked.string("MyME0Histograms_2026D99_TuneCP5_14TeV_Neutron_XS_100k_v1.root"),
-                              # ---------
-                              # PdfFileNameBase = cms.untracked.string("MyME0Histograms_NoBkg_100k"),
-                              # RootFileName = cms.untracked.string("MyME0Histograms_NoBkg_100k.root"),
                               # ---------
                               BunchSpacing = cms.untracked.double(25.0),
                               # COMEnergy    = cms.untracked.double(13.0),
@@ -83,8 +79,11 @@ process.demo = cms.EDAnalyzer('MyME0SimHitAnalyzer',
                               # MaxSimTime   = cms.untracked.double(100000000.0),     # 100ms = 10^8  ns [in ns]
                               # GEMOnlyGE11  = cms.untracked.bool(True), # not in use anymore
                               Edep30eV     = cms.untracked.bool(True),    # cut on minimal Energy deposition for ionisation
-                              MinHitEnergy = cms.untracked.double(0.030), # minimum Energy for hit creation (30eV)
-                              MinHIPEnergy = cms.untracked.double(030.0), # minimum Energy for HIP creation (150keV = 5000 e-)
+                              # MinHitEnergy = cms.untracked.double(0.030), # minimum Energy for hit creation (30eV)
+                              # MinHitEnergy = cms.untracked.double(0.150), # minimum Energy for hit creation (30eV)
+                              # MinHitEnergy = cms.untracked.double(0.300), # minimum Energy for hit creation (30eV)
+                              MinHitEnergy = cms.untracked.double(0.450), # minimum Energy for hit creation (30eV)
+                              MinHIPEnergy = cms.untracked.double(030.0), # minimum Energy for HIP creation (150keV = 5000 e- | 30keV = 1000 e-)
                               PhysicsDebug = cms.untracked.bool(False),
                               TechnicDebug = cms.untracked.bool(False),
                               )

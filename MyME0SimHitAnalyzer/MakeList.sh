@@ -33,5 +33,5 @@
 # source ConvertToPython.sh MinBias_13TeV_GEN_SIM_2021_100k_11X_ProdCutsDefault_v1_allfiles
 
 ### ZMM in Run-3 Geometry (2021) ###
-dasgoclient --query 'file dataset=/ZMM_13TeV_GEN_SIM_XS_2021_100k_11X_ProdCutsDefault/piet-crab_ZMM_14TeV_100k_11X_2021_ProdCutsDefault-bf470c918fd3e703c3904d56fca9a467/USER instance =prod/phys03' &> ZMM_14TeV_GEN_SIM_2021_100k_11X_ProdCutsDefault_v1_allfiles.txt
-source ConvertToPython.sh ZMM_14TeV_GEN_SIM_2021_100k_11X_ProdCutsDefault_v1_allfiles
+# dasgoclient --query 'file dataset=/ZMM_13TeV_GEN_SIM_XS_2021_100k_11X_ProdCutsDefault/piet-crab_ZMM_14TeV_100k_11X_2021_ProdCutsDefault-bf470c918fd3e703c3904d56fca9a467/USER instance =prod/phys03' &> ZMM_14TeV_GEN_SIM_2021_100k_11X_ProdCutsDefault_v1_allfiles.txt
+# source ConvertToPython.sh ZMM_14TeV_GEN_SIM_2021_100k_11X_ProdCutsDefault_v1_allfiles

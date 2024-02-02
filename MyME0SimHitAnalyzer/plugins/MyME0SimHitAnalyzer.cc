@@ -154,16 +154,23 @@ class MyME0SimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
   TH1F * ME0_All_hits_R, * ME0_All_hits_000_R, * ME0_All_hits_250_R, * ME0_All_hits_00_R, * ME0_All_hits_25_R, * ME0_HIP_hits_R;
   TH1F * G11_All_hits_R, * G11_All_hits_000_R, * G11_All_hits_250_R, * G11_All_hits_00_R, * G11_All_hits_25_R, * G11_HIP_hits_R; 
   TH1F * G21_All_hits_R, * G21_All_hits_000_R, * G21_All_hits_250_R, * G21_All_hits_00_R, * G21_All_hits_25_R, * G21_HIP_hits_R; 
-
-  // future :: need to split GE11 in short & long
-  TH1F * G11_L1_el_hits_R,  * G11_L1_mu_hits_R,  * G11_L1_pi_hits_R,  * G11_L1_ka_hits_R,  * G11_L1_p_hits_R,  * G11_L1_n_hits_R,  * G11_L1_g_hits_R,  * G11_L1_N_hits_R, * G11_L1_OH_hits_R,  * G11_L1_All_hits_R,  * G11_L1_HIP_hits_R;
-  TH1F * G11_L2_el_hits_R,  * G11_L2_mu_hits_R,  * G11_L2_pi_hits_R,  * G11_L2_ka_hits_R,  * G11_L2_p_hits_R,  * G11_L2_n_hits_R,  * G11_L2_g_hits_R,  * G11_L2_N_hits_R, * G11_L2_OH_hits_R,  * G11_L2_All_hits_R,  * G11_L2_HIP_hits_R;
+  // separate GE1/1 in odd (short) and even (long) chambers
   TH1F * G11_Od_el_hits_R,  * G11_Od_mu_hits_R,  * G11_Od_pi_hits_R,  * G11_Od_ka_hits_R,  * G11_Od_p_hits_R,  * G11_Od_n_hits_R,  * G11_Od_g_hits_R,  * G11_Od_N_hits_R, * G11_Od_OH_hits_R,  * G11_Od_All_hits_R,  * G11_Od_HIP_hits_R;
   TH1F * G11_Ev_el_hits_R,  * G11_Ev_mu_hits_R,  * G11_Ev_pi_hits_R,  * G11_Ev_ka_hits_R,  * G11_Ev_p_hits_R,  * G11_Ev_n_hits_R,  * G11_Ev_g_hits_R,  * G11_Ev_N_hits_R, * G11_Ev_OH_hits_R,  * G11_Ev_All_hits_R,  * G11_Ev_HIP_hits_R;
-  // TH1F * M11_Od_el_hits_R,  * M11_Od_mu_hits_R,  * M11_Od_pi_hits_R,  * M11_Od_ka_hits_R,  * M11_Od_p_hits_R,  * M11_Od_n_hits_R,  * M11_Od_g_hits_R,  * M11_Od_N_hits_R, * M11_Od_OH_hits_R,  * M11_Od_All_hits_R,  * M11_Od_HIP_hits_R;
-  // TH1F * M11_Ev_el_hits_R,  * M11_Ev_mu_hits_R,  * M11_Ev_pi_hits_R,  * M11_Ev_ka_hits_R,  * M11_Ev_p_hits_R,  * M11_Ev_n_hits_R,  * M11_Ev_g_hits_R,  * M11_Ev_N_hits_R, * M11_Ev_OH_hits_R,  * M11_Ev_All_hits_R,  * M11_Ev_HIP_hits_R;
-  // TH1F * M11_Od_L1_All_hits_R, * M11_Od_L2_All_hits_R, * M11_Od_L3_All_hits_R, * M11_Od_L4_All_hits_R, * M11_Od_L5_All_hits_R, * M11_Od_L6_All_hits_R;
-  // TH1F * M11_Ev_L1_All_hits_R, * M11_Ev_L2_All_hits_R, * M11_Ev_L3_All_hits_R, * M11_Ev_L4_All_hits_R, * M11_Ev_L5_All_hits_R, * M11_Ev_L6_All_hits_R;
+  // separate GE1/1 in [odd/even] x [Layer1/2] :: O1 = odd L1 | O2 = odd L2 | E1 = even L1 | E2 = even L2
+  TH1F * G11_O1_el_hits_R,  * G11_O1_mu_hits_R,  * G11_O1_pi_hits_R,  * G11_O1_ka_hits_R,  * G11_O1_p_hits_R,  * G11_O1_n_hits_R,  * G11_O1_g_hits_R,  * G11_O1_N_hits_R, * G11_O1_OH_hits_R,  * G11_O1_All_hits_R,  * G11_O1_HIP_hits_R;
+  TH1F * G11_O2_el_hits_R,  * G11_O2_mu_hits_R,  * G11_O2_pi_hits_R,  * G11_O2_ka_hits_R,  * G11_O2_p_hits_R,  * G11_O2_n_hits_R,  * G11_O2_g_hits_R,  * G11_O2_N_hits_R, * G11_O2_OH_hits_R,  * G11_O2_All_hits_R,  * G11_O2_HIP_hits_R;
+  TH1F * G11_E1_el_hits_R,  * G11_E1_mu_hits_R,  * G11_E1_pi_hits_R,  * G11_E1_ka_hits_R,  * G11_E1_p_hits_R,  * G11_E1_n_hits_R,  * G11_E1_g_hits_R,  * G11_E1_N_hits_R, * G11_E1_OH_hits_R,  * G11_E1_All_hits_R,  * G11_E1_HIP_hits_R;
+  TH1F * G11_E2_el_hits_R,  * G11_E2_mu_hits_R,  * G11_E2_pi_hits_R,  * G11_E2_ka_hits_R,  * G11_E2_p_hits_R,  * G11_E2_n_hits_R,  * G11_E2_g_hits_R,  * G11_E2_N_hits_R, * G11_E2_OH_hits_R,  * G11_E2_All_hits_R,  * G11_E2_HIP_hits_R;
+
+  // CSC ME1/1 for additional cross-checks
+  TH1F * M11_el_hits_R,     * M11_mu_hits_R,     * M11_pi_hits_R,     * M11_ka_hits_R,     * M11_p_hits_R,     * M11_n_hits_R,     * M11_g_hits_R,     * M11_N_hits_R,    * M11_OH_hits_R,     * M11_All_hits_R,     * M11_HIP_hits_R;
+  // separate ME1/1 in odd (back = yoke-side) and even (front = ip-side) chambers
+  TH1F * M11_Od_el_hits_R,  * M11_Od_mu_hits_R,  * M11_Od_pi_hits_R,  * M11_Od_ka_hits_R,  * M11_Od_p_hits_R,  * M11_Od_n_hits_R,  * M11_Od_g_hits_R,  * M11_Od_N_hits_R, * M11_Od_OH_hits_R,  * M11_Od_All_hits_R,  * M11_Od_HIP_hits_R;
+  TH1F * M11_Ev_el_hits_R,  * M11_Ev_mu_hits_R,  * M11_Ev_pi_hits_R,  * M11_Ev_ka_hits_R,  * M11_Ev_p_hits_R,  * M11_Ev_n_hits_R,  * M11_Ev_g_hits_R,  * M11_Ev_N_hits_R, * M11_Ev_OH_hits_R,  * M11_Ev_All_hits_R,  * M11_Ev_HIP_hits_R;
+  // have all hits for each layer
+  TH1F * M11_Od_L1_All_hits_R, * M11_Od_L2_All_hits_R, * M11_Od_L3_All_hits_R, * M11_Od_L4_All_hits_R, * M11_Od_L5_All_hits_R, * M11_Od_L6_All_hits_R;
+  TH1F * M11_Ev_L1_All_hits_R, * M11_Ev_L2_All_hits_R, * M11_Ev_L3_All_hits_R, * M11_Ev_L4_All_hits_R, * M11_Ev_L5_All_hits_R, * M11_Ev_L6_All_hits_R;
 
 
   // Separation [0 - 250ns] and [250ns - beyond]
@@ -194,6 +201,9 @@ class MyME0SimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
   TH1F * ME0_All_hits_E, * ME0_All_hits_000_E, * ME0_All_hits_250_E, * ME0_All_hits_00_E, * ME0_All_hits_25_E, * ME0_HIP_hits_E; 
   TH1F * G11_All_hits_E, * G11_All_hits_000_E, * G11_All_hits_250_E, * G11_All_hits_00_E, * G11_All_hits_25_E, * G11_HIP_hits_E; 
   TH1F * G21_All_hits_E, * G21_All_hits_000_E, * G21_All_hits_250_E, * G21_All_hits_00_E, * G21_All_hits_25_E, * G21_HIP_hits_E; 
+
+  TH1F *G11_Odd_el_hits_E,  *G11_Odd_mu_hits_E,  *G11_Odd_pi_hits_E,  *G11_Odd_ka_hits_E,  *G11_Odd_p_hits_E,  *G11_Odd_n_hits_E,  *G11_Odd_g_hits_E,  *G11_Odd_N_hits_E,  *G11_Odd_OH_hits_E,  *G11_Odd_All_hits_E,  *G11_Odd_HIP_hits_E;
+  TH1F *G11_Even_el_hits_E, *G11_Even_mu_hits_E, *G11_Even_pi_hits_E, *G11_Even_ka_hits_E, *G11_Even_p_hits_E, *G11_Even_n_hits_E, *G11_Even_g_hits_E, *G11_Even_N_hits_E, *G11_Even_OH_hits_E, *G11_Even_All_hits_E, *G11_Even_HIP_hits_E;
 
   TH1F * G11_L1Odd_el_hits_E,  * G11_L1Odd_mu_hits_E,   * G11_L1Odd_pi_hits_E,   * G11_L1Odd_ka_hits_E,   * G11_L1Odd_p_hits_E,    * G11_L1Odd_n_hits_E;
   TH1F * G11_L1Odd_g_hits_E,   * G11_L1Odd_N_hits_E,    * G11_L1Odd_OH_hits_E,   * G11_L1Odd_All_hits_E,  * G11_L1Odd_HIP_hits_E;
@@ -280,6 +290,10 @@ class MyME0SimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
   TH1F * G11_el_lindep,  * G11_mu_lindep,  * G11_pi_lindep,  * G11_ka_lindep,  * G11_p_lindep,  * G11_n_lindep,  * G11_g_lindep,  * G11_N_lindep, * G11_ha_lindep, *G11_OH_lindep, * G11_All_lindep, *G11_HIP_lindep;  
   TH1F * G21_el_lindep,  * G21_mu_lindep,  * G21_pi_lindep,  * G21_ka_lindep,  * G21_p_lindep,  * G21_n_lindep,  * G21_g_lindep,  * G21_N_lindep, * G21_ha_lindep, *G21_OH_lindep, * G21_All_lindep, *G21_HIP_lindep;  
 
+  TH1F * G11_el_lindepzoom,  * G11_mu_lindepzoom,  * G11_pi_lindepzoom,  * G11_ka_lindepzoom,  * G11_p_lindepzoom,  * G11_n_lindepzoom,  * G11_g_lindepzoom;  
+  TH1F * G11_N_lindepzoom,   * G11_ha_lindepzoom,  * G11_OH_lindepzoom,  * G11_All_lindepzoom, * G11_HIP_lindepzoom;  
+  TH1F * GEM_HIP_lindepext,  * ME0_HIP_lindepext,  * G11_HIP_lindepext,  * G21_HIP_lindepext;
+
   TH2F * ME0_All_lindep_roll,  * G11_All_lindep_roll,  * G21_All_lindep_roll;
   TH1F * ME0_All_lindep_eta01, * ME0_All_lindep_eta02, * ME0_All_lindep_eta03, * ME0_All_lindep_eta04, * ME0_All_lindep_eta05, * ME0_All_lindep_eta06, * ME0_All_lindep_eta07, * ME0_All_lindep_eta08;
   TH1F * G11_All_lindep_eta01, * G11_All_lindep_eta02, * G11_All_lindep_eta03, * G11_All_lindep_eta04, * G11_All_lindep_eta05, * G11_All_lindep_eta06, * G11_All_lindep_eta07, * G11_All_lindep_eta08;
@@ -354,6 +368,21 @@ class MyME0SimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
   TH2F * ME0_Nuclei_A_Z;
   TH1F * ME0_Nuclei_A, * ME0_Nuclei_Z, * ME0_Nuclei_List;
   TH1F * GEM_HIP_id, * ME0_HIP_id;
+
+
+
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  TDirectoryFile * TDir_Muon_Thresholds;
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  TH1F * ME0_thr_el_0GeV, * ME0_thr_mu_0GeV, *ME0_thr_p_0GeV, *ME0_thr_n_0GeV, *ME0_thr_pi_0GeV, *ME0_thr_ka_0GeV, *ME0_thr_ph_0GeV, *ME0_thr_N_0GeV, *ME0_thr_HIP_0GeV, *ME0_thr_All_0GeV, *ME0_thr_OH_0GeV;
+  TH1F * ME0_thr_el_1GeV, * ME0_thr_mu_1GeV, *ME0_thr_p_1GeV, *ME0_thr_n_1GeV, *ME0_thr_pi_1GeV, *ME0_thr_ka_1GeV, *ME0_thr_ph_1GeV, *ME0_thr_N_1GeV, *ME0_thr_HIP_1GeV, *ME0_thr_All_1GeV, *ME0_thr_OH_1GeV;
+  TH1F * ME0_thr_el_5GeV, * ME0_thr_mu_5GeV, *ME0_thr_p_5GeV, *ME0_thr_n_5GeV, *ME0_thr_pi_5GeV, *ME0_thr_ka_5GeV, *ME0_thr_ph_5GeV, *ME0_thr_N_5GeV, *ME0_thr_HIP_5GeV, *ME0_thr_All_5GeV, *ME0_thr_OH_5GeV;
+
+  TH1F * G11_thr_el_0GeV, * G11_thr_mu_0GeV, *G11_thr_p_0GeV, *G11_thr_n_0GeV, *G11_thr_pi_0GeV, *G11_thr_ka_0GeV, *G11_thr_ph_0GeV, *G11_thr_N_0GeV, *G11_thr_HIP_0GeV, *G11_thr_All_0GeV, *G11_thr_OH_0GeV;
+  TH1F * G11_thr_el_1GeV, * G11_thr_mu_1GeV, *G11_thr_p_1GeV, *G11_thr_n_1GeV, *G11_thr_pi_1GeV, *G11_thr_ka_1GeV, *G11_thr_ph_1GeV, *G11_thr_N_1GeV, *G11_thr_HIP_1GeV, *G11_thr_All_1GeV, *G11_thr_OH_1GeV;
+  TH1F * G11_thr_el_5GeV, * G11_thr_mu_5GeV, *G11_thr_p_5GeV, *G11_thr_n_5GeV, *G11_thr_pi_5GeV, *G11_thr_ka_5GeV, *G11_thr_ph_5GeV, *G11_thr_N_5GeV, *G11_thr_HIP_5GeV, *G11_thr_All_5GeV, *G11_thr_OH_5GeV;
+
+
 };
 
 //
@@ -369,22 +398,26 @@ int m_lin = 1000, m1_lin = 0,  m2_lin = 100000000;
 int n_hits = 20;  double n1_hits = 0.5, n2_hits = 20.5;
 int n_lay  = 12;  double n1_lay  = 0.5, n2_lay  = 12.5;
 
-int n_D   = 900,  n1_D   = -3, n2_D   = 6;
-int n_E   = 900,  n1_E   = -4, n2_E   = 5;
+int n_D   = 900,  n1_D   = -3, n2_D   = 6;      // 10log of Energy Deposit from 1E-3 to 1E6 keV
+int n_E   = 900,  n1_E   = -4, n2_E   = 5;      // 10log of Kinetic Energy from 1E-4 to 1E5 MeV (?)
 // int n_F   = 90,   n1_F   = -3, n2_F   = 6;
-int n_F   = 200,  n1_F   = -3, n2_F   = 6;
+int n_F   = 200,  n1_F   = -3, n2_F   = 6;       // 10log 
+
 int n_R   = 90,   n1_R   = 60, n2_R   = 150;     // Radius ME0  :: 60 - 150 cm
 int n_P   = 120,  n1_P   = 130,n2_P   = 250;     // Radius GE11 :: 130 - 250 cm
 int n_Q   = 190,  n1_Q   = 130,n2_Q   = 320;     // Radius GE21 :: 130 - 320 cm
+int n_S   = 250,  n1_S   = 100,n2_S   = 250;     // Radius ME11 :: 100 - 250 cm
 int n_N   = 8;    double n1_N  = 0.5, n2_N  = 8.5;  // Eta Partitions GE11 :: 8 
 int n_N2  = 16;   double n1_N2 = 0.5, n2_N2 = 16.5; // Eta Partitions GE21 :: 16 
 
 int n_Z   = 100,  n1_Z   =  1, n2_Z   = 100;
 int n_A   = 200,  n1_A   = 1,  n2_A   = 200;
 int n_DL  = 2500, n1_DL  = 0,  n2_DL  = 250;   // linear plot deposits: 0-250keV in steps of 100eV
-int n_H   = 1000, n1_H   = 0,  n2_H   = 10000; // HIP deposits: 0-10MeV in steps of 5keV = steps of 167e-  
 int n_EL  = 1000, n1_EL  = 0,  n2_EL  = 1000;  // linear kinetic energy 0 -1GeV in steps of 1 MeV
 int n_CL  = 1000, n1_CL  = 0,  n2_CL  = 500;   // linear plot deposits: 0-500keV in steps of 500eV + 1 overflowbin
+
+int n_H   = 1000, n1_H   = 0,  n2_H   = 10000; // HIP deposits: 0-10MeV in steps of 5keV = steps of 167e- [lindepext] 
+int n_DZ  = 5000, n1_DZ  = 0,  n2_DZ  = 50;    // linear plot deposits: 0-50keV in steps of 10eV [lindep zoom]
 
 int n_xy_x =  800; double n_xy_x1 = -800;  double n_xy_x2 = +800;
 int n_xy_y =  800; double n_xy_y1 = -800;  double n_xy_y2 = +800;
@@ -482,7 +515,7 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   TDir_Muon_hits_timing   = new TDirectoryFile("Muon_hits_timing",   "Muon_hits_timing");
   TDir_Muon_XY_RZ_views   = new TDirectoryFile("Muon_XY_RZ_views",   "Muon_XY_RZ_views");
   TDir_Muon_Nuclei        = new TDirectoryFile("Muon_hits_Nuclei",   "Muon_hits_Nuclei");
-
+  TDir_Muon_Thresholds    = new TDirectoryFile("TDir_Muon_Thresholds", "TDir_Muon_Thresholds");
 
   // Simhit vs R :: in future need to split between GE11 short & GE11 long
   G11_el_hits_R = new TH1F("G11_el_hits_R", "Simhit Radius :: Electrons", n_P, n1_P, n2_P);
@@ -661,29 +694,53 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   G21_All_hits_25_R= new TH1F("G21_All_hits_25_R","Simhit Radius :: All Particles :: t > 25 ns", n_Q, n1_Q, n2_Q);
 
   // 2B updated :: change binnings to n_R (ME0) n_P (GE11) and n_Q (GE21)
-  G11_L1_el_hits_R  = new TH1F("G11_L1_el_hits_R",  "Simhit Radius :: G1E1 L1 :: Electrons",       n_P, n1_P, n2_P);
-  G11_L1_mu_hits_R  = new TH1F("G11_L1_mu_hits_R",  "Simhit Radius :: GE11 L1 :: Muons",           n_P, n1_P, n2_P);
-  G11_L1_pi_hits_R  = new TH1F("G11_L1_pi_hits_R",  "Simhit Radius :: GE11 L1 :: Pions",           n_P, n1_P, n2_P);
-  G11_L1_ka_hits_R  = new TH1F("G11_L1_ka_hits_R",  "Simhit Radius :: GE11 L1 :: Kaons",           n_P, n1_P, n2_P);
-  G11_L1_p_hits_R   = new TH1F("G11_L1_p_hits_R",   "Simhit Radius :: GE11 L1 :: Protons",         n_P, n1_P, n2_P);
-  G11_L1_n_hits_R   = new TH1F("G11_L1_n_hits_R",   "Simhit Radius :: GE11 L1 :: Neutrons",        n_P, n1_P, n2_P);
-  G11_L1_g_hits_R   = new TH1F("G11_L1_g_hits_R",   "Simhit Radius :: GE11 L1 :: Photons",         n_P, n1_P, n2_P);
-  G11_L1_N_hits_R   = new TH1F("G11_L1_N_hits_R",   "Simhit Radius :: GE11 L1 :: Nuclei",          n_P, n1_P, n2_P);
-  G11_L1_OH_hits_R  = new TH1F("G11_L1_OH_hits_R",  "Simhit Radius :: GE11 L1 :: Other Hadrons",   n_P, n1_P, n2_P);
-  G11_L1_All_hits_R = new TH1F("G11_L1_All_hits_R", "Simhit Radius :: GE11 L1 :: All Particles",   n_P, n1_P, n2_P);
-  G11_L1_HIP_hits_R = new TH1F("G11_L1_HIP_hits_R", "Simhit Radius :: GE11 L1 :: Highly Ionizing", n_P, n1_P, n2_P);
+  G11_O1_el_hits_R  = new TH1F("G11_O1_el_hits_R",  "Simhit Radius :: GE11 Odd L1 :: Electrons",       n_P, n1_P, n2_P);
+  G11_O1_mu_hits_R  = new TH1F("G11_O1_mu_hits_R",  "Simhit Radius :: GE11 Odd L1 :: Muons",           n_P, n1_P, n2_P);
+  G11_O1_pi_hits_R  = new TH1F("G11_O1_pi_hits_R",  "Simhit Radius :: GE11 Odd L1 :: Pions",           n_P, n1_P, n2_P);
+  G11_O1_ka_hits_R  = new TH1F("G11_O1_ka_hits_R",  "Simhit Radius :: GE11 Odd L1 :: Kaons",           n_P, n1_P, n2_P);
+  G11_O1_p_hits_R   = new TH1F("G11_O1_p_hits_R",   "Simhit Radius :: GE11 Odd L1 :: Protons",         n_P, n1_P, n2_P);
+  G11_O1_n_hits_R   = new TH1F("G11_O1_n_hits_R",   "Simhit Radius :: GE11 Odd L1 :: Neutrons",        n_P, n1_P, n2_P);
+  G11_O1_g_hits_R   = new TH1F("G11_O1_g_hits_R",   "Simhit Radius :: GE11 Odd L1 :: Photons",         n_P, n1_P, n2_P);
+  G11_O1_N_hits_R   = new TH1F("G11_O1_N_hits_R",   "Simhit Radius :: GE11 Odd L1 :: Nuclei",          n_P, n1_P, n2_P);
+  G11_O1_OH_hits_R  = new TH1F("G11_O1_OH_hits_R",  "Simhit Radius :: GE11 Odd L1 :: Other Hadrons",   n_P, n1_P, n2_P);
+  G11_O1_All_hits_R = new TH1F("G11_O1_All_hits_R", "Simhit Radius :: GE11 Odd L1 :: All Particles",   n_P, n1_P, n2_P);
+  G11_O1_HIP_hits_R = new TH1F("G11_O1_HIP_hits_R", "Simhit Radius :: GE11 Odd L1 :: Highly Ionizing", n_P, n1_P, n2_P);
 
-  G11_L2_el_hits_R  = new TH1F("G11_L2_el_hits_R",  "Simhit Radius :: GE11 L2 :: Electrons",       n_P, n1_P, n2_P);
-  G11_L2_mu_hits_R  = new TH1F("G11_L2_mu_hits_R",  "Simhit Radius :: GE11 L2 :: Muons",           n_P, n1_P, n2_P);
-  G11_L2_pi_hits_R  = new TH1F("G11_L2_pi_hits_R",  "Simhit Radius :: GE11 L2 :: Pions",           n_P, n1_P, n2_P);
-  G11_L2_ka_hits_R  = new TH1F("G11_L2_ka_hits_R",  "Simhit Radius :: GE11 L2 :: Kaons",           n_P, n1_P, n2_P);
-  G11_L2_p_hits_R   = new TH1F("G11_L2_p_hits_R",   "Simhit Radius :: GE11 L2 :: Protons",         n_P, n1_P, n2_P);
-  G11_L2_n_hits_R   = new TH1F("G11_L2_n_hits_R",   "Simhit Radius :: GE11 L2 :: Neutrons",        n_P, n1_P, n2_P);
-  G11_L2_g_hits_R   = new TH1F("G11_L2_g_hits_R",   "Simhit Radius :: GE11 L2 :: Photons",         n_P, n1_P, n2_P);
-  G11_L2_N_hits_R   = new TH1F("G11_L2_N_hits_R",   "Simhit Radius :: GE11 L2 :: Nuclei",          n_P, n1_P, n2_P);
-  G11_L2_OH_hits_R  = new TH1F("G11_L2_OH_hits_R",  "Simhit Radius :: GE11 L2 :: Other Hadrons",   n_P, n1_P, n2_P);
-  G11_L2_All_hits_R = new TH1F("G11_L2_All_hits_R", "Simhit Radius :: GE11 L2 :: All Particles",   n_P, n1_P, n2_P);
-  G11_L2_HIP_hits_R = new TH1F("G11_L2_HIP_hits_R", "Simhit Radius :: GE11 L2 :: Highly Ionizing", n_P, n1_P, n2_P);
+  G11_O2_el_hits_R  = new TH1F("G11_O2_el_hits_R",  "Simhit Radius :: GE11 Odd L2 :: Electrons",       n_P, n1_P, n2_P);
+  G11_O2_mu_hits_R  = new TH1F("G11_O2_mu_hits_R",  "Simhit Radius :: GE11 Odd L2 :: Muons",           n_P, n1_P, n2_P);
+  G11_O2_pi_hits_R  = new TH1F("G11_O2_pi_hits_R",  "Simhit Radius :: GE11 Odd L2 :: Pions",           n_P, n1_P, n2_P);
+  G11_O2_ka_hits_R  = new TH1F("G11_O2_ka_hits_R",  "Simhit Radius :: GE11 Odd L2 :: Kaons",           n_P, n1_P, n2_P);
+  G11_O2_p_hits_R   = new TH1F("G11_O2_p_hits_R",   "Simhit Radius :: GE11 Odd L2 :: Protons",         n_P, n1_P, n2_P);
+  G11_O2_n_hits_R   = new TH1F("G11_O2_n_hits_R",   "Simhit Radius :: GE11 Odd L2 :: Neutrons",        n_P, n1_P, n2_P);
+  G11_O2_g_hits_R   = new TH1F("G11_O2_g_hits_R",   "Simhit Radius :: GE11 Odd L2 :: Photons",         n_P, n1_P, n2_P);
+  G11_O2_N_hits_R   = new TH1F("G11_O2_N_hits_R",   "Simhit Radius :: GE11 Odd L2 :: Nuclei",          n_P, n1_P, n2_P);
+  G11_O2_OH_hits_R  = new TH1F("G11_O2_OH_hits_R",  "Simhit Radius :: GE11 Odd L2 :: Other Hadrons",   n_P, n1_P, n2_P);
+  G11_O2_All_hits_R = new TH1F("G11_O2_All_hits_R", "Simhit Radius :: GE11 Odd L2 :: All Particles",   n_P, n1_P, n2_P);
+  G11_O2_HIP_hits_R = new TH1F("G11_O2_HIP_hits_R", "Simhit Radius :: GE11 Odd L2 :: Highly Ionizing", n_P, n1_P, n2_P);
+
+  G11_E1_el_hits_R  = new TH1F("G11_E1_el_hits_R",  "Simhit Radius :: GE11 Even L1 :: Electrons",       n_P, n1_P, n2_P);
+  G11_E1_mu_hits_R  = new TH1F("G11_E1_mu_hits_R",  "Simhit Radius :: GE11 Even L1 :: Muons",           n_P, n1_P, n2_P);
+  G11_E1_pi_hits_R  = new TH1F("G11_E1_pi_hits_R",  "Simhit Radius :: GE11 Even L1 :: Pions",           n_P, n1_P, n2_P);
+  G11_E1_ka_hits_R  = new TH1F("G11_E1_ka_hits_R",  "Simhit Radius :: GE11 Even L1 :: Kaons",           n_P, n1_P, n2_P);
+  G11_E1_p_hits_R   = new TH1F("G11_E1_p_hits_R",   "Simhit Radius :: GE11 Even L1 :: Protons",         n_P, n1_P, n2_P);
+  G11_E1_n_hits_R   = new TH1F("G11_E1_n_hits_R",   "Simhit Radius :: GE11 Even L1 :: Neutrons",        n_P, n1_P, n2_P);
+  G11_E1_g_hits_R   = new TH1F("G11_E1_g_hits_R",   "Simhit Radius :: GE11 Even L1 :: Photons",         n_P, n1_P, n2_P);
+  G11_E1_N_hits_R   = new TH1F("G11_E1_N_hits_R",   "Simhit Radius :: GE11 Even L1 :: Nuclei",          n_P, n1_P, n2_P);
+  G11_E1_OH_hits_R  = new TH1F("G11_E1_OH_hits_R",  "Simhit Radius :: GE11 Even L1 :: Other Hadrons",   n_P, n1_P, n2_P);
+  G11_E1_All_hits_R = new TH1F("G11_E1_All_hits_R", "Simhit Radius :: GE11 Even L1 :: All Particles",   n_P, n1_P, n2_P);
+  G11_E1_HIP_hits_R = new TH1F("G11_E1_HIP_hits_R", "Simhit Radius :: GE11 Even L1 :: Highly Ionizing", n_P, n1_P, n2_P);
+
+  G11_E2_el_hits_R  = new TH1F("G11_E2_el_hits_R",  "Simhit Radius :: GE11 Even L2 :: Electrons",       n_P, n1_P, n2_P);
+  G11_E2_mu_hits_R  = new TH1F("G11_E2_mu_hits_R",  "Simhit Radius :: GE11 Even L2 :: Muons",           n_P, n1_P, n2_P);
+  G11_E2_pi_hits_R  = new TH1F("G11_E2_pi_hits_R",  "Simhit Radius :: GE11 Even L2 :: Pions",           n_P, n1_P, n2_P);
+  G11_E2_ka_hits_R  = new TH1F("G11_E2_ka_hits_R",  "Simhit Radius :: GE11 Even L2 :: Kaons",           n_P, n1_P, n2_P);
+  G11_E2_p_hits_R   = new TH1F("G11_E2_p_hits_R",   "Simhit Radius :: GE11 Even L2 :: Protons",         n_P, n1_P, n2_P);
+  G11_E2_n_hits_R   = new TH1F("G11_E2_n_hits_R",   "Simhit Radius :: GE11 Even L2 :: Neutrons",        n_P, n1_P, n2_P);
+  G11_E2_g_hits_R   = new TH1F("G11_E2_g_hits_R",   "Simhit Radius :: GE11 Even L2 :: Photons",         n_P, n1_P, n2_P);
+  G11_E2_N_hits_R   = new TH1F("G11_E2_N_hits_R",   "Simhit Radius :: GE11 Even L2 :: Nuclei",          n_P, n1_P, n2_P);
+  G11_E2_OH_hits_R  = new TH1F("G11_E2_OH_hits_R",  "Simhit Radius :: GE11 Even L2 :: Other Hadrons",   n_P, n1_P, n2_P);
+  G11_E2_All_hits_R = new TH1F("G11_E2_All_hits_R", "Simhit Radius :: GE11 Even L2 :: All Particles",   n_P, n1_P, n2_P);
+  G11_E2_HIP_hits_R = new TH1F("G11_E2_HIP_hits_R", "Simhit Radius :: GE11 Even L2 :: Highly Ionizing", n_P, n1_P, n2_P);
 
   G11_Od_el_hits_R  = new TH1F("G11_Od_el_hits_R",  "Simhit Radius :: GE11 Odd :: Electrons",       n_P, n1_P, n2_P);
   G11_Od_mu_hits_R  = new TH1F("G11_Od_mu_hits_R",  "Simhit Radius :: GE11 Odd :: Muons",           n_P, n1_P, n2_P);
@@ -709,31 +766,56 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   G11_Ev_All_hits_R = new TH1F("G11_Ev_All_hits_R", "Simhit Radius :: GE11 Even :: All Particles",   n_P, n1_P, n2_P);
   G11_Ev_HIP_hits_R = new TH1F("G11_Ev_HIP_hits_R", "Simhit Radius :: GE11 Even :: Highly Ionizing", n_P, n1_P, n2_P);
 
-  /*
-  M11_Od_el_hits_R  = new TH1F("M11_Od_el_hits_R",  "Simhit Radius :: ME11 Odd :: Electrons",       121, 130, 251);
-  M11_Od_mu_hits_R  = new TH1F("M11_Od_mu_hits_R",  "Simhit Radius :: ME11 Odd :: Muons",           121, 130, 251);
-  M11_Od_pi_hits_R  = new TH1F("M11_Od_pi_hits_R",  "Simhit Radius :: ME11 Odd :: Pions",           121, 130, 251);
-  M11_Od_ka_hits_R  = new TH1F("M11_Od_ka_hits_R",  "Simhit Radius :: ME11 Odd :: Kaons",           121, 130, 251);
-  M11_Od_p_hits_R   = new TH1F("M11_Od_p_hits_R",   "Simhit Radius :: ME11 Odd :: Protons",         121, 130, 251);
-  M11_Od_n_hits_R   = new TH1F("M11_Od_n_hits_R",   "Simhit Radius :: ME11 Odd :: Neutrons",        121, 130, 251);
-  M11_Od_g_hits_R   = new TH1F("M11_Od_g_hits_R",   "Simhit Radius :: ME11 Odd :: Photons",         121, 130, 251);
-  M11_Od_N_hits_R   = new TH1F("M11_Od_N_hits_R",   "Simhit Radius :: ME11 Odd :: Nuclei",          121, 130, 251);
-  M11_Od_OH_hits_R  = new TH1F("M11_Od_OH_hits_R",  "Simhit Radius :: ME11 Odd :: Other Hadrons",   121, 130, 251);
-  M11_Od_All_hits_R = new TH1F("M11_Od_All_hits_R", "Simhit Radius :: ME11 Odd :: All Particles",   121, 130, 251);
-  M11_Od_HIP_hits_R = new TH1F("M11_Od_HIP_hits_R", "Simhit Radius :: ME11 Odd :: Highly Ionizing", 121, 130, 251);
+  // CSC ME1/1 Plots
+  M11_el_hits_R  = new TH1F("M11_el_hits_R",  "Simhit Radius :: ME11 :: Electrons",       n_S, n1_S, n2_S);
+  M11_mu_hits_R  = new TH1F("M11_mu_hits_R",  "Simhit Radius :: ME11 :: Muons",           n_S, n1_S, n2_S);
+  M11_pi_hits_R  = new TH1F("M11_pi_hits_R",  "Simhit Radius :: ME11 :: Pions",           n_S, n1_S, n2_S);
+  M11_ka_hits_R  = new TH1F("M11_ka_hits_R",  "Simhit Radius :: ME11 :: Kaons",           n_S, n1_S, n2_S);
+  M11_p_hits_R   = new TH1F("M11_p_hits_R",   "Simhit Radius :: ME11 :: Protons",         n_S, n1_S, n2_S);
+  M11_n_hits_R   = new TH1F("M11_n_hits_R",   "Simhit Radius :: ME11 :: Neutrons",        n_S, n1_S, n2_S);
+  M11_g_hits_R   = new TH1F("M11_g_hits_R",   "Simhit Radius :: ME11 :: Photons",         n_S, n1_S, n2_S);
+  M11_N_hits_R   = new TH1F("M11_N_hits_R",   "Simhit Radius :: ME11 :: Nuclei",          n_S, n1_S, n2_S);
+  M11_OH_hits_R  = new TH1F("M11_OH_hits_R",  "Simhit Radius :: ME11 :: Other Hadrons",   n_S, n1_S, n2_S);
+  M11_All_hits_R = new TH1F("M11_All_hits_R", "Simhit Radius :: ME11 :: All Particles",   n_S, n1_S, n2_S);
+  M11_HIP_hits_R = new TH1F("M11_HIP_hits_R", "Simhit Radius :: ME11 :: Highly Ionizing", n_S, n1_S, n2_S);
 
-  M11_Ev_el_hits_R  = new TH1F("M11_Ev_el_hits_R",  "Simhit Radius :: ME11 Even :: Electrons",       121, 130, 251);
-  M11_Ev_mu_hits_R  = new TH1F("M11_Ev_mu_hits_R",  "Simhit Radius :: ME11 Even :: Muons",           121, 130, 251);
-  M11_Ev_pi_hits_R  = new TH1F("M11_Ev_pi_hits_R",  "Simhit Radius :: ME11 Even :: Pions",           121, 130, 251);
-  M11_Ev_ka_hits_R  = new TH1F("M11_Ev_ka_hits_R",  "Simhit Radius :: ME11 Even :: Kaons",           121, 130, 251);
-  M11_Ev_p_hits_R   = new TH1F("M11_Ev_p_hits_R",   "Simhit Radius :: ME11 Even :: Protons",         121, 130, 251);
-  M11_Ev_n_hits_R   = new TH1F("M11_Ev_n_hits_R",   "Simhit Radius :: ME11 Even :: Neutrons",        121, 130, 251);
-  M11_Ev_g_hits_R   = new TH1F("M11_Ev_g_hits_R",   "Simhit Radius :: ME11 Even :: Photons",         121, 130, 251);
-  M11_Ev_N_hits_R   = new TH1F("M11_Ev_N_hits_R",   "Simhit Radius :: ME11 Even :: Nuclei",          121, 130, 251);
-  M11_Ev_OH_hits_R  = new TH1F("M11_Ev_OH_hits_R",  "Simhit Radius :: ME11 Even :: Other Hadrons",   121, 130, 251);
-  M11_Ev_All_hits_R = new TH1F("M11_Ev_All_hits_R", "Simhit Radius :: ME11 Even :: All Particles",   121, 130, 251);
-  M11_Ev_HIP_hits_R = new TH1F("M11_Ev_HIP_hits_R", "Simhit Radius :: ME11 Even :: Highly Ionizing", 121, 130, 251);
-  */
+  M11_Od_el_hits_R  = new TH1F("M11_Od_el_hits_R",  "Simhit Radius :: ME11 Odd :: Electrons",       n_S, n1_S, n2_S);
+  M11_Od_mu_hits_R  = new TH1F("M11_Od_mu_hits_R",  "Simhit Radius :: ME11 Odd :: Muons",           n_S, n1_S, n2_S);
+  M11_Od_pi_hits_R  = new TH1F("M11_Od_pi_hits_R",  "Simhit Radius :: ME11 Odd :: Pions",           n_S, n1_S, n2_S);
+  M11_Od_ka_hits_R  = new TH1F("M11_Od_ka_hits_R",  "Simhit Radius :: ME11 Odd :: Kaons",           n_S, n1_S, n2_S);
+  M11_Od_p_hits_R   = new TH1F("M11_Od_p_hits_R",   "Simhit Radius :: ME11 Odd :: Protons",         n_S, n1_S, n2_S);
+  M11_Od_n_hits_R   = new TH1F("M11_Od_n_hits_R",   "Simhit Radius :: ME11 Odd :: Neutrons",        n_S, n1_S, n2_S);
+  M11_Od_g_hits_R   = new TH1F("M11_Od_g_hits_R",   "Simhit Radius :: ME11 Odd :: Photons",         n_S, n1_S, n2_S);
+  M11_Od_N_hits_R   = new TH1F("M11_Od_N_hits_R",   "Simhit Radius :: ME11 Odd :: Nuclei",          n_S, n1_S, n2_S);
+  M11_Od_OH_hits_R  = new TH1F("M11_Od_OH_hits_R",  "Simhit Radius :: ME11 Odd :: Other Hadrons",   n_S, n1_S, n2_S);
+  M11_Od_All_hits_R = new TH1F("M11_Od_All_hits_R", "Simhit Radius :: ME11 Odd :: All Particles",   n_S, n1_S, n2_S);
+  M11_Od_HIP_hits_R = new TH1F("M11_Od_HIP_hits_R", "Simhit Radius :: ME11 Odd :: Highly Ionizing", n_S, n1_S, n2_S);
+
+  M11_Ev_el_hits_R  = new TH1F("M11_Ev_el_hits_R",  "Simhit Radius :: ME11 Even :: Electrons",       n_S, n1_S, n2_S);
+  M11_Ev_mu_hits_R  = new TH1F("M11_Ev_mu_hits_R",  "Simhit Radius :: ME11 Even :: Muons",           n_S, n1_S, n2_S);
+  M11_Ev_pi_hits_R  = new TH1F("M11_Ev_pi_hits_R",  "Simhit Radius :: ME11 Even :: Pions",           n_S, n1_S, n2_S);
+  M11_Ev_ka_hits_R  = new TH1F("M11_Ev_ka_hits_R",  "Simhit Radius :: ME11 Even :: Kaons",           n_S, n1_S, n2_S);
+  M11_Ev_p_hits_R   = new TH1F("M11_Ev_p_hits_R",   "Simhit Radius :: ME11 Even :: Protons",         n_S, n1_S, n2_S);
+  M11_Ev_n_hits_R   = new TH1F("M11_Ev_n_hits_R",   "Simhit Radius :: ME11 Even :: Neutrons",        n_S, n1_S, n2_S);
+  M11_Ev_g_hits_R   = new TH1F("M11_Ev_g_hits_R",   "Simhit Radius :: ME11 Even :: Photons",         n_S, n1_S, n2_S);
+  M11_Ev_N_hits_R   = new TH1F("M11_Ev_N_hits_R",   "Simhit Radius :: ME11 Even :: Nuclei",          n_S, n1_S, n2_S);
+  M11_Ev_OH_hits_R  = new TH1F("M11_Ev_OH_hits_R",  "Simhit Radius :: ME11 Even :: Other Hadrons",   n_S, n1_S, n2_S);
+  M11_Ev_All_hits_R = new TH1F("M11_Ev_All_hits_R", "Simhit Radius :: ME11 Even :: All Particles",   n_S, n1_S, n2_S);
+  M11_Ev_HIP_hits_R = new TH1F("M11_Ev_HIP_hits_R", "Simhit Radius :: ME11 Even :: Highly Ionizing", n_S, n1_S, n2_S);
+
+  M11_Od_L1_All_hits_R = new TH1F("M11_Od_L1_All_hits_R", "Simhit Radius :: ME11 Odd Layer 1 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Od_L2_All_hits_R = new TH1F("M11_Od_L2_All_hits_R", "Simhit Radius :: ME11 Odd Layer 2 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Od_L3_All_hits_R = new TH1F("M11_Od_L3_All_hits_R", "Simhit Radius :: ME11 Odd Layer 3 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Od_L4_All_hits_R = new TH1F("M11_Od_L4_All_hits_R", "Simhit Radius :: ME11 Odd Layer 4 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Od_L5_All_hits_R = new TH1F("M11_Od_L5_All_hits_R", "Simhit Radius :: ME11 Odd Layer 5 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Od_L6_All_hits_R = new TH1F("M11_Od_L6_All_hits_R", "Simhit Radius :: ME11 Odd Layer 6 :: All Particles",   n_S, n1_S, n2_S);  
+
+  M11_Ev_L1_All_hits_R = new TH1F("M11_Ev_L1_All_hits_R", "Simhit Radius :: ME11 Even Layer 1 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Ev_L2_All_hits_R = new TH1F("M11_Ev_L2_All_hits_R", "Simhit Radius :: ME11 Even Layer 2 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Ev_L3_All_hits_R = new TH1F("M11_Ev_L3_All_hits_R", "Simhit Radius :: ME11 Even Layer 3 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Ev_L4_All_hits_R = new TH1F("M11_Ev_L4_All_hits_R", "Simhit Radius :: ME11 Even Layer 4 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Ev_L5_All_hits_R = new TH1F("M11_Ev_L5_All_hits_R", "Simhit Radius :: ME11 Even Layer 5 :: All Particles",   n_S, n1_S, n2_S);  
+  M11_Ev_L6_All_hits_R = new TH1F("M11_Ev_L6_All_hits_R", "Simhit Radius :: ME11 Even Layer 6 :: All Particles",   n_S, n1_S, n2_S);  
 
   // Simhit vs EtaPartition
   G11_el_hits_E = new TH1F("G11_el_hits_E", "Simhit Radius :: Electrons", n_N, n1_N, n2_N);
@@ -786,53 +868,53 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   G21_All_hits_000_E= new TH1F("G21_All_hits_000_E","Simhit Radius :: All Particles :: t < 250 ns", n_N, n1_N, n2_N);
   G21_All_hits_250_E= new TH1F("G21_All_hits_250_E","Simhit Radius :: All Particles :: t > 250 ns", n_N, n1_N, n2_N);
 
-  G11_L1Odd_el_hits_E = new TH1F("G11_el_hits_E", "Simhit Radius :: GE11 L1 Odd :: Electrons", n_N, n1_N, n2_N);
-  G11_L1Odd_mu_hits_E = new TH1F("G11_mu_hits_E", "Simhit Radius :: GE11 L1 Odd :: Muons",     n_N, n1_N, n2_N);
-  G11_L1Odd_pi_hits_E = new TH1F("G11_pi_hits_E", "Simhit Radius :: GE11 L1 Odd :: Pions",     n_N, n1_N, n2_N);
-  G11_L1Odd_ka_hits_E = new TH1F("G11_ka_hits_E", "Simhit Radius :: GE11 L1 Odd :: Kaons",     n_N, n1_N, n2_N);
-  G11_L1Odd_p_hits_E  = new TH1F("G11_p_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Protons",   n_N, n1_N, n2_N);
-  G11_L1Odd_n_hits_E  = new TH1F("G11_n_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Neutrons",  n_N, n1_N, n2_N);
-  G11_L1Odd_g_hits_E  = new TH1F("G11_g_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Photons",   n_N, n1_N, n2_N);
-  G11_L1Odd_N_hits_E  = new TH1F("G11_N_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Nuclei",    n_N, n1_N, n2_N);
-  G11_L1Odd_OH_hits_E = new TH1F("G11_OH_hits_E", "Simhit Radius :: GE11 L1 Odd :: Other Hadrons", n_N, n1_N, n2_N);
-  G11_L1Odd_All_hits_E= new TH1F("G11_All_hits_E","Simhit Radius :: GE11 L1 Odd :: All Particles", n_N, n1_N, n2_N);
-  G11_L1Odd_HIP_hits_E= new TH1F("G11_HIP_hits_E","Simhit Radius :: GE11 L1 Odd :: HIP Particles", n_N, n1_N, n2_N);
+  G11_L1Odd_el_hits_E = new TH1F("G11_L1Odd_el_hits_E", "Simhit Radius :: GE11 L1 Odd :: Electrons", n_N, n1_N, n2_N);
+  G11_L1Odd_mu_hits_E = new TH1F("G11_L1Odd_mu_hits_E", "Simhit Radius :: GE11 L1 Odd :: Muons",     n_N, n1_N, n2_N);
+  G11_L1Odd_pi_hits_E = new TH1F("G11_L1Odd_pi_hits_E", "Simhit Radius :: GE11 L1 Odd :: Pions",     n_N, n1_N, n2_N);
+  G11_L1Odd_ka_hits_E = new TH1F("G11_L1Odd_ka_hits_E", "Simhit Radius :: GE11 L1 Odd :: Kaons",     n_N, n1_N, n2_N);
+  G11_L1Odd_p_hits_E  = new TH1F("G11_L1Odd_p_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Protons",   n_N, n1_N, n2_N);
+  G11_L1Odd_n_hits_E  = new TH1F("G11_L1Odd_n_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Neutrons",  n_N, n1_N, n2_N);
+  G11_L1Odd_g_hits_E  = new TH1F("G11_L1Odd_g_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Photons",   n_N, n1_N, n2_N);
+  G11_L1Odd_N_hits_E  = new TH1F("G11_L1Odd_N_hits_E",  "Simhit Radius :: GE11 L1 Odd :: Nuclei",    n_N, n1_N, n2_N);
+  G11_L1Odd_OH_hits_E = new TH1F("G11_L1Odd_OH_hits_E", "Simhit Radius :: GE11 L1 Odd :: Other Hadrons", n_N, n1_N, n2_N);
+  G11_L1Odd_All_hits_E= new TH1F("G11_L1Odd_All_hits_E","Simhit Radius :: GE11 L1 Odd :: All Particles", n_N, n1_N, n2_N);
+  G11_L1Odd_HIP_hits_E= new TH1F("G11_L1Odd_HIP_hits_E","Simhit Radius :: GE11 L1 Odd :: HIP Particles", n_N, n1_N, n2_N);
 
-  G11_L1Even_el_hits_E = new TH1F("G11_el_hits_E", "Simhit Radius :: GE11 L1 Even :: Electrons", n_N, n1_N, n2_N);
-  G11_L1Even_mu_hits_E = new TH1F("G11_mu_hits_E", "Simhit Radius :: GE11 L1 Even :: Muons",     n_N, n1_N, n2_N);
-  G11_L1Even_pi_hits_E = new TH1F("G11_pi_hits_E", "Simhit Radius :: GE11 L1 Even :: Pions",     n_N, n1_N, n2_N);
-  G11_L1Even_ka_hits_E = new TH1F("G11_ka_hits_E", "Simhit Radius :: GE11 L1 Even :: Kaons",     n_N, n1_N, n2_N);
-  G11_L1Even_p_hits_E  = new TH1F("G11_p_hits_E",  "Simhit Radius :: GE11 L1 Even :: Protons",   n_N, n1_N, n2_N);
-  G11_L1Even_n_hits_E  = new TH1F("G11_n_hits_E",  "Simhit Radius :: GE11 L1 Even :: Neutrons",  n_N, n1_N, n2_N);
-  G11_L1Even_g_hits_E  = new TH1F("G11_g_hits_E",  "Simhit Radius :: GE11 L1 Even :: Photons",   n_N, n1_N, n2_N);
-  G11_L1Even_N_hits_E  = new TH1F("G11_N_hits_E",  "Simhit Radius :: GE11 L1 Even :: Nuclei",    n_N, n1_N, n2_N);
-  G11_L1Even_OH_hits_E = new TH1F("G11_OH_hits_E", "Simhit Radius :: GE11 L1 Even :: Other Hadrons", n_N, n1_N, n2_N);
-  G11_L1Even_All_hits_E= new TH1F("G11_All_hits_E","Simhit Radius :: GE11 L1 Even :: All Particles", n_N, n1_N, n2_N);
-  G11_L1Even_HIP_hits_E= new TH1F("G11_HIP_hits_E","Simhit Radius :: GE11 L1 Even :: HIP Particles", n_N, n1_N, n2_N);
+  G11_L1Even_el_hits_E = new TH1F("G11_L1Even_el_hits_E", "Simhit Radius :: GE11 L1 Even :: Electrons", n_N, n1_N, n2_N);
+  G11_L1Even_mu_hits_E = new TH1F("G11_L1Even_mu_hits_E", "Simhit Radius :: GE11 L1 Even :: Muons",     n_N, n1_N, n2_N);
+  G11_L1Even_pi_hits_E = new TH1F("G11_L1Even_pi_hits_E", "Simhit Radius :: GE11 L1 Even :: Pions",     n_N, n1_N, n2_N);
+  G11_L1Even_ka_hits_E = new TH1F("G11_L1Even_ka_hits_E", "Simhit Radius :: GE11 L1 Even :: Kaons",     n_N, n1_N, n2_N);
+  G11_L1Even_p_hits_E  = new TH1F("G11_L1Even_p_hits_E",  "Simhit Radius :: GE11 L1 Even :: Protons",   n_N, n1_N, n2_N);
+  G11_L1Even_n_hits_E  = new TH1F("G11_L1Even_n_hits_E",  "Simhit Radius :: GE11 L1 Even :: Neutrons",  n_N, n1_N, n2_N);
+  G11_L1Even_g_hits_E  = new TH1F("G11_L1Even_g_hits_E",  "Simhit Radius :: GE11 L1 Even :: Photons",   n_N, n1_N, n2_N);
+  G11_L1Even_N_hits_E  = new TH1F("G11_L1Even_N_hits_E",  "Simhit Radius :: GE11 L1 Even :: Nuclei",    n_N, n1_N, n2_N);
+  G11_L1Even_OH_hits_E = new TH1F("G11_L1Even_OH_hits_E", "Simhit Radius :: GE11 L1 Even :: Other Hadrons", n_N, n1_N, n2_N);
+  G11_L1Even_All_hits_E= new TH1F("G11_L1Even_All_hits_E","Simhit Radius :: GE11 L1 Even :: All Particles", n_N, n1_N, n2_N);
+  G11_L1Even_HIP_hits_E= new TH1F("G11_L1Even_HIP_hits_E","Simhit Radius :: GE11 L1 Even :: HIP Particles", n_N, n1_N, n2_N);
 
-  G11_L2Odd_el_hits_E = new TH1F("G11_el_hits_E", "Simhit Radius :: GE11 L2 Odd :: Electrons", n_N, n1_N, n2_N);
-  G11_L2Odd_mu_hits_E = new TH1F("G11_mu_hits_E", "Simhit Radius :: GE11 L2 Odd :: Muons",     n_N, n1_N, n2_N);
-  G11_L2Odd_pi_hits_E = new TH1F("G11_pi_hits_E", "Simhit Radius :: GE11 L2 Odd :: Pions",     n_N, n1_N, n2_N);
-  G11_L2Odd_ka_hits_E = new TH1F("G11_ka_hits_E", "Simhit Radius :: GE11 L2 Odd :: Kaons",     n_N, n1_N, n2_N);
-  G11_L2Odd_p_hits_E  = new TH1F("G11_p_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Protons",   n_N, n1_N, n2_N);
-  G11_L2Odd_n_hits_E  = new TH1F("G11_n_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Neutrons",  n_N, n1_N, n2_N);
-  G11_L2Odd_g_hits_E  = new TH1F("G11_g_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Photons",   n_N, n1_N, n2_N);
-  G11_L2Odd_N_hits_E  = new TH1F("G11_N_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Nuclei",    n_N, n1_N, n2_N);
-  G11_L2Odd_OH_hits_E = new TH1F("G11_OH_hits_E", "Simhit Radius :: GE11 L2 Odd :: Other Hadrons", n_N, n1_N, n2_N);
-  G11_L2Odd_All_hits_E= new TH1F("G11_All_hits_E","Simhit Radius :: GE11 L2 Odd :: All Particles", n_N, n1_N, n2_N);
-  G11_L2Odd_HIP_hits_E= new TH1F("G11_HIP_hits_E","Simhit Radius :: GE11 L2 Odd :: HIP Particles", n_N, n1_N, n2_N);
+  G11_L2Odd_el_hits_E = new TH1F("G11_L2Odd_el_hits_E", "Simhit Radius :: GE11 L2 Odd :: Electrons", n_N, n1_N, n2_N);
+  G11_L2Odd_mu_hits_E = new TH1F("G11_L2Odd_mu_hits_E", "Simhit Radius :: GE11 L2 Odd :: Muons",     n_N, n1_N, n2_N);
+  G11_L2Odd_pi_hits_E = new TH1F("G11_L2Odd_pi_hits_E", "Simhit Radius :: GE11 L2 Odd :: Pions",     n_N, n1_N, n2_N);
+  G11_L2Odd_ka_hits_E = new TH1F("G11_L2Odd_ka_hits_E", "Simhit Radius :: GE11 L2 Odd :: Kaons",     n_N, n1_N, n2_N);
+  G11_L2Odd_p_hits_E  = new TH1F("G11_L2Odd_p_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Protons",   n_N, n1_N, n2_N);
+  G11_L2Odd_n_hits_E  = new TH1F("G11_L2Odd_n_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Neutrons",  n_N, n1_N, n2_N);
+  G11_L2Odd_g_hits_E  = new TH1F("G11_L2Odd_g_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Photons",   n_N, n1_N, n2_N);
+  G11_L2Odd_N_hits_E  = new TH1F("G11_L2Odd_N_hits_E",  "Simhit Radius :: GE11 L2 Odd :: Nuclei",    n_N, n1_N, n2_N);
+  G11_L2Odd_OH_hits_E = new TH1F("G11_L2Odd_OH_hits_E", "Simhit Radius :: GE11 L2 Odd :: Other Hadrons", n_N, n1_N, n2_N);
+  G11_L2Odd_All_hits_E= new TH1F("G11_L2Odd_All_hits_E","Simhit Radius :: GE11 L2 Odd :: All Particles", n_N, n1_N, n2_N);
+  G11_L2Odd_HIP_hits_E= new TH1F("G11_L2Odd_HIP_hits_E","Simhit Radius :: GE11 L2 Odd :: HIP Particles", n_N, n1_N, n2_N);
 
-  G11_L2Even_el_hits_E = new TH1F("G11_el_hits_E", "Simhit Radius :: GE11 L2 Even :: Electrons", n_N, n1_N, n2_N);
-  G11_L2Even_mu_hits_E = new TH1F("G11_mu_hits_E", "Simhit Radius :: GE11 L2 Even :: Muons",     n_N, n1_N, n2_N);
-  G11_L2Even_pi_hits_E = new TH1F("G11_pi_hits_E", "Simhit Radius :: GE11 L2 Even :: Pions",     n_N, n1_N, n2_N);
-  G11_L2Even_ka_hits_E = new TH1F("G11_ka_hits_E", "Simhit Radius :: GE11 L2 Even :: Kaons",     n_N, n1_N, n2_N);
-  G11_L2Even_p_hits_E  = new TH1F("G11_p_hits_E",  "Simhit Radius :: GE11 L2 Even :: Protons",   n_N, n1_N, n2_N);
-  G11_L2Even_n_hits_E  = new TH1F("G11_n_hits_E",  "Simhit Radius :: GE11 L2 Even :: Neutrons",  n_N, n1_N, n2_N);
-  G11_L2Even_g_hits_E  = new TH1F("G11_g_hits_E",  "Simhit Radius :: GE11 L2 Even :: Photons",   n_N, n1_N, n2_N);
-  G11_L2Even_N_hits_E  = new TH1F("G11_N_hits_E",  "Simhit Radius :: GE11 L2 Even :: Nuclei",    n_N, n1_N, n2_N);
-  G11_L2Even_OH_hits_E = new TH1F("G11_OH_hits_E", "Simhit Radius :: GE11 L2 Even :: Other Hadrons", n_N, n1_N, n2_N);
-  G11_L2Even_All_hits_E= new TH1F("G11_All_hits_E","Simhit Radius :: GE11 L2 Even :: All Particles", n_N, n1_N, n2_N);
-  G11_L2Even_HIP_hits_E= new TH1F("G11_HIP_hits_E","Simhit Radius :: GE11 L2 Even :: HIP Particles", n_N, n1_N, n2_N);
+  G11_L2Even_el_hits_E = new TH1F("G11_L2Even_el_hits_E", "Simhit Radius :: GE11 L2 Even :: Electrons", n_N, n1_N, n2_N);
+  G11_L2Even_mu_hits_E = new TH1F("G11_L2Even_mu_hits_E", "Simhit Radius :: GE11 L2 Even :: Muons",     n_N, n1_N, n2_N);
+  G11_L2Even_pi_hits_E = new TH1F("G11_L2Even_pi_hits_E", "Simhit Radius :: GE11 L2 Even :: Pions",     n_N, n1_N, n2_N);
+  G11_L2Even_ka_hits_E = new TH1F("G11_L2Even_ka_hits_E", "Simhit Radius :: GE11 L2 Even :: Kaons",     n_N, n1_N, n2_N);
+  G11_L2Even_p_hits_E  = new TH1F("G11_L2Even_p_hits_E",  "Simhit Radius :: GE11 L2 Even :: Protons",   n_N, n1_N, n2_N);
+  G11_L2Even_n_hits_E  = new TH1F("G11_L2Even_n_hits_E",  "Simhit Radius :: GE11 L2 Even :: Neutrons",  n_N, n1_N, n2_N);
+  G11_L2Even_g_hits_E  = new TH1F("G11_L2Even_g_hits_E",  "Simhit Radius :: GE11 L2 Even :: Photons",   n_N, n1_N, n2_N);
+  G11_L2Even_N_hits_E  = new TH1F("G11_L2Even_N_hits_E",  "Simhit Radius :: GE11 L2 Even :: Nuclei",    n_N, n1_N, n2_N);
+  G11_L2Even_OH_hits_E = new TH1F("G11_L2Even_OH_hits_E", "Simhit Radius :: GE11 L2 Even :: Other Hadrons", n_N, n1_N, n2_N);
+  G11_L2Even_All_hits_E= new TH1F("G11_L2Even_All_hits_E","Simhit Radius :: GE11 L2 Even :: All Particles", n_N, n1_N, n2_N);
+  G11_L2Even_HIP_hits_E= new TH1F("G11_L2Even_HIP_hits_E","Simhit Radius :: GE11 L2 Even :: HIP Particles", n_N, n1_N, n2_N);
 
 
   // Simhit Process Type
@@ -1178,7 +1260,7 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   GEM_N_lindep   = new TH1F("GEM_N_lindep",   "E_{deposit} :: GEM :: Nuclei",     n_DL, n1_DL, n2_DL);
   GEM_OH_lindep  = new TH1F("GEM_OH_lindep",  "E_{deposit} :: GEM :: Other Hadrons", n_DL, n1_DL, n2_DL);
   GEM_All_lindep = new TH1F("GEM_All_lindep",  "E_{deposit} :: GEM :: All Particles", n_DL, n1_DL, n2_DL);
-  GEM_HIP_lindep = new TH1F("GEM_HIP_lindep",  "E_{deposit} :: GEM :: Highly Ionising", n_H, n1_H, n2_H);
+  GEM_HIP_lindep = new TH1F("GEM_HIP_lindep",  "E_{deposit} :: GEM :: Highly Ionising", n_DL, n1_DL, n2_DL);
 
   ME0_el_lindep  = new TH1F("ME0_el_lindep",  "E_{deposit} :: ME0 :: Electrons",  n_DL, n1_DL, n2_DL);
   ME0_mu_lindep  = new TH1F("ME0_mu_lindep",  "E_{deposit} :: ME0 :: Muons",      n_DL, n1_DL, n2_DL);
@@ -1191,7 +1273,7 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   ME0_N_lindep   = new TH1F("ME0_N_lindep",   "E_{deposit} :: ME0 :: Nuclei",     n_DL, n1_DL, n2_DL);
   ME0_OH_lindep  = new TH1F("ME0_OH_lindep",  "E_{deposit} :: ME0 :: Other Hadrons", n_DL, n1_DL, n2_DL);
   ME0_All_lindep = new TH1F("ME0_All_lindep",  "E_{deposit} :: ME0 :: All Particles", n_DL, n1_DL, n2_DL);
-  ME0_HIP_lindep = new TH1F("ME0_HIP_lindep",  "E_{deposit} :: ME0 :: Highly Ionising", n_H, n1_H, n2_H);
+  ME0_HIP_lindep = new TH1F("ME0_HIP_lindep",  "E_{deposit} :: ME0 :: Highly Ionising", n_DL, n1_DL, n2_DL);
 
   G11_el_lindep  = new TH1F("G11_el_lindep",  "E_{deposit} :: GE11 :: Electrons",  n_DL, n1_DL, n2_DL);
   G11_mu_lindep  = new TH1F("G11_mu_lindep",  "E_{deposit} :: GE11 :: Muons",      n_DL, n1_DL, n2_DL);
@@ -1204,7 +1286,7 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   G11_N_lindep   = new TH1F("G11_N_lindep",   "E_{deposit} :: GE11 :: Nuclei",     n_DL, n1_DL, n2_DL);
   G11_OH_lindep  = new TH1F("G11_OH_lindep",  "E_{deposit} :: GE11 :: Other Hadrons", n_DL, n1_DL, n2_DL);
   G11_All_lindep = new TH1F("G11_All_lindep",  "E_{deposit} :: GE11 :: All Particles", n_DL, n1_DL, n2_DL);
-  G11_HIP_lindep = new TH1F("G11_HIP_lindep",  "E_{deposit} :: GE11 :: Highly Ionising", n_H, n1_H, n2_H);
+  G11_HIP_lindep = new TH1F("G11_HIP_lindep",  "E_{deposit} :: GE11 :: Highly Ionising", n_DL, n1_DL, n2_DL);
 
   G21_el_lindep  = new TH1F("G21_el_lindep",  "E_{deposit} :: GE21 :: Electrons",  n_DL, n1_DL, n2_DL);
   G21_mu_lindep  = new TH1F("G21_mu_lindep",  "E_{deposit} :: GE21 :: Muons",      n_DL, n1_DL, n2_DL);
@@ -1215,9 +1297,28 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   G21_n_lindep   = new TH1F("G21_n_lindep",   "E_{deposit} :: GE21 :: Neutrons",   n_DL, n1_DL, n2_DL);
   G21_g_lindep   = new TH1F("G21_g_lindep",   "E_{deposit} :: GE21 :: Photons",    n_DL, n1_DL, n2_DL);
   G21_N_lindep   = new TH1F("G21_N_lindep",   "E_{deposit} :: GE21 :: Nuclei",     n_DL, n1_DL, n2_DL);
-  G21_OH_lindep  = new TH1F("G21_OH_lindep",  "E_{deposit} :: GE21 :: Other Hadrons", n_DL, n1_DL, n2_DL);
-  G21_All_lindep = new TH1F("G21_All_lindep",  "E_{deposit} :: GE21 :: All Particles", n_DL, n1_DL, n2_DL);
-  G21_HIP_lindep = new TH1F("G21_HIP_lindep",  "E_{deposit} :: GE21 :: Highly Ionising", n_H, n1_H, n2_H);
+  G21_OH_lindep  = new TH1F("G21_OH_lindep",  "E_{deposit} :: GE21 :: Other Hadrons",    n_DL, n1_DL, n2_DL);
+  G21_All_lindep = new TH1F("G21_All_lindep",  "E_{deposit} :: GE21 :: All Particles",   n_DL, n1_DL, n2_DL);
+  G21_HIP_lindep = new TH1F("G21_HIP_lindep",  "E_{deposit} :: GE21 :: Highly Ionising", n_DL, n1_DL, n2_DL);
+
+  G11_el_lindepzoom  = new TH1F("G11_el_lindepzoom",   "E_{deposit} :: GE11 :: Electrons",      n_DZ, n1_DZ, n2_DZ);
+  G11_mu_lindepzoom  = new TH1F("G11_mu_lindepzoom",   "E_{deposit} :: GE11 :: Muons",          n_DZ, n1_DZ, n2_DZ);
+  G11_ha_lindepzoom  = new TH1F("G11_ha_lindepzoom",   "E_{deposit} :: GE11 :: Hadrons",        n_DZ, n1_DZ, n2_DZ);
+  G11_pi_lindepzoom  = new TH1F("G11_pi_lindepzoom",   "E_{deposit} :: GE11 :: Pions",          n_DZ, n1_DZ, n2_DZ);
+  G11_ka_lindepzoom  = new TH1F("G11_ka_lindepzoom",   "E_{deposit} :: GE11 :: Kaons",          n_DZ, n1_DZ, n2_DZ);
+  G11_p_lindepzoom   = new TH1F("G11_p_lindepzoom",    "E_{deposit} :: GE11 :: Protons",        n_DZ, n1_DZ, n2_DZ);
+  G11_n_lindepzoom   = new TH1F("G11_n_lindepzoom",    "E_{deposit} :: GE11 :: Neutrons",       n_DZ, n1_DZ, n2_DZ);
+  G11_g_lindepzoom   = new TH1F("G11_g_lindepzoom",    "E_{deposit} :: GE11 :: Photons",        n_DZ, n1_DZ, n2_DZ);
+  G11_N_lindepzoom   = new TH1F("G11_N_lindepzoom",    "E_{deposit} :: GE11 :: Nuclei",         n_DZ, n1_DZ, n2_DZ);
+  G11_OH_lindepzoom  = new TH1F("G11_OH_lindepzoom",   "E_{deposit} :: GE11 :: Other Hadrons",  n_DZ, n1_DZ, n2_DZ);
+  G11_All_lindepzoom = new TH1F("G11_All_lindepzoom",  "E_{deposit} :: GE11 :: All Particles",  n_DZ, n1_DZ, n2_DZ);
+  G11_HIP_lindepzoom = new TH1F("G11_HIP_lindepzoom",  "E_{deposit} :: GE11 :: Highly Ionising", n_DZ, n1_DZ, n2_DZ);
+
+  GEM_HIP_lindepext = new TH1F("GEM_HIP_lindepext",  "E_{deposit} :: GEM :: Highly Ionising",       n_H, n1_H, n2_H);  // bins of 5 keV
+  ME0_HIP_lindepext = new TH1F("ME0_HIP_lindepext",  "E_{deposit} :: ME0 :: Highly Ionising",       n_H, n1_H, n2_H);
+  G11_HIP_lindepext = new TH1F("G11_HIP_lindepext",  "E_{deposit} :: GE11 :: Highly Ionising",      n_H, n1_H, n2_H);
+  G21_HIP_lindepext = new TH1F("G21_HIP_lindepext",  "E_{deposit} :: GE21 :: Highly Ionising",      n_H, n1_H, n2_H);
+
 
   ME0_All_lindep_roll = new TH2F("ME0_All_lindep_roll",  "E_{deposit} vs EtaPart :: ME0  :: All Particles", n_CL, n1_CL, n2_CL, 8, 0.5, 8.5);
   G11_All_lindep_roll = new TH2F("G11_All_lindep_roll",  "E_{deposit} vs EtaPart :: GE11 :: All Particles", n_CL, n1_CL, n2_CL, 8, 0.5, 8.5);
@@ -1348,6 +1449,80 @@ MyME0SimHitAnalyzer::MyME0SimHitAnalyzer(const edm::ParameterSet& iConfig)
   ME0_Nuclei_List= new TH1F("ME0_Nuclei_List","Nuclei List :: ME0", 19, 0.5, 19.5);
   ME0_HIP_id     = new TH1F("ME0_HIP_id",     "Highly Ionising particle ID :: ME0", 9, 0.5, 9.5);
   GEM_HIP_id     = new TH1F("GEM_HIP_id",     "Highly Ionising particle ID :: GEM", 9, 0.5, 9.5);
+
+  ME0_thr_el_0GeV  = new TH1F("ME0_thr_el_0GeV",  "ME0_thr_el_0GeV",  1001, -0.5, 1000.5);
+  ME0_thr_mu_0GeV  = new TH1F("ME0_thr_mu_0GeV",  "ME0_thr_mu_0GeV",  1001, -0.5, 1000.5);
+  ME0_thr_p_0GeV   = new TH1F("ME0_thr_p_0GeV",   "ME0_thr_p_0GeV",   1001, -0.5, 1000.5);
+  ME0_thr_n_0GeV   = new TH1F("ME0_thr_n_0GeV",   "ME0_thr_n_0GeV",   1001, -0.5, 1000.5);
+  ME0_thr_pi_0GeV  = new TH1F("ME0_thr_pi_0GeV",  "ME0_thr_pi_0GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ka_0GeV  = new TH1F("ME0_thr_ka_0GeV",  "ME0_thr_ka_0GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ph_0GeV  = new TH1F("ME0_thr_ph_0GeV",  "ME0_thr_ph_0GeV",  1001, -0.5, 1000.5);
+  ME0_thr_N_0GeV   = new TH1F("ME0_thr_N_0GeV",   "ME0_thr_N_0GeV",   1001, -0.5, 1000.5);
+  ME0_thr_HIP_0GeV = new TH1F("ME0_thr_HIP_0GeV", "ME0_thr_HIP_0GeV", 1001, -0.5, 1000.5);
+  ME0_thr_All_0GeV = new TH1F("ME0_thr_All_0GeV", "ME0_thr_All_0GeV", 1001, -0.5, 1000.5);
+  ME0_thr_OH_0GeV  = new TH1F("ME0_thr_OH_0GeV",  "ME0_thr_OH_0GeV",  1001, -0.5, 1000.5);
+
+  ME0_thr_el_1GeV  = new TH1F("ME0_thr_el_1GeV",  "ME0_thr_el_1GeV",  1001, -0.5, 1000.5);
+  ME0_thr_mu_1GeV  = new TH1F("ME0_thr_mu_1GeV",  "ME0_thr_mu_1GeV",  1001, -0.5, 1000.5);
+  ME0_thr_p_1GeV   = new TH1F("ME0_thr_p_1GeV",   "ME0_thr_p_1GeV",   1001, -0.5, 1000.5);
+  ME0_thr_n_1GeV   = new TH1F("ME0_thr_n_1GeV",   "ME0_thr_n_1GeV",   1001, -0.5, 1000.5);
+  ME0_thr_pi_1GeV  = new TH1F("ME0_thr_pi_1GeV",  "ME0_thr_pi_1GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ka_1GeV  = new TH1F("ME0_thr_ka_1GeV",  "ME0_thr_ka_1GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ph_1GeV  = new TH1F("ME0_thr_ph_1GeV",  "ME0_thr_ph_1GeV",  1001, -0.5, 1000.5);
+  ME0_thr_N_1GeV   = new TH1F("ME0_thr_N_1GeV",   "ME0_thr_N_1GeV",   1001, -0.5, 1000.5);
+  ME0_thr_HIP_1GeV = new TH1F("ME0_thr_HIP_1GeV", "ME0_thr_HIP_1GeV", 1001, -0.5, 1000.5);
+  ME0_thr_All_1GeV = new TH1F("ME0_thr_All_1GeV", "ME0_thr_All_1GeV", 1001, -0.5, 1000.5);
+  ME0_thr_OH_1GeV  = new TH1F("ME0_thr_OH_1GeV",  "ME0_thr_OH_1GeV",  1001, -0.5, 1000.5);
+
+  ME0_thr_el_5GeV  = new TH1F("ME0_thr_el_5GeV",  "ME0_thr_el_5GeV",  1001, -0.5, 1000.5);
+  ME0_thr_mu_5GeV  = new TH1F("ME0_thr_mu_5GeV",  "ME0_thr_mu_5GeV",  1001, -0.5, 1000.5);
+  ME0_thr_p_5GeV   = new TH1F("ME0_thr_p_5GeV",   "ME0_thr_p_5GeV",   1001, -0.5, 1000.5);
+  ME0_thr_n_5GeV   = new TH1F("ME0_thr_n_5GeV",   "ME0_thr_n_5GeV",   1001, -0.5, 1000.5);
+  ME0_thr_pi_5GeV  = new TH1F("ME0_thr_pi_5GeV",  "ME0_thr_pi_5GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ka_5GeV  = new TH1F("ME0_thr_ka_5GeV",  "ME0_thr_ka_5GeV",  1001, -0.5, 1000.5);
+  ME0_thr_ph_5GeV  = new TH1F("ME0_thr_ph_5GeV",  "ME0_thr_ph_5GeV",  1001, -0.5, 1000.5);
+  ME0_thr_N_5GeV   = new TH1F("ME0_thr_N_5GeV",   "ME0_thr_N_5GeV",   1001, -0.5, 1000.5);
+  ME0_thr_HIP_5GeV = new TH1F("ME0_thr_HIP_5GeV", "ME0_thr_HIP_5GeV", 1001, -0.5, 1000.5);
+  ME0_thr_All_5GeV = new TH1F("ME0_thr_All_5GeV", "ME0_thr_All_5GeV", 1001, -0.5, 1000.5);
+  ME0_thr_OH_5GeV  = new TH1F("ME0_thr_OH_5GeV",  "ME0_thr_OH_5GeV",  1001, -0.5, 1000.5);
+
+  G11_thr_el_0GeV  = new TH1F("G11_thr_el_0GeV",  "G11_thr_el_0GeV",  1001, -0.5, 1000.5);
+  G11_thr_mu_0GeV  = new TH1F("G11_thr_mu_0GeV",  "G11_thr_mu_0GeV",  1001, -0.5, 1000.5);
+  G11_thr_p_0GeV   = new TH1F("G11_thr_p_0GeV",   "G11_thr_p_0GeV",   1001, -0.5, 1000.5);
+  G11_thr_n_0GeV   = new TH1F("G11_thr_n_0GeV",   "G11_thr_n_0GeV",   1001, -0.5, 1000.5);
+  G11_thr_pi_0GeV  = new TH1F("G11_thr_pi_0GeV",  "G11_thr_pi_0GeV",  1001, -0.5, 1000.5);
+  G11_thr_ka_0GeV  = new TH1F("G11_thr_ka_0GeV",  "G11_thr_ka_0GeV",  1001, -0.5, 1000.5);
+  G11_thr_ph_0GeV  = new TH1F("G11_thr_ph_0GeV",  "G11_thr_ph_0GeV",  1001, -0.5, 1000.5);
+  G11_thr_N_0GeV   = new TH1F("G11_thr_N_0GeV",   "G11_thr_N_0GeV",   1001, -0.5, 1000.5);
+  G11_thr_HIP_0GeV = new TH1F("G11_thr_HIP_0GeV", "G11_thr_HIP_0GeV", 1001, -0.5, 1000.5);
+  G11_thr_All_0GeV = new TH1F("G11_thr_All_0GeV", "G11_thr_All_0GeV", 1001, -0.5, 1000.5);
+  G11_thr_OH_0GeV  = new TH1F("G11_thr_OH_0GeV",  "G11_thr_OH_0GeV",  1001, -0.5, 1000.5);
+
+  G11_thr_el_1GeV  = new TH1F("G11_thr_el_1GeV",  "G11_thr_el_1GeV",  1001, -0.5, 1000.5);
+  G11_thr_mu_1GeV  = new TH1F("G11_thr_mu_1GeV",  "G11_thr_mu_1GeV",  1001, -0.5, 1000.5);
+  G11_thr_p_1GeV   = new TH1F("G11_thr_p_1GeV",   "G11_thr_p_1GeV",   1001, -0.5, 1000.5);
+  G11_thr_n_1GeV   = new TH1F("G11_thr_n_1GeV",   "G11_thr_n_1GeV",   1001, -0.5, 1000.5);
+  G11_thr_pi_1GeV  = new TH1F("G11_thr_pi_1GeV",  "G11_thr_pi_1GeV",  1001, -0.5, 1000.5);
+  G11_thr_ka_1GeV  = new TH1F("G11_thr_ka_1GeV",  "G11_thr_ka_1GeV",  1001, -0.5, 1000.5);
+  G11_thr_ph_1GeV  = new TH1F("G11_thr_ph_1GeV",  "G11_thr_ph_1GeV",  1001, -0.5, 1000.5);
+  G11_thr_N_1GeV   = new TH1F("G11_thr_N_1GeV",   "G11_thr_N_1GeV",   1001, -0.5, 1000.5);
+  G11_thr_HIP_1GeV = new TH1F("G11_thr_HIP_1GeV", "G11_thr_HIP_1GeV", 1001, -0.5, 1000.5);
+  G11_thr_All_1GeV = new TH1F("G11_thr_All_1GeV", "G11_thr_All_1GeV", 1001, -0.5, 1000.5);
+  G11_thr_OH_1GeV  = new TH1F("G11_thr_OH_1GeV",  "G11_thr_OH_1GeV",  1001, -0.5, 1000.5);
+
+  G11_thr_el_5GeV  = new TH1F("G11_thr_el_5GeV",  "G11_thr_el_5GeV",  1001, -0.5, 1000.5);
+  G11_thr_mu_5GeV  = new TH1F("G11_thr_mu_5GeV",  "G11_thr_mu_5GeV",  1001, -0.5, 1000.5);
+  G11_thr_p_5GeV   = new TH1F("G11_thr_p_5GeV",   "G11_thr_p_5GeV",   1001, -0.5, 1000.5);
+  G11_thr_n_5GeV   = new TH1F("G11_thr_n_5GeV",   "G11_thr_n_5GeV",   1001, -0.5, 1000.5);
+  G11_thr_pi_5GeV  = new TH1F("G11_thr_pi_5GeV",  "G11_thr_pi_5GeV",  1001, -0.5, 1000.5);
+  G11_thr_ka_5GeV  = new TH1F("G11_thr_ka_5GeV",  "G11_thr_ka_5GeV",  1001, -0.5, 1000.5);
+  G11_thr_ph_5GeV  = new TH1F("G11_thr_ph_5GeV",  "G11_thr_ph_5GeV",  1001, -0.5, 1000.5);
+  G11_thr_N_5GeV   = new TH1F("G11_thr_N_5GeV",   "G11_thr_N_5GeV",   1001, -0.5, 1000.5);
+  G11_thr_HIP_5GeV = new TH1F("G11_thr_HIP_5GeV", "G11_thr_HIP_5GeV", 1001, -0.5, 1000.5);
+  G11_thr_All_5GeV = new TH1F("G11_thr_All_5GeV", "G11_thr_All_5GeV", 1001, -0.5, 1000.5);
+  G11_thr_OH_5GeV  = new TH1F("G11_thr_OH_5GeV",  "G11_thr_OH_5GeV",  1001, -0.5, 1000.5);
+
+
 }
 
 
@@ -1387,18 +1562,29 @@ MyME0SimHitAnalyzer::~MyME0SimHitAnalyzer(){
   G21_el_hits_R->Write(); G21_mu_hits_R->Write(); G21_pi_hits_R->Write(); G21_ka_hits_R->Write(); G21_p_hits_R->Write();
   G21_n_hits_R->Write();  G21_g_hits_R->Write();  G21_N_hits_R->Write();  G21_OH_hits_R->Write(); G21_All_hits_R->Write(); G21_HIP_hits_R->Write();
 
-  G11_L1_el_hits_R->Write(); G11_L1_mu_hits_R->Write(); G11_L1_pi_hits_R->Write(); G11_L1_ka_hits_R->Write(); G11_L1_p_hits_R->Write();
-  G11_L1_n_hits_R->Write(); G11_L1_g_hits_R->Write(); G11_L1_N_hits_R->Write(); G11_L1_OH_hits_R->Write(); G11_L1_All_hits_R->Write(); G11_L1_HIP_hits_R->Write();
-  G11_L2_el_hits_R->Write(); G11_L2_mu_hits_R->Write(); G11_L2_pi_hits_R->Write(); G11_L2_ka_hits_R->Write(); G11_L2_p_hits_R->Write();
-  G11_L2_n_hits_R->Write(); G11_L2_g_hits_R->Write(); G11_L2_N_hits_R->Write(); G11_L2_OH_hits_R->Write(); G11_L2_All_hits_R->Write(); G11_L2_HIP_hits_R->Write();
+  G11_O1_el_hits_R->Write(); G11_O1_mu_hits_R->Write(); G11_O1_pi_hits_R->Write(); G11_O1_ka_hits_R->Write(); G11_O1_p_hits_R->Write();
+  G11_O1_n_hits_R->Write(); G11_O1_g_hits_R->Write(); G11_O1_N_hits_R->Write(); G11_O1_OH_hits_R->Write(); G11_O1_All_hits_R->Write(); G11_O1_HIP_hits_R->Write();
+  G11_O2_el_hits_R->Write(); G11_O2_mu_hits_R->Write(); G11_O2_pi_hits_R->Write(); G11_O2_ka_hits_R->Write(); G11_O2_p_hits_R->Write();
+  G11_O2_n_hits_R->Write(); G11_O2_g_hits_R->Write(); G11_O2_N_hits_R->Write(); G11_O2_OH_hits_R->Write(); G11_O2_All_hits_R->Write(); G11_O2_HIP_hits_R->Write();
+
+  G11_E1_el_hits_R->Write(); G11_E1_mu_hits_R->Write(); G11_E1_pi_hits_R->Write(); G11_E1_ka_hits_R->Write(); G11_E1_p_hits_R->Write();
+  G11_E1_n_hits_R->Write(); G11_E1_g_hits_R->Write(); G11_E1_N_hits_R->Write(); G11_E1_OH_hits_R->Write(); G11_E1_All_hits_R->Write(); G11_E1_HIP_hits_R->Write();
+  G11_E2_el_hits_R->Write(); G11_E2_mu_hits_R->Write(); G11_E2_pi_hits_R->Write(); G11_E2_ka_hits_R->Write(); G11_E2_p_hits_R->Write();
+  G11_E2_n_hits_R->Write(); G11_E2_g_hits_R->Write(); G11_E2_N_hits_R->Write(); G11_E2_OH_hits_R->Write(); G11_E2_All_hits_R->Write(); G11_E2_HIP_hits_R->Write();
+ 
   G11_Od_el_hits_R->Write(); G11_Od_mu_hits_R->Write(); G11_Od_pi_hits_R->Write(); G11_Od_ka_hits_R->Write(); G11_Od_p_hits_R->Write();
   G11_Od_n_hits_R->Write(); G11_Od_g_hits_R->Write(); G11_Od_N_hits_R->Write(); G11_Od_OH_hits_R->Write(); G11_Od_All_hits_R->Write(); G11_Od_HIP_hits_R->Write();
   G11_Ev_el_hits_R->Write(); G11_Ev_mu_hits_R->Write(); G11_Ev_pi_hits_R->Write(); G11_Ev_ka_hits_R->Write(); G11_Ev_p_hits_R->Write();
   G11_Ev_n_hits_R->Write(); G11_Ev_g_hits_R->Write(); G11_Ev_N_hits_R->Write(); G11_Ev_OH_hits_R->Write(); G11_Ev_All_hits_R->Write(); G11_Ev_HIP_hits_R->Write();
-  // M11_Od_el_hits_R->Write(); M11_Od_mu_hits_R->Write(); M11_Od_pi_hits_R->Write(); M11_Od_ka_hits_R->Write(); M11_Od_p_hits_R->Write();
-  // M11_Od_n_hits_R->Write(); M11_Od_g_hits_R->Write(); M11_Od_N_hits_R->Write(); M11_Od_OH_hits_R->Write(); M11_Od_All_hits_R->Write(); M11_Od_HIP_hits_R->Write();
-  // M11_Ev_el_hits_R->Write(); M11_Ev_mu_hits_R->Write(); M11_Ev_pi_hits_R->Write(); M11_Ev_ka_hits_R->Write(); M11_Ev_p_hits_R->Write();
-  // M11_Ev_n_hits_R->Write(); M11_Ev_g_hits_R->Write(); M11_Ev_N_hits_R->Write(); M11_Ev_OH_hits_R->Write(); M11_Ev_All_hits_R->Write(); M11_Ev_HIP_hits_R->Write();
+
+  M11_el_hits_R->Write();    M11_mu_hits_R->Write();    M11_pi_hits_R->Write();    M11_ka_hits_R->Write();    M11_p_hits_R->Write();
+  M11_n_hits_R->Write();     M11_g_hits_R->Write();     M11_N_hits_R->Write();     M11_OH_hits_R->Write();    M11_All_hits_R->Write(); M11_HIP_hits_R->Write();
+  M11_Od_el_hits_R->Write(); M11_Od_mu_hits_R->Write(); M11_Od_pi_hits_R->Write(); M11_Od_ka_hits_R->Write(); M11_Od_p_hits_R->Write();
+  M11_Od_n_hits_R->Write();  M11_Od_g_hits_R->Write();  M11_Od_N_hits_R->Write();  M11_Od_OH_hits_R->Write(); M11_Od_All_hits_R->Write(); M11_Od_HIP_hits_R->Write();
+  M11_Ev_el_hits_R->Write(); M11_Ev_mu_hits_R->Write(); M11_Ev_pi_hits_R->Write(); M11_Ev_ka_hits_R->Write(); M11_Ev_p_hits_R->Write();
+  M11_Ev_n_hits_R->Write();  M11_Ev_g_hits_R->Write();  M11_Ev_N_hits_R->Write();  M11_Ev_OH_hits_R->Write(); M11_Ev_All_hits_R->Write(); M11_Ev_HIP_hits_R->Write();
+  M11_Od_L1_All_hits_R->Write(); M11_Od_L2_All_hits_R->Write(); M11_Od_L3_All_hits_R->Write(); M11_Od_L4_All_hits_R->Write(); M11_Od_L5_All_hits_R->Write(); M11_Od_L6_All_hits_R->Write();
+  M11_Ev_L1_All_hits_R->Write(); M11_Ev_L2_All_hits_R->Write(); M11_Ev_L3_All_hits_R->Write(); M11_Ev_L4_All_hits_R->Write(); M11_Ev_L5_All_hits_R->Write(); M11_Ev_L6_All_hits_R->Write();
   outputfile->cd();
   // ---------------------------
 
@@ -1983,6 +2169,24 @@ MyME0SimHitAnalyzer::~MyME0SimHitAnalyzer(){
   G21_All_lindep->Write();
   G21_HIP_lindep->Write();
 
+  G11_el_lindepzoom->Write();
+  G11_mu_lindepzoom->Write();
+  G11_ha_lindepzoom->Write();
+  G11_pi_lindepzoom->Write();
+  G11_ka_lindepzoom->Write();
+  G11_p_lindepzoom->Write();
+  G11_n_lindepzoom->Write();
+  G11_g_lindepzoom->Write();
+  G11_N_lindepzoom->Write();
+  G11_OH_lindepzoom->Write();
+  G11_All_lindepzoom->Write();
+  G11_HIP_lindepzoom->Write();
+
+  ME0_HIP_lindepext->Write();
+  GEM_HIP_lindepext->Write();
+  G11_HIP_lindepext->Write();
+  G21_HIP_lindepext->Write();
+
   ME0_All_lindep_roll->Write();
   G11_All_lindep_roll->Write();
   G21_All_lindep_roll->Write();
@@ -2183,6 +2387,30 @@ MyME0SimHitAnalyzer::~MyME0SimHitAnalyzer(){
   ME0_HIP_id->Write();
   GEM_HIP_id->Write();
   outputfile->cd();
+
+
+  TDir_Muon_Thresholds->cd();
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+  ME0_thr_el_0GeV->Write(); ME0_thr_mu_0GeV->Write();  ME0_thr_p_0GeV->Write(); ME0_thr_n_0GeV->Write();
+  ME0_thr_pi_0GeV->Write(); ME0_thr_ka_0GeV->Write();  ME0_thr_ph_0GeV->Write(); ME0_thr_N_0GeV->Write(); 
+  ME0_thr_HIP_0GeV->Write();ME0_thr_All_0GeV->Write(); ME0_thr_OH_0GeV->Write();
+  ME0_thr_el_1GeV->Write(); ME0_thr_mu_1GeV->Write();  ME0_thr_p_1GeV->Write(); ME0_thr_n_1GeV->Write();
+  ME0_thr_pi_1GeV->Write(); ME0_thr_ka_1GeV->Write();  ME0_thr_ph_1GeV->Write(); ME0_thr_N_1GeV->Write(); 
+  ME0_thr_HIP_1GeV->Write();ME0_thr_All_1GeV->Write(); ME0_thr_OH_1GeV->Write();
+  ME0_thr_el_5GeV->Write(); ME0_thr_mu_5GeV->Write();  ME0_thr_p_5GeV->Write(); ME0_thr_n_5GeV->Write();
+  ME0_thr_pi_5GeV->Write(); ME0_thr_ka_5GeV->Write();  ME0_thr_ph_5GeV->Write(); ME0_thr_N_5GeV->Write(); 
+  ME0_thr_HIP_5GeV->Write();ME0_thr_All_5GeV->Write(); ME0_thr_OH_5GeV->Write();
+  G11_thr_el_0GeV->Write(); G11_thr_mu_0GeV->Write();  G11_thr_p_0GeV->Write(); G11_thr_n_0GeV->Write();
+  G11_thr_pi_0GeV->Write(); G11_thr_ka_0GeV->Write();  G11_thr_ph_0GeV->Write(); G11_thr_N_0GeV->Write(); 
+  G11_thr_HIP_0GeV->Write();G11_thr_All_0GeV->Write(); G11_thr_OH_0GeV->Write();
+  G11_thr_el_1GeV->Write(); G11_thr_mu_1GeV->Write();  G11_thr_p_1GeV->Write(); G11_thr_n_1GeV->Write();
+  G11_thr_pi_1GeV->Write(); G11_thr_ka_1GeV->Write();  G11_thr_ph_1GeV->Write(); G11_thr_N_1GeV->Write(); 
+  G11_thr_HIP_1GeV->Write();G11_thr_All_1GeV->Write(); G11_thr_OH_1GeV->Write();
+  G11_thr_el_5GeV->Write(); G11_thr_mu_5GeV->Write();  G11_thr_p_5GeV->Write(); G11_thr_n_5GeV->Write();
+  G11_thr_pi_5GeV->Write(); G11_thr_ka_5GeV->Write();  G11_thr_ph_5GeV->Write(); G11_thr_N_5GeV->Write(); 
+  G11_thr_HIP_5GeV->Write();G11_thr_All_5GeV->Write(); G11_thr_OH_5GeV->Write();
+
+
 
   // Relation Instantaneous Luminosity and PU interactions
 
@@ -2433,28 +2661,47 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	station==1?G11_All_hits_E->Fill(roll):G21_All_hits_E->Fill(roll);      
 	GEM_All_deps->Fill(log_d); GEM_All_lindep->Fill(deposit);
 	GEM_All_kins->Fill(log_e); GEM_All_linkin->Fill(energy);
-	if(station==1) {G11_All_deps->Fill(log_d); G11_All_lindep->Fill(deposit); G11_All_kins->Fill(log_e); G11_All_linkin->Fill(energy);}
+	if(station==1) {G11_All_deps->Fill(log_d); G11_All_lindep->Fill(deposit); G11_All_kins->Fill(log_e); G11_All_linkin->Fill(energy); G11_All_lindepzoom->Fill(deposit);}
 	else           {G21_All_deps->Fill(log_d); G21_All_lindep->Fill(deposit); G21_All_kins->Fill(log_e); G21_All_linkin->Fill(energy);}
-	if(isGE11L1) G11_L1_All_hits_R->Fill(gemr); 
-	if(isGE11L2) G11_L2_All_hits_R->Fill(gemr); 
-	if(isGE11Odd)  G11_Od_All_hits_R->Fill(gemr); 
-	if(isGE11Even) G11_Ev_All_hits_R->Fill(gemr); 
-	if(deposit > hipMin) {
-	  station==1?G11_HIP_hits_R->Fill(gemr):G21_HIP_hits_R->Fill(gemr);
-	  station==1?G11_HIP_hits_E->Fill(roll):G21_HIP_hits_E->Fill(roll);
-	  GEM_HIP_deps->Fill(log_d);  GEM_HIP_lindep->Fill(deposit);
-	  GEM_HIP_kins->Fill(log_e); 	GEM_HIP_linkin->Fill(energy);
-	  if(station==1) {G11_HIP_deps->Fill(log_d); G11_HIP_lindep->Fill(deposit); G11_HIP_kins->Fill(log_e); G11_HIP_linkin->Fill(energy);}
-	  else           {G21_HIP_deps->Fill(log_d); G21_HIP_lindep->Fill(deposit); G21_HIP_kins->Fill(log_e); G21_HIP_linkin->Fill(energy);}
-	  if(isGE11L1) G11_L1_HIP_hits_R->Fill(gemr); 
-	  if(isGE11L2) G11_L2_HIP_hits_R->Fill(gemr); 
-	  if(isGE11Odd)  G11_Od_HIP_hits_R->Fill(gemr); 
-	  if(isGE11Even) G11_Ev_HIP_hits_R->Fill(gemr); 
-	}
+	if(isGE11L1)   {if(isGE11Odd) G11_O1_All_hits_R->Fill(gemr); G11_L1Odd_All_hits_E->Fill(roll); if(isGE11Even) G11_E1_All_hits_R->Fill(gemr); G11_L1Even_All_hits_E->Fill(roll);}
+	if(isGE11L2)   {if(isGE11Odd) G11_O2_All_hits_R->Fill(gemr); G11_L2Odd_All_hits_E->Fill(roll); if(isGE11Even) G11_E2_All_hits_R->Fill(gemr); G11_L2Even_All_hits_E->Fill(roll);} 
+	if(isGE11Odd)  {G11_Od_All_hits_R->Fill(gemr); }
+	if(isGE11Even) {G11_Ev_All_hits_R->Fill(gemr); }
 	if(InTime)  {station==1?G11_All_hits_000_R->Fill(gemr):G21_All_hits_000_R->Fill(gemr); station==1?G11_All_hits_000_E->Fill(roll):G21_All_hits_000_E->Fill(roll);}
 	if(OutTime) {station==1?G11_All_hits_250_R->Fill(gemr):G21_All_hits_250_R->Fill(gemr); station==1?G11_All_hits_000_E->Fill(roll):G21_All_hits_250_E->Fill(roll);}
 	if(BXTime)  {station==1?G11_All_hits_00_R->Fill(gemr):G21_All_hits_00_R->Fill(gemr);   station==1?G11_All_hits_00_E->Fill(roll):G21_All_hits_00_E->Fill(roll);}
 	if(OXTime)  {station==1?G11_All_hits_25_R->Fill(gemr):G21_All_hits_25_R->Fill(gemr);   station==1?G11_All_hits_25_E->Fill(roll):G21_All_hits_25_E->Fill(roll);}
+	// All Particles ... Thresholdscan
+	if(station==1) {
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_All_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_All_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_All_5GeV->Fill(i);}}
+	  // debug ...
+	  // if(energy > 0000) {
+	  //  std::cout<<" GE11 Simhit from particle with Energy = "<<energy<<" MeV and EnergyDeposit = "<<deposit<<" keV"<<std::endl;
+	  //  for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_All_0GeV->Fill(i); std::cout<<"Histogram Fill "<<i<<std::endl;}
+	  // }
+	}
+
+
+	// Highly Ionizing Particles
+	if(deposit > hipMin) {
+	  station==1?G11_HIP_hits_R->Fill(gemr):G21_HIP_hits_R->Fill(gemr);
+	  station==1?G11_HIP_hits_E->Fill(roll):G21_HIP_hits_E->Fill(roll);
+	  GEM_HIP_deps->Fill(log_d);    GEM_HIP_lindep->Fill(deposit); GEM_HIP_lindepext->Fill(deposit);
+	  GEM_HIP_kins->Fill(log_e); 	GEM_HIP_linkin->Fill(energy);
+	  if(station==1) {G11_HIP_deps->Fill(log_d); G11_HIP_lindep->Fill(deposit); G11_HIP_kins->Fill(log_e); G11_HIP_linkin->Fill(energy); G11_HIP_lindepzoom->Fill(deposit); G11_HIP_lindepext->Fill(deposit);}
+	  else           {G21_HIP_deps->Fill(log_d); G21_HIP_lindep->Fill(deposit); G21_HIP_kins->Fill(log_e); G21_HIP_linkin->Fill(energy);}
+	  if(isGE11L1)   {if(isGE11Odd) G11_O1_HIP_hits_R->Fill(gemr); G11_L1Odd_HIP_hits_E->Fill(roll); if(isGE11Even) G11_E1_HIP_hits_R->Fill(gemr); G11_L1Even_HIP_hits_E->Fill(roll);}
+	  if(isGE11L2)   {if(isGE11Odd) G11_O2_HIP_hits_R->Fill(gemr); G11_L2Odd_HIP_hits_E->Fill(roll); if(isGE11Even) G11_E2_HIP_hits_R->Fill(gemr); G11_L2Even_HIP_hits_E->Fill(roll);}
+	  if(isGE11Odd)  {G11_Od_HIP_hits_R->Fill(gemr); }
+	  if(isGE11Even) {G11_Ev_HIP_hits_R->Fill(gemr); }
+	  if(station==1) {
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_HIP_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_HIP_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_HIP_5GeV->Fill(i);}}
+	  }
+	}
 	
 	if(station==1) {
 	  G11_All_lindep_roll->Fill(deposit,roll);
@@ -2489,52 +2736,67 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	// Distinction by Particle Type
 	if(abs(pid)==22) { // PHOTON
 	  GEM_g_hits->Fill(log_e,log_t); GEM_g_deposits->Fill(log_d,log_t); GEM_g_ekindep->Fill(log_e, log_d); GEM_g_kins->Fill(log_e);   GEM_g_process->Fill(process);
-	  GEM_g_deps->Fill(log_d);       GEM_g_tof->Fill(log_t);            GEM_g_time->Fill(time);            GEM_g_lindep->Fill(deposit); GEM_g_linkin->Fill(energy);
+	  GEM_g_deps->Fill(log_d);       GEM_g_tof->Fill(log_t);            GEM_g_time->Fill(time);            GEM_g_lindep->Fill(deposit); GEM_g_linkin->Fill(energy); // GEM_g_lindepzoom->Fill(deposit);
 	  station==1?G11_g_hits_R->Fill(gemr):G21_g_hits_R->Fill(gemr);
 	  station==1?G11_g_hits_E->Fill(roll):G21_g_hits_E->Fill(roll);
 	  if(InTime)  { GEM_g_deps_000->Fill(log_d); GEM_g_proc000->Fill(process); station==1?G11_g_hits_000_R->Fill(gemr):G21_g_hits_000_R->Fill(gemr);}
 	  if(OutTime) { GEM_g_deps_250->Fill(log_d); GEM_g_proc250->Fill(process); station==1?G11_g_hits_250_R->Fill(gemr):G21_g_hits_250_R->Fill(gemr);}
 	  if(deposit > hipMin) { GEM_HIP_id->Fill(7); }
-	  if(station==1) {G11_g_deps->Fill(log_d); G11_g_lindep->Fill(deposit); G11_g_kins->Fill(log_e); G11_g_linkin->Fill(energy);}
+	  if(station==1) {G11_g_deps->Fill(log_d); G11_g_lindep->Fill(deposit); G11_g_kins->Fill(log_e); G11_g_linkin->Fill(energy); G11_g_lindepzoom->Fill(deposit); }
 	  else           {G21_g_deps->Fill(log_d); G21_g_lindep->Fill(deposit); G21_g_kins->Fill(log_e); G21_g_linkin->Fill(energy);}
-	  if(isGE11L1)   { G11_L1_g_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_g_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_g_hits_E->Fill(roll); } }
-	  if(isGE11L2)   { G11_L2_g_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_g_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_g_hits_E->Fill(roll); } }
+	  if(isGE11L1)   { if(isGE11Odd) { G11_O1_g_hits_R->Fill(gemr); G11_L1Odd_g_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_g_hits_R->Fill(gemr); G11_L1Even_g_hits_E->Fill(roll); } }
+	  if(isGE11L2)   { if(isGE11Odd) { G11_O2_g_hits_R->Fill(gemr); G11_L2Odd_g_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_g_hits_R->Fill(gemr); G11_L2Even_g_hits_E->Fill(roll); } }
 	  if(isGE11Odd)  G11_Od_g_hits_R->Fill(gemr); 
 	  if(isGE11Even) G11_Ev_g_hits_R->Fill(gemr); 
+	  if(station==1) {
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ph_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ph_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ph_5GeV->Fill(i);}}
+	  }
 	}
 	else if(abs(pid)==2212) { // PROTON
 	  GEM_p_hits->Fill(log_e,log_t); GEM_p_deposits->Fill(log_d,log_t); GEM_p_ekindep->Fill(log_e, log_d); GEM_p_kins->Fill(log_e);   GEM_p_process->Fill(process);
-	  GEM_p_deps->Fill(log_d);       GEM_p_tof->Fill(log_t);            GEM_p_time->Fill(time);            GEM_p_lindep->Fill(deposit); GEM_p_linkin->Fill(energy);
+	  GEM_p_deps->Fill(log_d);       GEM_p_tof->Fill(log_t);            GEM_p_time->Fill(time);            GEM_p_lindep->Fill(deposit); GEM_p_linkin->Fill(energy); // GEM_p_lindepzoom->Fill(deposit);
 	  station==1?G11_p_hits_R->Fill(gemr):G21_p_hits_R->Fill(gemr);
 	  station==1?G11_p_hits_E->Fill(roll):G21_p_hits_E->Fill(roll);
 	  if(InTime)  { GEM_p_deps_000->Fill(log_d); GEM_p_proc000->Fill(process); station==1?G11_p_hits_000_R->Fill(gemr):G21_p_hits_000_R->Fill(gemr);}
 	  if(OutTime) { GEM_p_deps_250->Fill(log_d); GEM_p_proc250->Fill(process); station==1?G11_p_hits_250_R->Fill(gemr):G21_p_hits_250_R->Fill(gemr);}
 	  if(deposit > hipMin) { GEM_HIP_id->Fill(5); }
-	  if(station==1) {G11_p_deps->Fill(log_d); G11_p_lindep->Fill(deposit); G11_p_kins->Fill(log_e); G11_p_linkin->Fill(energy);}
+	  if(station==1) {G11_p_deps->Fill(log_d); G11_p_lindep->Fill(deposit); G11_p_kins->Fill(log_e); G11_p_linkin->Fill(energy); G11_p_lindepzoom->Fill(deposit);}
 	  else           {G21_p_deps->Fill(log_d); G21_p_lindep->Fill(deposit); G21_p_kins->Fill(log_e); G21_p_linkin->Fill(energy);}
-	  if(isGE11L1)   { G11_L1_p_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_p_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_p_hits_E->Fill(roll); } }
-	  if(isGE11L2)   { G11_L2_p_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_p_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_p_hits_E->Fill(roll); } }
+	  if(isGE11L1)   { if(isGE11Odd) { G11_O1_p_hits_R->Fill(gemr); G11_L1Odd_p_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_p_hits_R->Fill(gemr); G11_L1Even_p_hits_E->Fill(roll); } }
+	  if(isGE11L2)   { if(isGE11Odd) { G11_O2_p_hits_R->Fill(gemr); G11_L2Odd_p_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_p_hits_R->Fill(gemr); G11_L2Even_p_hits_E->Fill(roll); } }
 	  if(isGE11Odd)  G11_Od_p_hits_R->Fill(gemr); 
 	  if(isGE11Even) G11_Ev_p_hits_R->Fill(gemr); 
+	  if(station==1) {
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_p_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_p_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_p_5GeV->Fill(i);}}
+	  }
 	}
 	else if(abs(pid)==2112) { // NEUTRON
 	  GEM_n_hits->Fill(log_e,log_t); GEM_n_deposits->Fill(log_d,log_t); GEM_n_ekindep->Fill(log_e, log_d); GEM_n_kins->Fill(log_e);   GEM_n_process->Fill(process);
-	  GEM_n_deps->Fill(log_d);       GEM_n_tof->Fill(log_t);            GEM_n_time->Fill(time);            GEM_n_lindep->Fill(deposit); GEM_n_linkin->Fill(energy);
+	  GEM_n_deps->Fill(log_d);       GEM_n_tof->Fill(log_t);            GEM_n_time->Fill(time);            GEM_n_lindep->Fill(deposit); GEM_n_linkin->Fill(energy); // GEM_n_lindepzoom->Fill(deposit);
 	  station==1?G11_n_hits_R->Fill(gemr):G21_n_hits_R->Fill(gemr);
 	  station==1?G11_n_hits_E->Fill(roll):G21_n_hits_E->Fill(roll);
 	  if(InTime)  { GEM_n_deps_000->Fill(log_d); GEM_n_proc000->Fill(process); station==1?G11_n_hits_000_R->Fill(gemr):G21_n_hits_000_R->Fill(gemr);}
 	  if(OutTime) { GEM_n_deps_250->Fill(log_d); GEM_n_proc250->Fill(process); station==1?G11_n_hits_000_R->Fill(gemr):G21_n_hits_000_R->Fill(gemr);}
 	  if(deposit > hipMin) { GEM_HIP_id->Fill(6); }
-	  if(station==1) {G11_n_deps->Fill(log_d); G11_n_lindep->Fill(deposit); G11_n_kins->Fill(log_e); G11_n_linkin->Fill(energy);}
+	  if(station==1) {G11_n_deps->Fill(log_d); G11_n_lindep->Fill(deposit); G11_n_kins->Fill(log_e); G11_n_linkin->Fill(energy); G11_n_lindepzoom->Fill(deposit);}
 	  else           {G21_n_deps->Fill(log_d); G21_n_lindep->Fill(deposit); G21_n_kins->Fill(log_e); G21_n_linkin->Fill(energy);}
-	  if(isGE11L1)   { G11_L1_n_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_n_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_n_hits_E->Fill(roll); } }
-	  if(isGE11L2)   { G11_L2_n_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_n_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_n_hits_E->Fill(roll); } }
+	  if(isGE11L1)   { if(isGE11Odd) { G11_O1_n_hits_R->Fill(gemr); G11_L1Odd_n_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_n_hits_R->Fill(gemr); G11_L1Even_n_hits_E->Fill(roll); } }
+	  if(isGE11L2)   { if(isGE11Odd) { G11_O2_n_hits_R->Fill(gemr); G11_L2Odd_n_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_n_hits_R->Fill(gemr); G11_L2Even_n_hits_E->Fill(roll); } }
 	  if(isGE11Odd)  G11_Od_n_hits_R->Fill(gemr); 
 	  if(isGE11Even) G11_Ev_n_hits_R->Fill(gemr); 
+	  if(station==1) {
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_n_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_n_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_n_5GeV->Fill(i);}}
+	  }
 	}
 	else if(abs(pid)>1E9)   { // NUCLEI
 	  GEM_N_hits->Fill(log_e,log_t); GEM_N_deposits->Fill(log_d,log_t); GEM_N_ekindep->Fill(log_e, log_d); GEM_N_kins->Fill(log_e);   GEM_N_process->Fill(process);
-	  GEM_N_deps->Fill(log_d);       GEM_N_tof->Fill(log_t);            GEM_N_time->Fill(time);            GEM_N_lindep->Fill(deposit); GEM_N_linkin->Fill(energy);
+	  GEM_N_deps->Fill(log_d);       GEM_N_tof->Fill(log_t);            GEM_N_time->Fill(time);            GEM_N_lindep->Fill(deposit); GEM_N_linkin->Fill(energy); // GEM_N_lindepzoom->Fill(deposit); 
 	  station==1?G11_N_hits_R->Fill(gemr):G21_N_hits_R->Fill(gemr);
 	  station==1?G11_N_hits_E->Fill(roll):G21_N_hits_E->Fill(roll);
 	  if(InTime)  { GEM_N_deps_000->Fill(log_d); GEM_N_proc000->Fill(process); station==1?G11_N_hits_000_R->Fill(gemr):G21_N_hits_000_R->Fill(gemr);}
@@ -2542,12 +2804,17 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	  std::cout<<" 10 log (tof) = "<<log_t<<" [ns] and 10 log (E) = "<<log_d<<" [keV] catalogued as NUCLEI"<<std::endl;
 	  if(deposit > hipMin) { GEM_HIP_id->Fill(8); }
-	  if(station==1) {G11_N_deps->Fill(log_d); G11_N_lindep->Fill(deposit); G11_N_kins->Fill(log_e); G11_N_linkin->Fill(energy);}
+	  if(station==1) {G11_N_deps->Fill(log_d); G11_N_lindep->Fill(deposit); G11_N_kins->Fill(log_e); G11_N_linkin->Fill(energy); G11_N_lindepzoom->Fill(deposit);}
 	  else           {G21_N_deps->Fill(log_d); G21_N_lindep->Fill(deposit); G21_N_kins->Fill(log_e); G21_N_linkin->Fill(energy);}
-	  if(isGE11L1)   { G11_L1_N_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_N_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_N_hits_E->Fill(roll); } }
-	  if(isGE11L2)   { G11_L2_N_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_N_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_N_hits_E->Fill(roll); } }
+	  if(isGE11L1)   { if(isGE11Odd) { G11_O1_N_hits_R->Fill(gemr); G11_L1Odd_N_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_N_hits_R->Fill(gemr); G11_L1Even_N_hits_E->Fill(roll); } }
+	  if(isGE11L2)   { if(isGE11Odd) { G11_O2_N_hits_R->Fill(gemr); G11_L2Odd_N_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_N_hits_R->Fill(gemr); G11_L2Even_N_hits_E->Fill(roll); } }
 	  if(isGE11Odd)  G11_Od_N_hits_R->Fill(gemr); 
 	  if(isGE11Even) G11_Ev_N_hits_R->Fill(gemr); 
+	  if(station==1) {
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_N_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_N_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_N_5GeV->Fill(i);}}
+	  }
 	}
 	else {
 	  
@@ -2564,50 +2831,65 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // Leptons
 	  case 11:  
 	    GEM_el_hits->Fill(log_e,log_t); GEM_el_deposits->Fill(log_d,log_t); GEM_el_ekindep->Fill(log_e, log_d); GEM_el_tof->Fill(log_t);       GEM_el_time->Fill(time);
-	    GEM_el_kins->Fill(log_e);       GEM_el_deps->Fill(log_d);           GEM_el_lindep->Fill(deposit);  GEM_el_process->Fill(process);      GEM_el_linkin->Fill(energy);
+	    GEM_el_kins->Fill(log_e);       GEM_el_deps->Fill(log_d);           GEM_el_lindep->Fill(deposit);  GEM_el_process->Fill(process);      GEM_el_linkin->Fill(energy); // GEM_el_lindepzoom->Fill(deposit);
 	    station==1?G11_el_hits_R->Fill(gemr):G21_el_hits_R->Fill(gemr);
 	    station==1?G11_el_hits_E->Fill(roll):G21_el_hits_E->Fill(roll);
 	    if(InTime)  { GEM_el_deps_000->Fill(log_d); GEM_el_proc000->Fill(process); station==1?G11_el_hits_000_R->Fill(gemr):G21_el_hits_000_R->Fill(gemr);}
 	    if(OutTime) { GEM_el_deps_250->Fill(log_d); GEM_el_proc250->Fill(process); station==1?G11_el_hits_250_R->Fill(gemr):G21_el_hits_250_R->Fill(gemr);}
 	    if(deposit > hipMin) { GEM_HIP_id->Fill(1); }
-	    if(station==1) {G11_el_deps->Fill(log_d); G11_el_lindep->Fill(deposit); G11_el_kins->Fill(log_e); G11_el_linkin->Fill(energy);}
+	    if(station==1) {G11_el_deps->Fill(log_d); G11_el_lindep->Fill(deposit); G11_el_kins->Fill(log_e); G11_el_linkin->Fill(energy); G11_el_lindepzoom->Fill(deposit);}
 	    else           {G21_el_deps->Fill(log_d); G21_el_lindep->Fill(deposit); G21_el_kins->Fill(log_e); G21_el_linkin->Fill(energy);}
-	    if(isGE11L1)   { G11_L1_el_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_el_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_el_hits_E->Fill(roll); } }
-	    if(isGE11L2)   { G11_L2_el_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_el_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_el_hits_E->Fill(roll); } } 
+	    if(isGE11L1)   { if(isGE11Odd) { G11_O1_el_hits_R->Fill(gemr); G11_L1Odd_el_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_el_hits_R->Fill(gemr); G11_L1Even_el_hits_E->Fill(roll); } }
+	    if(isGE11L2)   { if(isGE11Odd) { G11_O2_el_hits_R->Fill(gemr); G11_L2Odd_el_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_el_hits_R->Fill(gemr); G11_L2Even_el_hits_E->Fill(roll); } } 
 	    if(isGE11Odd)  G11_Od_el_hits_R->Fill(gemr); 
 	    if(isGE11Even) G11_Ev_el_hits_R->Fill(gemr); 
+	    if(station==1) {
+	      if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_el_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	      if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_el_1GeV->Fill(i);}}
+	      if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_el_5GeV->Fill(i);}}
+	    }
 	    break;
 	  case 13:  
 	    GEM_mu_hits->Fill(log_e,log_t); GEM_mu_deposits->Fill(log_d,log_t); GEM_mu_ekindep->Fill(log_e, log_d); GEM_mu_tof->Fill(log_t);       GEM_mu_time->Fill(time);
-	    GEM_mu_kins->Fill(log_e);       GEM_mu_deps->Fill(log_d);           GEM_mu_lindep->Fill(deposit);  GEM_mu_process->Fill(process);      GEM_mu_linkin->Fill(energy);
+	    GEM_mu_kins->Fill(log_e);       GEM_mu_deps->Fill(log_d);           GEM_mu_lindep->Fill(deposit);  GEM_mu_process->Fill(process);      GEM_mu_linkin->Fill(energy); // GEM_mu_lindepzoom->Fill(deposit);
 	    station==1?G11_mu_hits_R->Fill(gemr):G21_mu_hits_R->Fill(gemr);
 	    station==1?G11_mu_hits_E->Fill(roll):G21_mu_hits_E->Fill(roll);
 	    if(InTime)  { GEM_mu_deps_000->Fill(log_d); GEM_mu_proc000->Fill(process); station==1?G11_mu_hits_000_R->Fill(gemr):G21_mu_hits_000_R->Fill(gemr);}
 	    if(OutTime) { GEM_mu_deps_250->Fill(log_d); GEM_mu_proc250->Fill(process); station==1?G11_mu_hits_250_R->Fill(gemr):G21_mu_hits_250_R->Fill(gemr);}
 	    if(deposit > hipMin) { GEM_HIP_id->Fill(2); }
-	    if(station==1) {G11_mu_deps->Fill(log_d); G11_mu_lindep->Fill(deposit); G11_mu_kins->Fill(log_e); G11_mu_linkin->Fill(energy);}
+	    if(station==1) {G11_mu_deps->Fill(log_d); G11_mu_lindep->Fill(deposit); G11_mu_kins->Fill(log_e); G11_mu_linkin->Fill(energy); G11_mu_lindepzoom->Fill(deposit);}
 	    else           {G21_mu_deps->Fill(log_d); G21_mu_lindep->Fill(deposit); G21_mu_kins->Fill(log_e); G21_mu_linkin->Fill(energy);}
-	    if(isGE11L1)   { G11_L1_mu_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_mu_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_mu_hits_E->Fill(roll); } }
-	    if(isGE11L2)   { G11_L2_mu_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_mu_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_mu_hits_E->Fill(roll); } }
+	    if(isGE11L1)   { if(isGE11Odd) { G11_O1_mu_hits_R->Fill(gemr); G11_L1Odd_mu_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_mu_hits_R->Fill(gemr); G11_L1Even_mu_hits_E->Fill(roll); } }
+	    if(isGE11L2)   { if(isGE11Odd) { G11_O2_mu_hits_R->Fill(gemr); G11_L2Odd_mu_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_mu_hits_R->Fill(gemr); G11_L2Even_mu_hits_E->Fill(roll); } }
 	    if(isGE11Odd)  G11_Od_mu_hits_R->Fill(gemr); 
 	    if(isGE11Even) G11_Ev_mu_hits_R->Fill(gemr); 
+	    if(station==1) {
+	      if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_mu_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	      if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_mu_1GeV->Fill(i);}}
+	      if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_mu_5GeV->Fill(i);}}
+	    }
 	    break;
 	    // Pions
 	  case 111: 
 	  case 211: 
 	    GEM_pi_hits->Fill(log_e,log_t); GEM_pi_deposits->Fill(log_d,log_t); GEM_pi_ekindep->Fill(log_e, log_d); GEM_pi_tof->Fill(log_t);       GEM_pi_time->Fill(time);
-	    GEM_pi_kins->Fill(log_e);       GEM_pi_deps->Fill(log_d);           GEM_pi_lindep->Fill(deposit);  GEM_pi_process->Fill(process);      GEM_pi_linkin->Fill(energy);
+	    GEM_pi_kins->Fill(log_e);       GEM_pi_deps->Fill(log_d);           GEM_pi_lindep->Fill(deposit);  GEM_pi_process->Fill(process);      GEM_pi_linkin->Fill(energy); // GEM_pi_lindepzoom->Fill(deposit);
 	    station==1?G11_pi_hits_R->Fill(gemr):G21_pi_hits_R->Fill(gemr);
 	    station==1?G11_pi_hits_E->Fill(roll):G21_pi_hits_E->Fill(roll);
 	    if(InTime)  { GEM_pi_deps_000->Fill(log_d); GEM_pi_proc000->Fill(process); station==1?G11_pi_hits_000_R->Fill(gemr):G21_pi_hits_000_R->Fill(gemr);}
 	    if(OutTime) { GEM_pi_deps_250->Fill(log_d); GEM_pi_proc250->Fill(process); station==1?G11_pi_hits_250_R->Fill(gemr):G21_pi_hits_250_R->Fill(gemr);}
 	    if(deposit > hipMin) { GEM_HIP_id->Fill(3); }
-	    if(station==1) {G11_pi_deps->Fill(log_d); G11_pi_lindep->Fill(deposit); G11_pi_kins->Fill(log_e); G11_pi_linkin->Fill(energy);}
+	    if(station==1) {G11_pi_deps->Fill(log_d); G11_pi_lindep->Fill(deposit); G11_pi_kins->Fill(log_e); G11_pi_linkin->Fill(energy); G11_pi_lindepzoom->Fill(deposit);}
 	    else           {G21_pi_deps->Fill(log_d); G21_pi_lindep->Fill(deposit); G21_pi_kins->Fill(log_e); G21_pi_linkin->Fill(energy);}
-	    if(isGE11L1)   { G11_L1_pi_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_pi_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_pi_hits_E->Fill(roll); } }
-	    if(isGE11L2)   { G11_L2_pi_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_pi_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_pi_hits_E->Fill(roll); } }
+	    if(isGE11L1)   { if(isGE11Odd) { G11_O1_pi_hits_R->Fill(gemr); G11_L1Odd_pi_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_pi_hits_R->Fill(gemr); G11_L1Even_pi_hits_E->Fill(roll); } }
+	    if(isGE11L2)   { if(isGE11Odd) { G11_O2_pi_hits_R->Fill(gemr); G11_L2Odd_pi_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_pi_hits_R->Fill(gemr); G11_L2Even_pi_hits_E->Fill(roll); } }
 	    if(isGE11Odd)  G11_Od_pi_hits_R->Fill(gemr); 
 	    if(isGE11Even) G11_Ev_pi_hits_R->Fill(gemr); 
+	    if(station==1) {
+	      if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_pi_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	      if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_pi_1GeV->Fill(i);}}
+	      if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_pi_5GeV->Fill(i);}}
+	    }
 	    break;
 	    // Kaons
 	  case 130:
@@ -2629,12 +2911,17 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(InTime)  { GEM_ka_deps_000->Fill(log_d); GEM_ka_proc000->Fill(process); station==1?G11_ka_hits_000_R->Fill(gemr):G21_ka_hits_000_R->Fill(gemr);}
 	    if(OutTime) { GEM_ka_deps_250->Fill(log_d); GEM_ka_proc250->Fill(process); station==1?G11_ka_hits_250_R->Fill(gemr):G21_ka_hits_250_R->Fill(gemr);}
 	    if(deposit > hipMin) { GEM_HIP_id->Fill(4); }
-	    if(station==1) {G11_ka_deps->Fill(log_d); G11_ka_lindep->Fill(deposit); G11_ka_kins->Fill(log_e); G11_ka_linkin->Fill(energy);}
+	    if(station==1) {G11_ka_deps->Fill(log_d); G11_ka_lindep->Fill(deposit); G11_ka_kins->Fill(log_e); G11_ka_linkin->Fill(energy); G11_ka_lindepzoom->Fill(deposit);}
 	    else           {G21_ka_deps->Fill(log_d); G21_ka_lindep->Fill(deposit); G21_ka_kins->Fill(log_e); G21_ka_linkin->Fill(energy);}
-	    if(isGE11L1)   { G11_L1_ka_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_ka_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_ka_hits_E->Fill(roll); } }
-	    if(isGE11L2)   { G11_L2_ka_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_ka_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_ka_hits_E->Fill(roll); } }
+	    if(isGE11L1)   { if(isGE11Odd) { G11_O1_ka_hits_R->Fill(gemr); G11_L1Odd_ka_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_ka_hits_R->Fill(gemr); G11_L1Even_ka_hits_E->Fill(roll); } }
+	    if(isGE11L2)   { if(isGE11Odd) { G11_O2_ka_hits_R->Fill(gemr); G11_L2Odd_ka_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_ka_hits_R->Fill(gemr); G11_L2Even_ka_hits_E->Fill(roll); } }
 	    if(isGE11Odd)  G11_Od_ka_hits_R->Fill(gemr); 
 	    if(isGE11Even) G11_Ev_ka_hits_R->Fill(gemr); 
+	    if(station==1) {
+	      if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ka_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	      if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ka_1GeV->Fill(i);}}
+	      if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_ka_5GeV->Fill(i);}}
+	    }
 	    break;
 	    // Other Hadrons
 	  default:
@@ -2645,12 +2932,17 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(InTime)  { GEM_OH_deps_000->Fill(log_d); GEM_OH_proc000->Fill(process); station==1?G11_OH_hits_000_R->Fill(gemr):G21_OH_hits_000_R->Fill(gemr);} 
 	    if(OutTime) { GEM_OH_deps_250->Fill(log_d); GEM_OH_proc250->Fill(process); station==1?G11_OH_hits_250_R->Fill(gemr):G21_OH_hits_250_R->Fill(gemr);}
 	    if(deposit > hipMin) { GEM_HIP_id->Fill(9); }
-	    if(station==1) {G11_OH_deps->Fill(log_d); G11_OH_lindep->Fill(deposit); G11_OH_kins->Fill(log_e); G11_OH_linkin->Fill(energy);}
+	    if(station==1) {G11_OH_deps->Fill(log_d); G11_OH_lindep->Fill(deposit); G11_OH_kins->Fill(log_e); G11_OH_linkin->Fill(energy); G11_OH_lindepzoom->Fill(deposit);}
 	    else           {G21_OH_deps->Fill(log_d); G21_OH_lindep->Fill(deposit); G21_OH_kins->Fill(log_e); G21_OH_linkin->Fill(energy);}
-	    if(isGE11L1)   { G11_L1_OH_hits_R->Fill(gemr); if(isGE11Odd) { G11_L1Odd_OH_hits_E->Fill(roll); } if(isGE11Even) { G11_L1Even_OH_hits_E->Fill(roll); } }
-	    if(isGE11L2)   { G11_L2_OH_hits_R->Fill(gemr); if(isGE11Odd) { G11_L2Odd_OH_hits_E->Fill(roll); } if(isGE11Even) { G11_L2Even_OH_hits_E->Fill(roll); } }
+	    if(isGE11L1)   { if(isGE11Odd) { G11_O1_OH_hits_R->Fill(gemr); G11_L1Odd_OH_hits_E->Fill(roll); } if(isGE11Even) { G11_E1_OH_hits_R->Fill(gemr); G11_L1Even_OH_hits_E->Fill(roll); } }
+	    if(isGE11L2)   { if(isGE11Odd) { G11_O2_OH_hits_R->Fill(gemr); G11_L2Odd_OH_hits_E->Fill(roll); } if(isGE11Even) { G11_E2_OH_hits_R->Fill(gemr); G11_L2Even_OH_hits_E->Fill(roll); } }
 	    if(isGE11Odd)  G11_Od_OH_hits_R->Fill(gemr); 
 	    if(isGE11Even) G11_Ev_OH_hits_R->Fill(gemr); 
+	    if(station==1) {
+	      if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_OH_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	      if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_OH_1GeV->Fill(i);}}
+	      if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) G11_thr_OH_5GeV->Fill(i);}}
+	    }
 	    std::cout<<"GEM :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	    std::cout<<" 10 log (tof) = "<<log_t<<" [ns] and 10 log (E) = "<<log_d<<" [keV] catalogued as OTHER HADRON"<<std::endl;
 	    break;
@@ -2713,6 +3005,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	ME0_All_hits_R->Fill(me0r); ME0_All_hits_E->Fill(roll);
 	ME0_All_deps->Fill(log_d);  ME0_All_lindep->Fill(deposit);
 	ME0_All_kins->Fill(log_e);  ME0_All_linkin->Fill(energy);
+	// Thresholdscan
+	if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_All_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_All_1GeV->Fill(i);}}
+	if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_All_5GeV->Fill(i);}}
 	
 	ME0_All_lindep_roll->Fill(deposit,roll);
 	switch(roll) {
@@ -2725,11 +3021,16 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	case 7: ME0_All_lindep_eta07->Fill(deposit); break;
 	case 8: ME0_All_lindep_eta08->Fill(deposit); break;
 	}
+
 	
 	if(deposit > hipMin) {
 	  ME0_HIP_hits_R->Fill(me0r); ME0_HIP_hits_E->Fill(roll);
-	  ME0_HIP_deps->Fill(log_d);  ME0_HIP_lindep->Fill(deposit);
+	  ME0_HIP_deps->Fill(log_d);  ME0_HIP_lindep->Fill(deposit);   ME0_HIP_lindepext->Fill(deposit);
 	  ME0_HIP_kins->Fill(log_e);  ME0_HIP_linkin->Fill(energy);
+	  // Thresholdscan
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_HIP_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_HIP_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_HIP_5GeV->Fill(i);}}
 	}
 	if(InTime)  {ME0_All_hits_000_R->Fill(me0r); ME0_All_hits_000_E->Fill(roll);}
 	if(OutTime) {ME0_All_hits_250_R->Fill(me0r); ME0_All_hits_250_E->Fill(roll);}
@@ -2746,6 +3047,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if(BXTime)  { ME0_g_hits_00_R->Fill(me0r);}
 	  if(OXTime)  { ME0_g_hits_25_R->Fill(me0r);}
 	  if(deposit > hipMin) { ME0_HIP_id->Fill(7); }
+	  // Thresholdscan
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ph_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ph_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ph_5GeV->Fill(i);}}
 	}
 	else if(abs(pid)==2212) { // PROTON
 	  ME0_p_hits->Fill(log_e,log_t); ME0_p_deposits->Fill(log_d,log_t); ME0_p_ekindep->Fill(log_e, log_d); ME0_p_kins->Fill(log_e);   ME0_p_process->Fill(process); ME0_p_linkin->Fill(energy);
@@ -2755,6 +3060,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if(BXTime)  { ME0_p_hits_00_R->Fill(me0r);}
 	  if(OXTime)  { ME0_p_hits_25_R->Fill(me0r);}
 	  if(deposit > hipMin) { ME0_HIP_id->Fill(5); }
+	  // Thresholdscan
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_p_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_p_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_p_5GeV->Fill(i);}}
 	}
 	else if(abs(pid)==2112) { // NEUTRON
 	  ME0_n_hits->Fill(log_e,log_t); ME0_n_deposits->Fill(log_d,log_t); ME0_n_ekindep->Fill(log_e, log_d); ME0_n_kins->Fill(log_e);   ME0_n_process->Fill(process); ME0_n_linkin->Fill(energy);
@@ -2764,6 +3073,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if(BXTime)  { ME0_n_hits_00_R->Fill(me0r);}
 	  if(OXTime)  { ME0_n_hits_25_R->Fill(me0r);}
 	  if(deposit > hipMin) { ME0_HIP_id->Fill(6); }
+	  // Thresholdscan
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_n_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_n_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_n_5GeV->Fill(i);}}
 	}
 	else if(abs(pid)>1E9)   { // NUCLEI
 	  ME0_N_hits->Fill(log_e,log_t); ME0_N_deposits->Fill(log_d,log_t); ME0_N_ekindep->Fill(log_e, log_d); ME0_N_kins->Fill(log_e);   ME0_N_process->Fill(process); ME0_N_linkin->Fill(energy);
@@ -2773,6 +3086,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if(BXTime)  { ME0_N_hits_00_R->Fill(me0r);}
 	  if(OXTime)  { ME0_N_hits_25_R->Fill(me0r);}
 	  if(deposit > hipMin) { ME0_HIP_id->Fill(8); }
+	  // Thresholdscan
+	  if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_N_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	  if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_N_1GeV->Fill(i);}}
+	  if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_N_5GeV->Fill(i);}}
 	  std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	  std::cout<<" 10 log (tof) = "<<log_t<<" [ns] and 10 log (E) = "<<log_d<<" [keV] catalogued as NUCLEI"<<std::endl;
 	  // Nuclei code: 100ZZZAAA0
@@ -2807,6 +3124,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(BXTime)  { ME0_el_hits_00_R->Fill(me0r);}
 	    if(OXTime)  { ME0_el_hits_25_R->Fill(me0r);}
 	    if(deposit > hipMin) { ME0_HIP_id->Fill(1); }
+	    // Thresholdscan
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_el_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_el_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_el_5GeV->Fill(i);}}
 	    break;
 	  case 13:  
 	    ME0_mu_hits->Fill(log_e,log_t); ME0_mu_deposits->Fill(log_d,log_t); ME0_mu_ekindep->Fill(log_e, log_d); ME0_mu_tof->Fill(log_t);       ME0_mu_time->Fill(time);        ME0_mu_linkin->Fill(energy); 
@@ -2816,6 +3137,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(BXTime)  { ME0_mu_hits_00_R->Fill(me0r);}
 	    if(OXTime)  { ME0_mu_hits_25_R->Fill(me0r);}
 	    if(deposit > hipMin) { ME0_HIP_id->Fill(2); }
+	    // Thresholdscan
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_mu_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_mu_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_mu_5GeV->Fill(i);}}
 	    break;
 	    // Pions
 	  case 111: 
@@ -2827,6 +3152,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(BXTime)  { ME0_pi_hits_00_R->Fill(me0r);}
 	    if(OXTime)  { ME0_pi_hits_25_R->Fill(me0r);}
 	    if(deposit > hipMin) { ME0_HIP_id->Fill(3); }
+	    // Thresholdscan
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_pi_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_pi_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_pi_5GeV->Fill(i);}}
 	    break;
 	    // Kaons
 	  case 130:
@@ -2848,6 +3177,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(BXTime)  { ME0_ka_hits_00_R->Fill(me0r);}
 	    if(OXTime)  { ME0_ka_hits_25_R->Fill(me0r);}
 	    if(deposit > hipMin) { ME0_HIP_id->Fill(4); }
+	    // Thresholdscan
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ka_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ka_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_ka_5GeV->Fill(i);}}
 	    break;
 	    // Other Hadrons
 	  default:   
@@ -2858,6 +3191,10 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(BXTime)  { ME0_OH_hits_00_R->Fill(me0r);}
 	    if(OXTime)  { ME0_OH_hits_25_R->Fill(me0r);}
 	    if(deposit > hipMin) { ME0_HIP_id->Fill(9); }
+	    // Thresholdscan
+	    if(energy > 0000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_OH_0GeV->Fill(i);}} // energy in MeV | deposit in keV
+	    if(energy > 1000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_OH_1GeV->Fill(i);}}
+	    if(energy > 5000) {for(int i=0; i<1001; ++i) { if(deposit*1000 > i) ME0_thr_OH_5GeV->Fill(i);}}
 	    std::cout<<"ME0 :: SimHit from Particle id "<<pid<<" with time of flight "<<(*iHit).timeOfFlight()<<" [ns] and energy deposit "<<(*iHit).energyLoss()<< " [GeV]";
 	    std::cout<<" 10 log (tof) = "<<log_t<<" [ns] and 10 log (E) = "<<log_d<<" [keV] catalogued as OTHER HADRONS"<<std::endl;
 	    break;
@@ -2869,6 +3206,115 @@ MyME0SimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	ME0_hits_lin->Fill(time);     
       } // close ME0
     } // close GEM
+
+    if(simdetid.det()==DetId::Muon &&  simdetid.subdetId()== MuonSubdetId::CSC){
+
+      CSCDetId rollId(theDetUnitId);
+      GlobalPoint CSCGlobalPoint = cscGeom->idToDet(rollId)->toGlobal((*iHit).localPosition());
+      double CSC_GlobalPoint_R = sqrt(pow(CSCGlobalPoint.x(),2)+pow(CSCGlobalPoint.y(),2));
+      int layer = rollId.layer();
+
+      bool isME11 = false, isME11odd = false, isME11even = false;
+      if(rollId.station() == 1 && (rollId.ring() == 1 || rollId.ring() == 4) ) {
+        isME11 = true;
+        if(rollId.chamber()%2==1) isME11odd = true; else isME11even = true;
+      }
+
+      if (phys_debug) {
+	std::cout<<"CSC SimHit in "<<std::setw(24)<<rollId<<" | time t = "<<std::setw(12)<<(*iHit).timeOfFlight()<<" | z = "<<std::setw(12)<<CSCGlobalPoint.z();
+	std::cout<<" | r = "<<std::setw(12)<<CSCGlobalPoint.mag()<<" | phi = "<<std::setw(12)<<CSCGlobalPoint.phi()<<" | eta = "<<std::setw(12)<<CSCGlobalPoint.eta();
+	std::cout<<" | global position = "<<CSCGlobalPoint<<std::endl;
+      }
+      if(isME11) {
+        // All CSC Hits
+	M11_All_hits_R->Fill(CSC_GlobalPoint_R);
+	if(isME11odd) {
+	  M11_Od_All_hits_R->Fill(CSC_GlobalPoint_R);
+	  switch (layer) {
+	  case 1: M11_Od_L1_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 2: M11_Od_L2_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 3: M11_Od_L3_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 4: M11_Od_L4_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 5: M11_Od_L5_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 6: M11_Od_L6_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  }
+	} 
+	if(isME11even) {
+	  M11_Ev_All_hits_R->Fill(CSC_GlobalPoint_R);
+	  switch (layer) {
+	  case 1: M11_Ev_L1_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 2: M11_Ev_L2_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 3: M11_Ev_L3_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 4: M11_Ev_L4_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 5: M11_Ev_L5_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  case 6: M11_Ev_L6_All_hits_R->Fill(CSC_GlobalPoint_R); break;
+	  }
+	}
+	// HIP Hits
+	if(deposit > hipMin) {
+	  M11_HIP_hits_R->Fill(CSC_GlobalPoint_R);
+	  if(isME11odd) {M11_Od_HIP_hits_R->Fill(CSC_GlobalPoint_R);} 
+	  if(isME11even) {M11_Ev_HIP_hits_R->Fill(CSC_GlobalPoint_R);} 
+	}
+	// Protons 
+	if(abs(pid)==2212)      {
+	  M11_p_hits_R->Fill(CSC_GlobalPoint_R);
+	  if(isME11odd) {M11_Od_p_hits_R->Fill(CSC_GlobalPoint_R);} 
+	  if(isME11even) {M11_Ev_p_hits_R->Fill(CSC_GlobalPoint_R);}
+	}
+	// Neutrons
+	else if(abs(pid)==2112) {
+	  M11_n_hits_R->Fill(CSC_GlobalPoint_R);
+	  if(isME11odd) {M11_Od_n_hits_R->Fill(CSC_GlobalPoint_R);} 
+	  if(isME11even) {M11_Ev_n_hits_R->Fill(CSC_GlobalPoint_R);}
+	}
+	// Switch
+	else {
+	  switch (abs(pid)%1000) {
+	    // leptons
+	  case 11:
+	    M11_el_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_el_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_el_hits_R->Fill(CSC_GlobalPoint_R);}
+	  break;
+	  case 13:
+	    M11_mu_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_mu_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_mu_hits_R->Fill(CSC_GlobalPoint_R);}
+	  break;
+          // Photons
+	  case 22:   
+	    M11_g_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_g_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_g_hits_R->Fill(CSC_GlobalPoint_R);}
+	  break;
+          // Pions
+	  case 111:
+	  case 211:
+	  case 130:
+	    M11_pi_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_pi_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_pi_hits_R->Fill(CSC_GlobalPoint_R);}
+	    break;
+	    // Kaons
+	  case 310:
+	  case 311:
+	  case 313:
+	  case 315:
+	  case 317:
+	  case 319:
+	  case 321:
+	  case 323:
+	  case 325:
+	  case 327:
+	  case 329:
+	    M11_ka_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_ka_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_ka_hits_R->Fill(CSC_GlobalPoint_R);}
+	    break;
+	  default:   {
+	    if(abs(pid) > 999999999) { // Nucleons (10-digit numbers)
+	      M11_N_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_N_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_N_hits_R->Fill(CSC_GlobalPoint_R);}
+	    }
+	    else { // non-Nucleon ... catalogue as "Other Hadron 
+	      M11_OH_hits_R->Fill(CSC_GlobalPoint_R); if(isME11odd) {M11_Od_OH_hits_R->Fill(CSC_GlobalPoint_R);} if(isME11even) {M11_Ev_OH_hits_R->Fill(CSC_GlobalPoint_R);}
+	    }
+	    break;
+	  }
+	  } // end switch
+	} // end else
+      } // end if isME11
+    } // close CSC
   } // close simhitloop
     
   // Fill EventCounter
