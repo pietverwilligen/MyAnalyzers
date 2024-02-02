@@ -41,6 +41,7 @@ process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
 # process.load("MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
 # process.load("Test_MinBias_Phase2_14TeV_TuneCP5_100k_Neutron_XS_2026D99_1E4s")
 process.load("MinBias_Phase1_14TeV_TuneCP5_100k_Neutron_XS_2023DB_1E4s")
+# process.load("MinBias_Phase1_14TeV_TuneCP5_1M_Neutron_XS_2023DB_1E4s")
 # ---------------------------------------------------------------------------------------
 # option C
 # ---------------------------------------------------------------------------------------
@@ -63,8 +64,11 @@ process.demo = cms.EDAnalyzer('MyNeutronSimHitAnalyzer',
                               # PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s"),
                               # RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase2_2026D99_Neutron_XS_1E4s.root"),
                               # ---------
-                              PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s"),
-                              RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s.root"),
+                              PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s_100k"),
+                              RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s_100k.root"),
+                              # ---------
+                              # PdfFileNameBase = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s_1M"),
+                              # RootFileName = cms.untracked.string("MyNeutronSimHistograms_Phase1_2023DB_Neutron_XS_1E4s_1M.root"),
                               # ---------
                               BunchSpacing = cms.untracked.double(25.0),
                               COMEnergy    = cms.untracked.double(14.0),
@@ -77,6 +81,7 @@ process.demo = cms.EDAnalyzer('MyNeutronSimHitAnalyzer',
                               VarEDepCuteV = cms.untracked.double(120.0),
                               PhysicsDebug = cms.untracked.bool(False),
                               TechnicDebug = cms.untracked.bool(False),
+                              PDFOutput    = cms.untracked.bool(False),  # set false for large number of events
                               )
 
 
