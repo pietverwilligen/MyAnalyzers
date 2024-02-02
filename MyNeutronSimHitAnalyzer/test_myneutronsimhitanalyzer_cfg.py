@@ -72,6 +72,7 @@ process.demo = cms.EDAnalyzer('MyNeutronSimHitAnalyzer',
                               EDepCut30eV  = cms.untracked.bool(True),
                               PhysicsDebug = cms.untracked.bool(True),
                               TechnicDebug = cms.untracked.bool(True),
+                              PDFOutput    = cms.untracked.bool(False), # set false for large number of events
                               )
 
 
