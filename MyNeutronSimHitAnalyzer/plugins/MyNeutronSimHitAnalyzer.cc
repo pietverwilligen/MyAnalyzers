@@ -165,7 +165,7 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   double comenergy;
   double maxsimtime;
   double varEDepCuteV;
-  bool phys_debug, tech_debug;
+  bool phys_debug, tech_debug, pdf_output;
   TFile * outputfile;
 
 
@@ -214,6 +214,13 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
   TH1F * RPCb_hits_eta, * RPCf_hits_eta, * CSC_hits_eta, * DT_hits_eta, * GEM_hits_eta, * ME0_hits_eta;
   TH1F * RPCb_hits_phi, * RPCf_hits_phi, * CSC_hits_phi, * DT_hits_phi, * GEM_hits_phi, * ME0_hits_phi; 
   TH1F * RPCb_hits_lin, * RPCf_hits_lin, * CSC_hits_lin, * DT_hits_lin, * GEM_hits_lin, * ME0_hits_lin;
+
+  // Linear Histograms - 1ms bin width - 1000 bins 0-1s
+  TH1F * DT_MB1_all_hits_tof, * DT_MB1_W2_hits_tof, * DT_MB1_W1_hits_tof, * DT_MB1_W0_hits_tof, * DT_MB2_all_hits_tof, * DT_MB3_all_hits_tof, * DT_MB4_all_hits_tof, * DT_MBX_all_hits_tof;
+  TH1F * CSC_ME11_hits_tof, * CSC_ME12_hits_tof, * CSC_ME13_hits_tof, * CSC_ME21_hits_tof, * CSC_ME22_hits_tof, * CSC_ME31_hits_tof, * CSC_ME32_hits_tof, * CSC_ME41_hits_tof, * CSC_ME42_hits_tof;
+  TH1F * CSC_MEX1_hits_tof, * CSC_MEX2_hits_tof, * CSC_MEXX_hits_tof;
+
+
 
   TH1F * MB1_hits_phi, * MB2_hits_phi, *MB3_hits_phi, * MB4_hits_phi;
   TH1F * RB1_hits_phi, * RB2_hits_phi, *RB3_hits_phi, * RB4_hits_phi;
@@ -422,6 +429,7 @@ class MyNeutronSimHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedReso
 
 int n_tof = 1100,  n1_tof = 1,  n2_tof = 12;
 int m_tof = 110,   m1_tof = 1,  m2_tof = 12;
+int n_toflin = 1000, n1_toflin = 0, n2_toflin = 50; // 0-1000ms in 1ms | 0-100ms in 100us | 0-50ms in steps of 50us
 int m_eta = 50;   double m1_eta =  0.0,  m2_eta = 2.5;
 int m_phi = 36;   double m1_phi = -3.1415, m2_phi = 3.1415;
 int m_lin = 1000, m1_lin = 0,  m2_lin = 100000000;
@@ -519,7 +527,7 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   varEDepCuteV    = iConfig.getUntrackedParameter<double>("VarEDepCuteV");
   phys_debug      = iConfig.getUntrackedParameter<bool>("PhysicsDebug");
   tech_debug      = iConfig.getUntrackedParameter<bool>("TechnicDebug");
-
+  pdf_output      = iConfig.getUntrackedParameter<bool>("PDFOutput");
   outputfile      = new TFile(rootFileName.c_str(), "RECREATE" );
 
   // required for 7XY: registration of the data access
@@ -967,6 +975,30 @@ MyNeutronSimHitAnalyzer::MyNeutronSimHitAnalyzer(const edm::ParameterSet& iConfi
   ME0_el_tof  = new TH1F("ME0_el_tof",  "Time Of Flight :: ME0 :: Electrons",  n_tof, n1_tof, n2_tof);
   ME0_mu_tof  = new TH1F("ME0_mu_tof",  "Time Of Flight :: ME0 :: Muons",      n_tof, n1_tof, n2_tof);
   ME0_ha_tof  = new TH1F("ME0_ha_tof",  "Time Of Flight :: ME0 :: Hadrons",    n_tof, n1_tof, n2_tof);
+
+  DT_MB1_all_hits_tof = new TH1F("DT_MB1_all_hits_tof", "Time of Flight :: DT MB1 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB2_all_hits_tof = new TH1F("DT_MB2_all_hits_tof", "Time of Flight :: DT MB1 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB3_all_hits_tof = new TH1F("DT_MB3_all_hits_tof", "Time of Flight :: DT MB1 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB4_all_hits_tof = new TH1F("DT_MB4_all_hits_tof", "Time of Flight :: DT MB1 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB1_W2_hits_tof  = new TH1F("DT_MB1_W2_hits_tof",  "Time of Flight :: DT MB1 Wheel+/-2 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB1_W1_hits_tof  = new TH1F("DT_MB1_W1_hits_tof",  "Time of Flight :: DT MB1 Wheel+/-1 :: all hits", n_toflin, n1_toflin, n2_toflin);
+  DT_MB1_W0_hits_tof  = new TH1F("DT_MB1_W0_hits_tof",  "Time of Flight :: DT MB1 Wheel 0 :: all hits",   n_toflin, n1_toflin, n2_toflin);
+  DT_MBX_all_hits_tof = new TH1F("DT_MBX_all_hits_tof", "Time of Flight :: DT MBX :: all hits", n_toflin, n1_toflin, n2_toflin);
+  CSC_ME11_hits_tof= new TH1F("CSC_ME11_hits_tof", "Time of Flight :: CSC ME11 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME12_hits_tof= new TH1F("CSC_ME12_hits_tof", "Time of Flight :: CSC ME12 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME13_hits_tof= new TH1F("CSC_ME13_hits_tof", "Time of Flight :: CSC ME13 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME21_hits_tof= new TH1F("CSC_ME21_hits_tof", "Time of Flight :: CSC ME21 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME22_hits_tof= new TH1F("CSC_ME22_hits_tof", "Time of Flight :: CSC ME22 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME31_hits_tof= new TH1F("CSC_ME31_hits_tof", "Time of Flight :: CSC ME31 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME32_hits_tof= new TH1F("CSC_ME32_hits_tof", "Time of Flight :: CSC ME32 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME41_hits_tof= new TH1F("CSC_ME41_hits_tof", "Time of Flight :: CSC ME41 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_ME42_hits_tof= new TH1F("CSC_ME42_hits_tof", "Time of Flight :: CSC ME42 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_MEX1_hits_tof= new TH1F("CSC_MEX1_hits_tof", "Time of Flight :: CSC MEX1 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_MEX2_hits_tof= new TH1F("CSC_MEX2_hits_tof", "Time of Flight :: CSC MEX2 :: all hits" , n_toflin, n1_toflin, n2_toflin);
+  CSC_MEXX_hits_tof= new TH1F("CSC_MEXX_hits_tof", "Time of Flight :: CSC MEXX :: all hits" , n_toflin, n1_toflin, n2_toflin);
+
+
+
 
   RPCb_XY = new TH2F("RPCb_XY", "Simhits in XY :: RPCb", n_xy_x, n_xy_x1, n_xy_x2, n_xy_y, n_xy_y1, n_xy_y2);
   RPCb_RZ = new TH2F("RPCb_RZ", "Simhits in RZ :: RPCb", n_zr_z, n_zr_z1, n_zr_z2, n_zr_r, n_zr_r1, n_zr_r2);
@@ -1416,11 +1448,14 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   gStyle->SetOptFit(0);
   gStyle->SetPalette(1);
   TCanvas * Dummy = new TCanvas("dummy", "dummy", 600, 600);
-  // First Plot for PDF File :: print empty Dummy 
-  pdfFileName = pdfFileNameBase + ".pdf[";
-  Dummy->Print(pdfFileName.c_str());
-  // Name for next plot for PDF File
-  pdfFileName = pdfFileNameBase + ".pdf";
+
+  if(pdf_output) {
+    // First Plot for PDF File :: print empty Dummy 
+    pdfFileName = pdfFileNameBase + ".pdf[";
+    Dummy->Print(pdfFileName.c_str());
+    // Name for next plot for PDF File
+    pdfFileName = pdfFileNameBase + ".pdf";
+  }
 
   // Center of Mass Energy Label
   std::stringstream comlabelss; comlabelss<<"CMS Simulation #sqrt{s} = "<<comenergy<<" TeV"; std::string comlabel = comlabelss.str();
@@ -1550,7 +1585,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
 
   Canvas_RPCb_hits->SetTicks(1,1);
   Canvas_RPCb_hits->Write();
-  Canvas_RPCb_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_hits->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_hits->cd();
   RPCf_el_hits->GetXaxis()->SetTitle("^{10}log E_{kin} (MeV)");
@@ -1579,7 +1614,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_RPCf_hits->SetTicks(1,1);
   Canvas_RPCf_hits->Write();
-  Canvas_RPCf_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_hits->Print(pdfFileName.c_str());}
 
   Canvas_CSC_hits->cd();
   CSC_el_hits->GetXaxis()->SetTitle("^{10}log E_{kin} (MeV)");
@@ -1608,7 +1643,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_hits->SetTicks(1,1);
   Canvas_CSC_hits->Write();
-  Canvas_CSC_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_hits->Print(pdfFileName.c_str());}
 
 
   Canvas_DT_hits->cd();
@@ -1637,7 +1672,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_DT_hits->SetTicks(1,1);
   Canvas_DT_hits->Write();
-  Canvas_DT_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_hits->Print(pdfFileName.c_str());}
 
   Canvas_GEM_hits->cd();
   GEM_el_hits->GetXaxis()->SetTitle("^{10}log E_{kin} (MeV)");
@@ -1665,7 +1700,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_GEM_hits->SetTicks(1,1);
   Canvas_GEM_hits->Write();
-  Canvas_GEM_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_GEM_hits->Print(pdfFileName.c_str());}
 
   Canvas_ME0_hits->cd();
   ME0_el_hits->GetXaxis()->SetTitle("^{10}log E_{kin} (MeV)");
@@ -1693,7 +1728,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_ME0_hits->SetTicks(1,1);
   Canvas_ME0_hits->Write();
-  Canvas_ME0_hits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_ME0_hits->Print(pdfFileName.c_str());}
 
   Canvas_RPCb_hits_fancy = new TCanvas("Canvas_RPCb_hits_fancy", "Simhit time vs E_{kin} :: RPCb", 600, 600);
   Canvas_RPCf_hits_fancy = new TCanvas("Canvas_RPCf_hits_fancy", "Simhit time vs E_{kin} :: RPCf", 600, 600);
@@ -1784,7 +1819,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   Canvas_CSC_hits_fancy->SetTicks(1,1);
   Canvas_CSC_hits->RedrawAxis();
   Canvas_CSC_hits_fancy->Write();
-  Canvas_CSC_hits_fancy->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_hits_fancy->Print(pdfFileName.c_str());}
   /*
   TCanvas * test = new TCanvas("test", "test", 600, 600);
   test->cd();
@@ -1793,7 +1828,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   test->Update();
   test->RedrawAxis();
   test->Write();
-  test->Print(pdfFileName.c_str());
+  if(pdf_output) {test->Print(pdfFileName.c_str());}
   */
 
   TDir_Muon_hits_deposits->cd();
@@ -1907,7 +1942,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_RPCb_deposits->SetTicks(1,1);
   Canvas_RPCb_deposits->Write();
-  Canvas_RPCb_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_deposits->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_deposits->cd();
   RPCf_el_deposits->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -1935,7 +1970,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_RPCf_deposits->SetTicks(1,1);
   Canvas_RPCf_deposits->Write();
-  Canvas_RPCf_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_deposits->Print(pdfFileName.c_str());}
 
   Canvas_CSC_deposits->cd();
   CSC_el_deposits->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -1962,7 +1997,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_deposits->SetTicks(1,1);
   Canvas_CSC_deposits->Write();
-  Canvas_CSC_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_deposits->Print(pdfFileName.c_str());}
 
   Canvas_DT_deposits->cd();
   DT_el_deposits->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -1990,7 +2025,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_DT_deposits->SetTicks(1,1);
   Canvas_DT_deposits->Write();
-  Canvas_DT_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_deposits->Print(pdfFileName.c_str());}
 
   Canvas_GEM_deposits->cd();
   GEM_el_deposits->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2017,7 +2052,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_GEM_deposits->SetTicks(1,1);
   Canvas_GEM_deposits->Write();
-  Canvas_GEM_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_GEM_deposits->Print(pdfFileName.c_str());}
 
   Canvas_ME0_deposits->cd();
   ME0_el_deposits->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2044,7 +2079,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_ME0_deposits->SetTicks(1,1);
   Canvas_ME0_deposits->Write();
-  Canvas_ME0_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_ME0_deposits->Print(pdfFileName.c_str());}
 
   TDir_Muon_hits_deposits->cd();
   // --------------------------- 
@@ -2142,7 +2177,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_RPCb_1D_deps->SetTicks(1,1);
   Canvas_RPCb_1D_deps->Write();
-  Canvas_RPCb_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_1D_deps->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_1D_deps->cd();
   RPCf_el_deps->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2157,7 +2192,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_RPCf_1D_deps->SetTicks(1,1);
   Canvas_RPCf_1D_deps->Write();
-  Canvas_RPCf_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_1D_deps->Print(pdfFileName.c_str());}
 
   Canvas_CSC_1D_deps->cd();
   CSC_el_deps->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2172,7 +2207,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_CSC_1D_deps->SetTicks(1,1);
   Canvas_CSC_1D_deps->Write();
-  Canvas_CSC_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_1D_deps->Print(pdfFileName.c_str());}
 
   Canvas_DT_1D_deps->cd();
   DT_el_deps->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2187,7 +2222,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_DT_1D_deps->SetTicks(1,1);
   Canvas_DT_1D_deps->Write();
-  Canvas_DT_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_1D_deps->Print(pdfFileName.c_str());}
 
   Canvas_GEM_1D_deps->cd();
   GEM_el_deps->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2202,7 +2237,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_GEM_1D_deps->SetTicks(1,1);
   Canvas_GEM_1D_deps->Write();
-  Canvas_GEM_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_GEM_1D_deps->Print(pdfFileName.c_str());}
 
   Canvas_ME0_1D_deps->cd();
   ME0_el_deps->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -2217,7 +2252,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_right.DrawLatex(0.40, 0.025,"#font[12]{1 keV}");
   Canvas_ME0_1D_deps->SetTicks(1,1);
   Canvas_ME0_1D_deps->Write();
-  Canvas_ME0_1D_deps->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_ME0_1D_deps->Print(pdfFileName.c_str());}
 
   TDir_Muon_hits_deposits->cd();
   // --------------------------- 
@@ -2260,7 +2295,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"RPCb");
   Canvas_RPCb_1D_tof->SetTicks(1,1);
   Canvas_RPCb_1D_tof->Write();
-  Canvas_RPCb_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_1D_tof->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_1D_tof->cd();
   RPCf_el_tof->GetXaxis()->SetTitle("^{10}log TOF (ns)");
@@ -2274,7 +2309,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"RPCf");
   Canvas_RPCf_1D_tof->SetTicks(1,1);
   Canvas_RPCf_1D_tof->Write();
-  Canvas_RPCf_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_1D_tof->Print(pdfFileName.c_str());}
 
   Canvas_CSC_1D_tof->cd();
   CSC_el_tof->GetXaxis()->SetTitle("^{10}log TOF (ns)");
@@ -2288,7 +2323,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"CSC");
   Canvas_CSC_1D_tof->SetTicks(1,1);
   Canvas_CSC_1D_tof->Write();
-  Canvas_CSC_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_1D_tof->Print(pdfFileName.c_str());}
 
   Canvas_DT_1D_tof->cd();
   DT_el_tof->GetXaxis()->SetTitle("^{10}log TOF (ns)");
@@ -2302,7 +2337,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"DT");
   Canvas_DT_1D_tof->SetTicks(1,1);
   Canvas_DT_1D_tof->Write();
-  Canvas_DT_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_1D_tof->Print(pdfFileName.c_str());}
 
   Canvas_GEM_1D_tof->cd();
   GEM_el_tof->GetXaxis()->SetTitle("^{10}log TOF (ns)");
@@ -2316,7 +2351,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"GEM");
   Canvas_GEM_1D_tof->SetTicks(1,1);
   Canvas_GEM_1D_tof->Write();
-  Canvas_GEM_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_GEM_1D_tof->Print(pdfFileName.c_str());}
 
   Canvas_ME0_1D_tof->cd();
   ME0_el_tof->GetXaxis()->SetTitle("^{10}log TOF (ns)");
@@ -2330,7 +2365,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"ME0");
   Canvas_ME0_1D_tof->SetTicks(1,1);
   Canvas_ME0_1D_tof->Write();
-  Canvas_ME0_1D_tof->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_ME0_1D_tof->Print(pdfFileName.c_str());}
 
   TDir_Muon_hits_deposits->cd();
   // --------------------------- 
@@ -2352,6 +2387,31 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   ME0_el_tof->Write();
   ME0_mu_tof->Write();
   ME0_ha_tof->Write();
+
+  DT_MB1_all_hits_tof->Write();
+  DT_MB2_all_hits_tof->Write();
+  DT_MB3_all_hits_tof->Write();
+  DT_MB4_all_hits_tof->Write();
+  DT_MB1_W2_hits_tof->Write();
+  DT_MB1_W1_hits_tof->Write();
+  DT_MB1_W0_hits_tof->Write();
+  DT_MBX_all_hits_tof->Write();
+  CSC_ME11_hits_tof->Write();
+  CSC_ME12_hits_tof->Write();
+  CSC_ME13_hits_tof->Write();
+  CSC_ME21_hits_tof->Write();
+  CSC_ME22_hits_tof->Write();
+  CSC_ME31_hits_tof->Write();
+  CSC_ME32_hits_tof->Write();
+  CSC_ME41_hits_tof->Write();
+  CSC_ME42_hits_tof->Write();
+  CSC_MEX1_hits_tof->Write();
+  CSC_MEX2_hits_tof->Write();  
+  CSC_MEXX_hits_tof->Write();
+
+
+
+
   // --------------------------- 
   outputfile->cd();
 
@@ -2382,7 +2442,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"RPCb");
   Canvas_RPCb_hits_phi->SetTicks(1,1);
   Canvas_RPCb_hits_phi->Write();
-  Canvas_RPCb_hits_phi->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_hits_phi->Print(pdfFileName.c_str());}
 
   Canvas_DT_hits_phi->cd();
   MB4_hits_phi->GetXaxis()->SetTitle("phi (-)");
@@ -2406,7 +2466,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"DT");
   Canvas_DT_hits_phi->SetTicks(1,1);
   Canvas_DT_hits_phi->Write();
-  Canvas_DT_hits_phi->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_hits_phi->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_hits_phi->cd();
   RE12_hits_phi->GetXaxis()->SetTitle("phi (-)");
@@ -2439,7 +2499,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"RPCf");
   Canvas_RPCf_hits_phi->SetTicks(1,1);
   Canvas_RPCf_hits_phi->Write();
-  Canvas_RPCf_hits_phi->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_hits_phi->Print(pdfFileName.c_str());}
 
   Canvas_CSC_hits_phi->cd();
   ME11_hits_phi->GetXaxis()->SetTitle("phi (-)");
@@ -2473,7 +2533,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.125, 0.850,"CSC");
   Canvas_CSC_hits_phi->SetTicks(1,1);
   Canvas_CSC_hits_phi->Write();
-  Canvas_CSC_hits_phi->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_hits_phi->Print(pdfFileName.c_str());}
 
 
 
@@ -2489,7 +2549,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"All SimHits");
   Canvas_Muon_RZ->SetTicks(1,1);
   Canvas_Muon_RZ->Write(); 
-  Canvas_Muon_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_RZ->Print(pdfFileName.c_str());}
 
   Canvas_Muon_000ns_RZ = new TCanvas("Canvas_Muon_000ns_RZ", "RZ-view of SimHits with tof < 250 ns :: Muon", 600, 600);
   Muon_000ns_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2501,7 +2561,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF < 250 ns");
   Canvas_Muon_000ns_RZ->SetTicks(1,1);
   Canvas_Muon_000ns_RZ->Write(); 
-  Canvas_Muon_000ns_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_000ns_RZ->Print(pdfFileName.c_str());}
 
   Canvas_Muon_250ns_RZ = new TCanvas("Canvas_Muon_250ns_RZ", "RZ-view of SimHits with tof > 250 ns :: Muon", 600, 600);
   Muon_250ns_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2513,7 +2573,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF > 250 ns");
   Canvas_Muon_250ns_RZ->SetTicks(1,1);
   Canvas_Muon_250ns_RZ->Write(); 
-  Canvas_Muon_250ns_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_250ns_RZ->Print(pdfFileName.c_str());}
 
   Muon_000ns_el_RZ->SetMarkerColor(kBlack);  Muon_000ns_mu_RZ->SetMarkerColor(kBlue);  Muon_000ns_ha_RZ->SetMarkerColor(kRed);
   l2_x1 = 0.15; l2_x2 = 0.35; l2_y1 = 0.20; l2_y2 = 0.40;
@@ -2537,7 +2597,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2a->Draw();
   Canvas_Muon_000ns_Cont_RZ->SetTicks(1,1);
   Canvas_Muon_000ns_Cont_RZ->Write(); 
-  Canvas_Muon_000ns_Cont_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_000ns_Cont_RZ->Print(pdfFileName.c_str());}
 
   Canvas_Muon_250ns_Cont_RZ = new TCanvas("Canvas_Muon_250ns_Cont_RZ", "RZ-view of SimHits with tof > 250 ns :: Muon", 600, 600);
   Muon_250ns_el_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2552,7 +2612,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2a->Draw();
   Canvas_Muon_250ns_Cont_RZ->SetTicks(1,1);
   Canvas_Muon_250ns_Cont_RZ->Write(); 
-  Canvas_Muon_250ns_Cont_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_250ns_Cont_RZ->Print(pdfFileName.c_str());}
 
   Canvas_Muon_00ns_Cont_RZ = new TCanvas("Canvas_Muon_00ns_Cont_RZ", "RZ-view of SimHits with tof < 50 ns :: Muon", 600, 600);
   Muon_00ns_el_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2567,7 +2627,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2a->Draw();
   Canvas_Muon_00ns_Cont_RZ->SetTicks(1,1);
   Canvas_Muon_00ns_Cont_RZ->Write(); 
-  Canvas_Muon_00ns_Cont_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_00ns_Cont_RZ->Print(pdfFileName.c_str());}
 
   Canvas_Muon_50ns_Cont_RZ = new TCanvas("Canvas_Muon_50ns_Cont_RZ", "RZ-view of SimHits with 50 < tof < 250 ns :: Muon", 600, 600);
   Muon_50ns_el_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2582,7 +2642,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2a->Draw();
   Canvas_Muon_50ns_Cont_RZ->SetTicks(1,1);
   Canvas_Muon_50ns_Cont_RZ->Write(); 
-  Canvas_Muon_50ns_Cont_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_50ns_Cont_RZ->Print(pdfFileName.c_str());}
   // -------------------------------- //
 
   // ----- Muon Barrel XY plots ----- //
@@ -2596,7 +2656,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"All SimHits");
   Canvas_Muon_Barrel_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_XY->Write(); 
-  Canvas_Muon_Barrel_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Barrel_000ns_XY = new TCanvas("Canvas_Muon_Barrel_000ns_XY", "XY-view of SimHits with tof < 250 ns :: Muon Barrel", 600, 600);
   Muon_Barrel_000ns_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2608,7 +2668,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF < 250 ns");
   Canvas_Muon_Barrel_000ns_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_000ns_XY->Write(); 
-  Canvas_Muon_Barrel_000ns_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_000ns_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Barrel_250ns_XY = new TCanvas("Canvas_Muon_Barrel_250ns_XY", "XY-view of SimHits with tof > 250 ns :: Muon Barrel", 600, 600);
   Muon_Barrel_250ns_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2620,7 +2680,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF > 250 ns");
   Canvas_Muon_Barrel_250ns_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_250ns_XY->Write(); 
-  Canvas_Muon_Barrel_250ns_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_250ns_XY->Print(pdfFileName.c_str());}
 
   Muon_Barrel_000ns_el_XY->SetMarkerColor(kBlack);  Muon_Barrel_000ns_mu_XY->SetMarkerColor(kBlue);  Muon_Barrel_000ns_ha_XY->SetMarkerColor(kRed);
   l2_x1 = 0.15; l2_x2 = 0.35; l2_y1 = 0.825; l2_y2 = 0.875;
@@ -2644,7 +2704,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Barrel_000ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_000ns_Cont_XY->Write(); 
-  Canvas_Muon_Barrel_000ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_000ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Barrel_250ns_Cont_XY = new TCanvas("Canvas_Muon_Barrel_250ns_Cont_XY", "XY-view of SimHits with tof > 250 ns :: Muon Barrel", 600, 600);
   Muon_Barrel_250ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2659,7 +2719,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Barrel_250ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_250ns_Cont_XY->Write(); 
-  Canvas_Muon_Barrel_250ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_250ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Barrel_00ns_Cont_XY = new TCanvas("Canvas_Muon_Barrel_00ns_Cont_XY", "XY-view of SimHits with tof < 50 ns :: Muon Barrel", 600, 600);
   Muon_Barrel_00ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2674,7 +2734,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Barrel_00ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_00ns_Cont_XY->Write(); 
-  Canvas_Muon_Barrel_00ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_00ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Barrel_50ns_Cont_XY = new TCanvas("Canvas_Muon_Barrel_50ns_Cont_XY", "XY-view of SimHits with 50 < tof < 250 ns :: Muon Barrel", 600, 600);
   Muon_Barrel_50ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2689,7 +2749,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Barrel_50ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Barrel_50ns_Cont_XY->Write(); 
-  Canvas_Muon_Barrel_50ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Barrel_50ns_Cont_XY->Print(pdfFileName.c_str());}
   // -------------------------------- //
 
   // ----- Muon Endcap XY plots ----- //
@@ -2703,7 +2763,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"All SimHits");
   Canvas_Muon_Endcap_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_XY->Write(); 
-  Canvas_Muon_Endcap_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Endcap_000ns_XY = new TCanvas("Canvas_Muon_Endcap_000ns_XY", "XY-view of SimHits with tof < 250 ns :: Muon Endcap", 600, 600);
   Muon_Endcap_000ns_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2715,7 +2775,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF < 250 ns");
   Canvas_Muon_Endcap_000ns_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_000ns_XY->Write(); 
-  Canvas_Muon_Endcap_000ns_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_000ns_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Endcap_250ns_XY = new TCanvas("Canvas_Muon_Endcap_250ns_XY", "XY-view of SimHits with tof > 250 ns :: Muon Endcap", 600, 600);
   Muon_Endcap_250ns_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2727,7 +2787,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.15, 0.15,"SimHits TOF > 250 ns");
   Canvas_Muon_Endcap_250ns_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_250ns_XY->Write(); 
-  Canvas_Muon_Endcap_250ns_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_250ns_XY->Print(pdfFileName.c_str());}
 
   Muon_Endcap_000ns_el_XY->SetMarkerColor(kBlack);  Muon_Endcap_000ns_mu_XY->SetMarkerColor(kBlue);  Muon_Endcap_000ns_ha_XY->SetMarkerColor(kRed);
 
@@ -2744,7 +2804,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Endcap_000ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_000ns_Cont_XY->Write(); 
-  Canvas_Muon_Endcap_000ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_000ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Endcap_250ns_Cont_XY = new TCanvas("Canvas_Muon_Endcap_250ns_Cont_XY", "XY-view of SimHits with tof > 250 ns :: Muon Endcap", 600, 600);
   Muon_Endcap_250ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2759,7 +2819,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Endcap_250ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_250ns_Cont_XY->Write(); 
-  Canvas_Muon_Endcap_250ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_250ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Endcap_00ns_Cont_XY = new TCanvas("Canvas_Muon_Endcap_00ns_Cont_XY", "XY-view of SimHits with tof < 50 ns :: Muon Endcap", 600, 600);
   Muon_Endcap_00ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2774,7 +2834,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Endcap_00ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_00ns_Cont_XY->Write(); 
-  Canvas_Muon_Endcap_00ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_00ns_Cont_XY->Print(pdfFileName.c_str());}
 
   Canvas_Muon_Endcap_50ns_Cont_XY = new TCanvas("Canvas_Muon_Endcap_50ns_Cont_XY", "XY-view of SimHits with 50 < tof < 250 ns :: Muon Endcap", 600, 600);
   Muon_Endcap_50ns_el_XY->GetXaxis()->SetTitle("X (cm)");
@@ -2789,7 +2849,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   l2b->Draw();
   Canvas_Muon_Endcap_50ns_Cont_XY->SetTicks(1,1);
   Canvas_Muon_Endcap_50ns_Cont_XY->Write(); 
-  Canvas_Muon_Endcap_50ns_Cont_XY->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_Muon_Endcap_50ns_Cont_XY->Print(pdfFileName.c_str());}
   // -------------------------------- //
 
 
@@ -2868,7 +2928,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_SimVertices_RZ->SetTicks(1,1);
   Canvas_SimVertices_RZ->Write(); 
-  Canvas_SimVertices_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_SimVertices_RZ->Print(pdfFileName.c_str());}
 
   Canvas_SimVertices_Muon_RZ = new TCanvas("Canvas_SimVertices_Muon_RZ", "RZ-view of Sim Vertices in Muon System and Cavern", 600, 600);
   SimVertices_Muon_RZ->GetXaxis()->SetTitle("Z (cm)");
@@ -2883,7 +2943,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_SimVertices_Muon_RZ->SetTicks(1,1);
   Canvas_SimVertices_Muon_RZ->Write(); 
-  Canvas_SimVertices_Muon_RZ->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_SimVertices_Muon_RZ->Print(pdfFileName.c_str());}
   PrimVertices_Z->Write();
   PrimVertices_R->Write();
   */
@@ -3176,7 +3236,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_EntryExit_vs_deposits->SetTicks(1,1);
   Canvas_CSC_EntryExit_vs_deposits->Write();
-  Canvas_CSC_EntryExit_vs_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_EntryExit_vs_deposits->Print(pdfFileName.c_str());}
 
   Canvas_CSC_EntryExit_vs_kinenergy->cd();
   CSC_EntryExit_el_KinEn_dz->GetXaxis()->SetTitle("^{10}log E_{kin} (MeV)");
@@ -3204,7 +3264,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_EntryExit_vs_kinenergy->SetTicks(1,1);
   Canvas_CSC_EntryExit_vs_kinenergy->Write();
-  Canvas_CSC_EntryExit_vs_kinenergy->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_EntryExit_vs_kinenergy->Print(pdfFileName.c_str());}
 
   Canvas_CSC_EntryExit_vs_time->cd();
   CSC_EntryExit_el_Time_dz->GetXaxis()->SetTitle("#Delta z (Global Coords) (cm)");
@@ -3231,7 +3291,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_EntryExit_vs_time->SetTicks(1,1);
   Canvas_CSC_EntryExit_vs_time->Write();
-  Canvas_CSC_EntryExit_vs_time->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_EntryExit_vs_time->Print(pdfFileName.c_str());}
 
 
   Canvas_CSC_PathLength_vs_deposits  = new TCanvas("Canvas_CSC_PathLength_vs_deposits",  "#Delta z (Global Coords) vs E_{deposit} :: CSC", 600, 600);
@@ -3263,7 +3323,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_PathLength_vs_deposits->SetTicks(1,1);
   Canvas_CSC_PathLength_vs_deposits->Write();
-  Canvas_CSC_PathLength_vs_deposits->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_PathLength_vs_deposits->Print(pdfFileName.c_str());}
 
 
   Canvas_CSC_PathLength_vs_kinenergy->cd();
@@ -3292,7 +3352,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_PathLength_vs_kinenergy->SetTicks(1,1);
   Canvas_CSC_PathLength_vs_kinenergy->Write();
-  Canvas_CSC_PathLength_vs_kinenergy->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_PathLength_vs_kinenergy->Print(pdfFileName.c_str());}
 
 
   Canvas_CSC_dz_vs_dR              = new TCanvas("Canvas_CSC_dz_vs_dR",              "#Delta R (Global Coords) vs dz (Global Coords) :: CSC", 600, 600);
@@ -3327,7 +3387,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_dz_vs_dR->SetTicks(1,1);
   Canvas_CSC_dz_vs_dR->Write();
-  Canvas_CSC_dz_vs_dR->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_dz_vs_dR->Print(pdfFileName.c_str());}
 
   Canvas_CSC_dz_vs_dR_detail->cd();
   CSC_EntryExit_el_dz_dR_detail->GetXaxis()->SetTitle("#Delta z (Global Coords) (cm)");
@@ -3355,7 +3415,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_dz_vs_dR_detail->SetTicks(1,1);
   Canvas_CSC_dz_vs_dR_detail->Write();
-  Canvas_CSC_dz_vs_dR_detail->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_dz_vs_dR_detail->Print(pdfFileName.c_str());}
 
   Canvas_CSC_deposits_vs_GapLength->cd();
   CSC_EntryExit_el_GapLength_Deposit->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV) (cm)");
@@ -3383,7 +3443,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
  Canvas_CSC_deposits_vs_GapLength->SetTicks(1,1);
  Canvas_CSC_deposits_vs_GapLength->Write();
- Canvas_CSC_deposits_vs_GapLength->Print(pdfFileName.c_str());
+ if(pdf_output) {Canvas_CSC_deposits_vs_GapLength->Print(pdfFileName.c_str());}
 
   Canvas_CSC_deposits_vs_pidR2->cd();
   CSC_EntryExit_el_Deposit_pidR2->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -3411,7 +3471,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   // latex_left.DrawLatex(lab_max_x,lab_max_y,       lab_time.c_str());
   Canvas_CSC_deposits_vs_pidR2->SetTicks(1,1);
   Canvas_CSC_deposits_vs_pidR2->Write();
-  Canvas_CSC_deposits_vs_pidR2->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_deposits_vs_pidR2->Print(pdfFileName.c_str());}
 
   Canvas_CSC_deposits_vs_dRdz->cd();
   CSC_EntryExit_el_Deposit_dRdz->GetXaxis()->SetTitle("^{10}log E_{deposit} (keV)");
@@ -3439,7 +3499,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   //   latex_right.DrawLatex(lab_max_x,lab_max_y,    lab_time.c_str());
   Canvas_CSC_deposits_vs_dRdz->SetTicks(1,1);
   Canvas_CSC_deposits_vs_dRdz->Write();
-  Canvas_CSC_deposits_vs_dRdz->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_deposits_vs_dRdz->Print(pdfFileName.c_str());}
 
 
 
@@ -3625,7 +3685,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPCb_Layers->SetTicks(1,1);
   Canvas_RPCb_Layers->Write();
-  Canvas_RPCb_Layers->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCb_Layers->Print(pdfFileName.c_str());}
 
   Canvas_RPCf_Layers->cd();
   // RPCf_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in RPCf system"); // original intention
@@ -3639,7 +3699,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPCf_Layers->SetTicks(1,1);
   Canvas_RPCf_Layers->Write();
-  Canvas_RPCf_Layers->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPCf_Layers->Print(pdfFileName.c_str());}
   
 
   Canvas_CSC_Layers->cd();
@@ -3654,7 +3714,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_CSC_Layers->SetTicks(1,1);
   Canvas_CSC_Layers->Write();
-  Canvas_CSC_Layers->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_CSC_Layers->Print(pdfFileName.c_str());}
 
   Canvas_DT_Layers->cd();
   // DT_el_HPL->GetXaxis()->SetTitle("Number of Layers hit in DT system"); // original intention
@@ -3668,7 +3728,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_DT_Layers->SetTicks(1,1);
   Canvas_DT_Layers->Write();
-  Canvas_DT_Layers->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_DT_Layers->Print(pdfFileName.c_str());}
 
 
   int rpc_barrel_hits = 0;
@@ -3794,7 +3854,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPC_Rates->SetTicks(1,1);
   Canvas_RPC_Rates->Write(); 
-  Canvas_RPC_Rates->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPC_Rates->Print(pdfFileName.c_str());}
 
 
   // Barrel + Endcap @ 24 pu
@@ -4075,7 +4135,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPC_Rates_RE1->SetTicks(1,1);
   Canvas_RPC_Rates_RE1->Write(); 
-  Canvas_RPC_Rates_RE1->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPC_Rates_RE1->Print(pdfFileName.c_str());}
 
   Canvas_RPC_Rates_RE2 = new TCanvas("Canvas_RPC_Rates_RE2", "Rates in RPC System :: First Endcap Station", 600, 600);
   gr_RPC_Rates_RE22->GetXaxis()->SetTitle("Instantaneous Luminosity #times 10^{34} (cm^{-2}s^{-1})");
@@ -4090,7 +4150,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPC_Rates_RE2->SetTicks(1,1);
   Canvas_RPC_Rates_RE2->Write(); 
-  Canvas_RPC_Rates_RE2->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPC_Rates_RE2->Print(pdfFileName.c_str());}
 
   Canvas_RPC_Rates_RE3 = new TCanvas("Canvas_RPC_Rates_RE3", "Rates in RPC System :: First Endcap Station", 600, 600);
   gr_RPC_Rates_RE32->GetXaxis()->SetTitle("Instantaneous Luminosity #times 10^{34} (cm^{-2}s^{-1})");
@@ -4105,7 +4165,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPC_Rates_RE3->SetTicks(1,1);
   Canvas_RPC_Rates_RE3->Write(); 
-  Canvas_RPC_Rates_RE3->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPC_Rates_RE3->Print(pdfFileName.c_str());}
 
   Canvas_RPC_Rates_RE4 = new TCanvas("Canvas_RPC_Rates_RE4", "Rates in RPC System :: First Endcap Station", 600, 600);
   gr_RPC_Rates_RE42->GetXaxis()->SetTitle("Instantaneous Luminosity #times 10^{34} (cm^{-2}s^{-1})");
@@ -4120,7 +4180,7 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   latex_cmslab.DrawLatex(0.10, 0.925,comlabel.c_str());
   Canvas_RPC_Rates_RE4->SetTicks(1,1);
   Canvas_RPC_Rates_RE4->Write(); 
-  Canvas_RPC_Rates_RE4->Print(pdfFileName.c_str());
+  if(pdf_output) {Canvas_RPC_Rates_RE4->Print(pdfFileName.c_str());}
 
   /*
     TDir_Muon_rates->cd();
@@ -4135,11 +4195,11 @@ MyNeutronSimHitAnalyzer::~MyNeutronSimHitAnalyzer(){
   gr_RPC_Rates_RE43->Write();
   // ------------------------
   */
-
+  if(pdf_output) {
   // last plot for PDF File :: print empty Dummy
-  pdfFileName = pdfFileNameBase + ".pdf]";
-  Dummy->Print(pdfFileName.c_str());
-
+    pdfFileName = pdfFileNameBase + ".pdf]";
+    Dummy->Print(pdfFileName.c_str());
+  }
 }
 
 
@@ -4234,6 +4294,7 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     double log_energy  = log10((*iHit).momentumAtEntry().perp()*1000); // MeV
     double log_deposit = log10((*iHit).energyLoss()*1000000);          // keV
     double e_deposit   = (*iHit).energyLoss()*1000000; // keV
+    double ms_time     = (*iHit).timeOfFlight()*1.0/1000000; // time ns->ms
 
     // Highly Ionizing Particles
     bool HIP = false;
@@ -4548,6 +4609,8 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       LocalVector GapVector = ((*iHit).exitPoint() - (*iHit).entryPoint());
       double GapLength= GapVector.mag();
       int layer = rollId.layer();
+      int station = rollId.station();
+      int ring = rollId.ring();
 
       bool isME11 = false, isME11odd = false, isME11even = false;
       if(rollId.station() == 1 && (rollId.ring() == 1 || rollId.ring() == 4) ) {
@@ -4555,6 +4618,28 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	if(rollId.chamber()%2==1) isME11odd = true; else isME11even = true;
       }
 
+      CSC_MEXX_hits_tof->Fill(ms_time);
+      if(station==1) {
+	if(ring==1)      CSC_ME11_hits_tof->Fill(ms_time); 
+	else if(ring==2) CSC_ME12_hits_tof->Fill(ms_time);
+	else if(ring==3) CSC_ME13_hits_tof->Fill(ms_time);
+	else if(ring==4) CSC_ME11_hits_tof->Fill(ms_time);
+	else {}
+      }
+      if(station==2) {
+	if(ring==1) CSC_ME21_hits_tof->Fill(ms_time);
+	else        CSC_ME22_hits_tof->Fill(ms_time);
+      }
+      if(station==3) {
+	if(ring==1) CSC_ME31_hits_tof->Fill(ms_time);
+	else        CSC_ME32_hits_tof->Fill(ms_time);
+      }
+      if(station==4) {
+	if(ring==1) CSC_ME41_hits_tof->Fill(ms_time);
+	else        CSC_ME42_hits_tof->Fill(ms_time);
+      }
+      if(ring==1 || ring==4) { CSC_MEX1_hits_tof->Fill(ms_time); }
+      if(ring==2 || ring==3) { CSC_MEX2_hits_tof->Fill(ms_time); }
 
       if (phys_debug) {
        std::cout<<"CSC SimHit in "<<std::setw(24)<<rollId<<" | time t = "<<std::setw(12)<<(*iHit).timeOfFlight()<<" | z = "<<std::setw(12)<<CSCGlobalPoint.z();
@@ -4879,6 +4964,8 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       double DTGlobalEntryExitDR = fabs(sqrt(pow(DTGlobalEntry.x(),2)+pow(DTGlobalEntry.y(),2))-sqrt(pow(DTGlobalExit.x(),2)+pow(DTGlobalExit.y(),2)));
       double DTLocalEntryExitDZ  = fabs((*iHit).entryPoint().z()-(*iHit).exitPoint().z());
       int layer = (wireId.superlayer()-1)*4+wireId.layer();
+      int station = wireId.station();
+      int wheel = wireId.wheel();
 
       // dtGeometry->idToDet(id)->surface().toGlobal(LocalPoint(point->displacement.x(), point->displacement.y(), point->displacement.z()));
       if (phys_debug) {
@@ -4896,6 +4983,18 @@ MyNeutronSimHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       Muon_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R));  
       DT_EntryExit_All_Glob_dr->Fill(DTGlobalEntryExitDR);
       DT_EntryExit_All_Loc_dz->Fill(DTLocalEntryExitDZ);
+
+      DT_MBX_all_hits_tof->Fill(ms_time);
+      if(station==1) {
+	DT_MB1_all_hits_tof->Fill(ms_time);
+	if(abs(wheel)==2)      DT_MB1_W2_hits_tof->Fill(ms_time);
+	else if(abs(wheel)==1) DT_MB1_W1_hits_tof->Fill(ms_time);
+	else                   DT_MB1_W0_hits_tof->Fill(ms_time);
+      }
+      else if(station==2) { DT_MB2_all_hits_tof->Fill(ms_time); }
+      else if(station==3) { DT_MB3_all_hits_tof->Fill(ms_time); }
+      else if(station==4) { DT_MB4_all_hits_tof->Fill(ms_time); }
+      else {}
       
       if((*iHit).timeOfFlight()<250) {
 	if(abs(pid)==11)      { Muon_000ns_el_RZ->Fill(fabs(DTGlobalPoint.z()), fabs(DT_GlobalPoint_R)); Muon_Barrel_000ns_el_XY->Fill(DTGlobalPoint.x(), DTGlobalPoint.y()); DT_Electrons_000ns_SHPT->Fill(process);}
